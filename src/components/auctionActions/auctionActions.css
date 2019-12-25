@@ -1,0 +1,14 @@
+.team-name {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 500;
+}
+
+.flex-growVert-parent {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-growVert-child {
+  flex: 1;
+}

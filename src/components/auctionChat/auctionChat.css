@@ -1,0 +1,12 @@
+.timestamp {
+  float: right;
+  padding-left: 6px;
+}
+
+.content {
+  padding: 0 4px;
+}
+
+.author {
+  font-weight: bold;
+}
