@@ -7,7 +7,7 @@ import LeagueModal from '../leagueModal/leagueModal';
 
 import { NOTIF, LEAGUE_FORM_TYPE } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';
-import { User } from '../../firebase/authService';
+import { User } from '../../utilities/authService';
 import DataService, { Data } from '../../utilities/data';
 import { formatMoney } from '../../utilities/helper';
 import { navigate } from '@reach/router/lib/history';
@@ -95,7 +95,7 @@ function Main() {
     }
   }
 
-  if (User.user_id) {
+  if (User.authenticated) {
     return (
       <div>
         <Row type='flex' justify='center'>

@@ -8,7 +8,8 @@ import 'antd/dist/antd.css';
 
 import { AUTH_FORM_TYPE, NOTIF } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';
-import AuthService, { User } from '../../firebase/authService';
+import { User, signOut, getCurrentSession } from '../../utilities/authService';
+import Axios from 'axios';
 
 
 const { SubMenu } = Menu;
@@ -21,6 +22,8 @@ function Topnav() {
     Pubsub.subscribe(NOTIF.SIGN_IN, Topnav, handleSignin);
     Pubsub.subscribe(NOTIF.SIGN_OUT, Topnav, handleSignout);
 
+    getCurrentSession();
+
     return (() => {
       Pubsub.unsubscribe(NOTIF.SIGN_IN, Topnav);
       Pubsub.unsubscribe(NOTIF.SIGN_OUT, Topnav);
@@ -29,6 +32,18 @@ function Topnav() {
 
   const handleSignin = () => {
     setAuthenticated(true);
+    
+    Axios({
+      method: 'GET',
+      url: 'https://kgjlpsbai4.execute-api.us-east-1.amazonaws.com/dev/verifyToken',
+      headers: {
+        'x-cognito-token': User.session.idToken.jwtToken || ''
+      }
+    }).then(response => {
+      console.log(response);
+    }).catch(error => {
+      console.log(error);
+    })
   }
 
   const handleSignout = () => {
@@ -40,7 +55,7 @@ function Topnav() {
       <Menu.Item key='signout' style={{textAlign: 'center'}}  >
         <Button 
           type='danger' 
-          onClick={() => AuthService.signout()}
+          onClick={() => signOut()}
         >
           Sign Out
         </Button>

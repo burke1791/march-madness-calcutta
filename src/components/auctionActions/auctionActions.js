@@ -10,7 +10,7 @@ import { formatMoney } from '../../utilities/helper';
 import DataService, { Auction, Data } from '../../utilities/data';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF, AUCTION_STATUS } from '../../utilities/constants';
-import { User } from '../../firebase/authService';
+import { User } from '../../utilities/authService';
 
 const { Countdown } = Statistic;
 

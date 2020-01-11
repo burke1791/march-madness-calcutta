@@ -3,7 +3,7 @@ import React, { useState, useEffect} from 'react';
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
 import 'antd/dist/antd.css';
 import { AUTH_FORM_TYPE, ERROR_MESSAGES } from '../../utilities/constants';
-import AuthService from '../../firebase/authService';
+import { signIn } from '../../utilities/authService';
 
 function SigninForm(props) {
 
@@ -22,11 +22,13 @@ function SigninForm(props) {
         let password = values.password;
         let remember = values.remember;
 
-        // @TODO send to firebase authentication
-        AuthService.sendSigninRequest({ email: email, password: password }).catch(errorCode => {
-          setErrorMessage(ERROR_MESSAGES[errorCode]);
-          props.toggleLoading(false);
-        })
+        // @TODO refactor error handling
+        signIn(email, password);
+
+        // AuthService.sendSigninRequest({ email: email, password: password }).catch(errorCode => {
+        //   setErrorMessage(ERROR_MESSAGES[errorCode]);
+        //   props.toggleLoading(false);
+        // })
       } else {
         alert('Validation Error');
       }
@@ -51,12 +53,8 @@ function SigninForm(props) {
           rules: [
             { 
               required: true, 
-              message: 'Please input your email address!'
-            },
-            {
-              type: 'email',
-              message: 'The input is not a valid email'
-            }  
+              message: 'Please input your username!'
+            }
           ],
         })(
           <Input 

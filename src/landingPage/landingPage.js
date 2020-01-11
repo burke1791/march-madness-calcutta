@@ -7,7 +7,7 @@ import basketball from '../images/basketball_icon.jpg';
 import { navigate } from '@reach/router';
 import Pubsub from '../utilities/pubsub';
 import { NOTIF, AUTH_FORM_TYPE } from '../utilities/constants';
-import { User } from '../firebase/authService';
+import { User } from '../utilities/authService';
 import { Button } from 'antd';
 
 function LandingPage() {

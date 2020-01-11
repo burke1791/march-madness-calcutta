@@ -4,7 +4,7 @@ import { AUTH_FORM_TYPE, ERROR_MESSAGES } from '../../utilities/constants';
 
 import { Form, Icon, Input, Button, Checkbox, Tooltip } from 'antd';
 import 'antd/dist/antd.css';
-import AuthService from '../../firebase/authService';
+import { signUp } from '../../utilities/authService';
 
 const formItemStyle = {
   marginBottom: '6px'
@@ -46,10 +46,13 @@ function SignupForm(props) {
         let password = values.password;
         let remember = values.remember;
 
-        AuthService.sendSignupRequest({ email: email, password: password, username: username }).catch(errorCode => {
-          setErrorMessage(ERROR_MESSAGES[errorCode]);
-          props.toggleLoading(false);
-        });
+        // @TODO refactor error handling
+        signUp(username, email, password);
+
+        // AuthService.sendSignupRequest({ email: email, password: password, username: username }).catch(errorCode => {
+        //   setErrorMessage(ERROR_MESSAGES[errorCode]);
+        //   props.toggleLoading(false);
+        // });
       } else {
         alert('Validation Error');
       }

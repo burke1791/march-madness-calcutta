@@ -9,7 +9,7 @@ import MessageThread from '../messageThread/messageThread';
 
 import { Layout } from 'antd';
 import 'antd/dist/antd.css';
-import { User } from '../../firebase/authService';
+import { User } from '../../utilities/authService';
 
 const { Header } = Layout;
 

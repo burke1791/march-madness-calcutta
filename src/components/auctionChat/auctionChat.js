@@ -5,7 +5,7 @@ import { formatTimestamp } from '../../utilities/helper';
 
 import { Row, Col, List, Card, Input, Button } from 'antd'
 import 'antd/dist/antd.css';
-import { User } from '../../firebase/authService';
+import { User } from '../../utilities/authService';
 import DataService, { Data } from '../../utilities/data';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';

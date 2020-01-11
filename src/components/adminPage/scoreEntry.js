@@ -5,7 +5,7 @@ import 'antd/dist/antd.css';
 
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
-import AdminService from '../../utilities/adminService';
+// import AdminService from '../../utilities/adminService';
 
 import WrappedScoreEntryForm from './scoreEntryForm';
 
@@ -30,17 +30,17 @@ function ScoreEntry(props) {
 
   const handleMarchMadnessResults = () => {
     console.log('handling results');
-    setTeams(AdminService.marchMadnessResults);
+    // setTeams(AdminService.marchMadnessResults);
 
-    if (AdminService.marchMadnessResults && AdminService.marchMadnessResults.length) {
-      let loadingObj = {};
-      for (let game of AdminService.marchMadnessResults) {
-        let gameCode = 'R' + game.round + game.gameId;
-        loadingObj[gameCode] = false;
-      }
+    // if (AdminService.marchMadnessResults && AdminService.marchMadnessResults.length) {
+    //   let loadingObj = {};
+    //   for (let game of AdminService.marchMadnessResults) {
+    //     let gameCode = 'R' + game.round + game.gameId;
+    //     loadingObj[gameCode] = false;
+    //   }
 
-      setLoading(loadingObj);
-    }
+    //   setLoading(loadingObj);
+    // }
   }
 
   const handleScoreSetErr = (errorObj) => {
@@ -59,7 +59,7 @@ function ScoreEntry(props) {
     setLoading({...loading, [gameCode]: true});
     setButtons({...buttons, [gameCode]: null});
 
-    AdminService.sendGameResult(props.year, round, gameId, scoreObj);
+    // AdminService.sendGameResult(props.year, round, gameId, scoreObj);
   }
 
   return (

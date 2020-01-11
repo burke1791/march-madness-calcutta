@@ -5,7 +5,7 @@ import { Layout, Menu, Icon } from 'antd';
 import 'antd/dist/antd.css';
 import ScoreEntry from './scoreEntry';
 
-import AdminService from '../../utilities/adminService';
+// import AdminService from '../../utilities/adminService';
 import Pubsub from '../../utilities/pubsub';
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -19,7 +19,7 @@ function Admin(props) {
     if (tournamentKey.includes('mm-')) {
       // fetch data from tournament_* tables
       let year = tournamentKey.match(/\d{4}$/g)[0];
-      AdminService.fetchMarchMadnessGames(year);
+      // AdminService.fetchMarchMadnessGames(year);
     } else if (tournamentKey.includes('btt-')) {
       // fetch data from big_ten_tournament_* tables
     }

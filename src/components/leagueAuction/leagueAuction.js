@@ -10,7 +10,7 @@ import MemberList from '../memberList/memberList';
 import DataService, { Data } from '../../utilities/data';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
-import { User } from '../../firebase/authService';
+import { User } from '../../utilities/authService';
 
 function LeagueAuction(props) {
 
