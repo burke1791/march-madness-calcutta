@@ -42,3 +42,7 @@ export const NOTIF = {
   MM_SCORE_SET: 'mm_score_set',
   MM_SCORE_SET_ERR: 'mm_score_set_err'
 };
+
+export const ERROR_MESSAGES = {
+  GENERAL: 'Error'
+}
