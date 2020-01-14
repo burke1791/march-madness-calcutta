@@ -1,6 +1,7 @@
 export const AUTH_FORM_TYPE = {
   SIGN_IN: 'Sign In',
-  SIGN_UP: 'Create an Account'
+  SIGN_UP: 'Create an Account',
+  CONFIRM: 'confirm'
 };
 
 export const LEAGUE_FORM_TYPE = {

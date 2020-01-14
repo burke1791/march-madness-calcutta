@@ -7,6 +7,7 @@ import { AUTH_FORM_TYPE, NOTIF } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';
 import WrappedSigninForm from '../signinForm/signinForm';
 import WrappedSignupForm from '../signupForm/signupForm';
+import ConfirmAccount from './confirmAccount';
 
 function AuthModal() {
 
@@ -17,10 +18,12 @@ function AuthModal() {
   useEffect(() => {
     Pubsub.subscribe(NOTIF.AUTH_MODAL_SHOW, AuthModal, showModal);
     Pubsub.subscribe(NOTIF.SIGN_IN, AuthModal, handleCancel);
+    Pubsub.subscribe(NOTIF.SIGN_UP_PLEASE_CONFIRM, AuthModal, handleConfirm);
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.AUTH_MODAL_SHOW, AuthModal);
       Pubsub.unsubscribe(NOTIF.SIGN_IN, AuthModal);
+      Pubsub.unsubscribe(NOTIF.SIGN_UP_PLEASE_CONFIRM, AuthModal);
     });
   }, []);
 
@@ -33,6 +36,11 @@ function AuthModal() {
 
   const handleFormToggle = (type) => {
     setFormType(type);
+  }
+
+  const handleConfirm = () => {
+    setLoading(false);
+    setFormType(AUTH_FORM_TYPE.CONFIRM);
   }
 
   const handleCancel = () => {
@@ -59,6 +67,10 @@ function AuthModal() {
       return (
         <WrappedSignupForm loading={loading} toggleLoading={toggleLoading} toggleAuthForm={handleFormToggle} />
       );
+    } else if (formType === AUTH_FORM_TYPE.CONFIRM) {
+      return (
+        <ConfirmAccount loading={loading} toggleLoading={toggleLoading} toggleAuthForm={handleFormToggle} />
+      )
     }
   }
 

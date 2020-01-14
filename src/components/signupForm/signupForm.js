@@ -48,11 +48,6 @@ function SignupForm(props) {
 
         // @TODO refactor error handling
         signUp(username, email, password);
-
-        // AuthService.sendSignupRequest({ email: email, password: password, username: username }).catch(errorCode => {
-        //   setErrorMessage(ERROR_MESSAGES[errorCode]);
-        //   props.toggleLoading(false);
-        // });
       } else {
         alert('Validation Error');
       }
@@ -86,12 +81,27 @@ function SignupForm(props) {
           ]
         })(<Input />)}
       </Form.Item>
-      <Form.Item label='Password' style={formItemStyle} hasFeedback>
+      <Form.Item 
+        label={
+          <span>
+            Password &nbsp;
+            <Tooltip title='Password must be at least 6 characters long and include at least one uppercase, lowercase, and number'>
+              <Icon type='question-circle-o' />
+            </Tooltip>
+          </span>
+        }
+        style={formItemStyle} 
+        hasFeedback
+      >
         {getFieldDecorator('password', {
           rules: [
             {
               required: true,
               message: 'Please input your password!'
+            },
+            {
+              pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,})/g,
+              message: 'Password not strong enough'
             },
             {
               validator: validateToNextPassword

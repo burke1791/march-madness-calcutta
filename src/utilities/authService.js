@@ -5,6 +5,9 @@ import { NOTIF } from './constants';
 var User = {};
 
 export function signUp(username, email, password) {
+  //User.email = email;
+  User.password = password;
+
   Auth.signUp({
     username: email,
     password: password,
@@ -13,8 +16,7 @@ export function signUp(username, email, password) {
     }
   }).then(response => {
     console.log(response);
-    User.authenticated = true;
-    Pubsub.publish(NOTIF.SIGN_IN, null);
+    Pubsub.publish(NOTIF.SIGN_UP_PLEASE_CONFIRM, null);
   }).catch(error => {
     console.log(error);
     User.authenticated = false;
@@ -28,8 +30,7 @@ export function signIn(username, password) {
     password: password
   }).then(response => {
     console.log(response);
-    User.authenticated = true;
-    Pubsub.publish(NOTIF.SIGN_IN, null);
+    getCurrentSession();
   }).catch(error => {
     console.log(error);
     User.authenticated = false;
@@ -56,6 +57,8 @@ export function getCurrentUser() {
 }
 
 export function getCurrentSession() {
+  User.email = null;
+  User.password = null;
   Auth.currentSession().then(session => {
     console.log(session);
     User.session = session;
