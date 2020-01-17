@@ -1,5 +1,5 @@
 import { User } from './authService';
-import { ENDPOINTS } from './constants';
+import { ENDPOINTS, NOTIF } from './constants';
 import Axios from 'axios';
 import Pubsub from './pubsub';
 
