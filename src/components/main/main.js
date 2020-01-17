@@ -79,7 +79,7 @@ function Main() {
 
   const newLeague = () => {
     console.log('new league clicked');
-    if (User.user_id) {
+    if (User.authenticated) {
       Pubsub.publish(NOTIF.LEAGUE_MODAL_SHOW, LEAGUE_FORM_TYPE.CREATE);
     } else {
       alert('Please sign in to create a league');
@@ -88,7 +88,7 @@ function Main() {
 
   const joinLeague = () => {
     console.log('join league clicked');
-    if (User.user_id) {
+    if (User.authenticated) {
       Pubsub.publish(NOTIF.LEAGUE_MODAL_SHOW, LEAGUE_FORM_TYPE.JOIN);
     } else {
       alert('Please sign in to join a league');
