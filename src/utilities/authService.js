@@ -5,7 +5,7 @@ import { NOTIF } from './constants';
 var User = {};
 
 export function signUp(username, email, password) {
-  //User.email = email;
+  User.email = email;
   User.password = password;
 
   Auth.signUp({
