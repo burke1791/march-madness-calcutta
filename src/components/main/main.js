@@ -8,10 +8,10 @@ import LeagueModal from '../leagueModal/leagueModal';
 import { NOTIF, LEAGUE_FORM_TYPE } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';
 import { User } from '../../utilities/authService';
-import DataService, { Data } from '../../utilities/data';
 import { formatMoney } from '../../utilities/helper';
 import { navigate } from '@reach/router/lib/history';
 import { Redirect } from '@reach/router';
+import { Data, getLeagueSummaries } from '../../utilities/leagueData';
 
 function Main() {
 
@@ -36,7 +36,9 @@ function Main() {
   }, []);
 
   const fetchLeagueInfo = () => {
-    DataService.updateLeagueInfo();
+    if (User.authenticated) {
+      getLeagueSummaries();
+    }
   }
 
   const handleLeagueJoin = () => {
@@ -50,17 +52,20 @@ function Main() {
         (() => {
           return Data.leagues.map(league => {
             return {
-              name: league.league_name,
+              name: league.name,
               buyIn: formatMoney(league.buyIn || '0'),
               payout: formatMoney(league.payout || '0'),
               return: formatMoney(league.buyIn && league.payout ? league.payout - league.buyIn : '0'),
               role: league.role,
-              auctionId: league.auction_id,
-              key: league.league_id
+              auctionId: league.auctionId,
+              key: league.id
             };
           });
         })()
       );
+    } else {
+      // in case this component gets rendered after the sign in notification
+      fetchLeagueInfo();
     }
   }
 
@@ -95,7 +100,7 @@ function Main() {
     }
   }
 
-  if (User.authenticated) {
+  if (User.authenticated == undefined || User.authenticated) {
     return (
       <div>
         <Row type='flex' justify='center'>
