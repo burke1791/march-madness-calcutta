@@ -1,3 +1,7 @@
+export const ENDPOINTS = {
+  NEW_LEAGUE: '/createLeague'
+};
+
 export const AUTH_FORM_TYPE = {
   SIGN_IN: 'Sign In',
   SIGN_UP: 'Create an Account',
