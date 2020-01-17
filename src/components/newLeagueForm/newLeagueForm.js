@@ -5,6 +5,7 @@ import { Form, Input, Button } from 'antd';
 import 'antd/dist/antd.css';
 
 import DataService from '../../utilities/data';
+import { createLeague } from '../../utilities/leagueData';
 import { User } from '../../utilities/authService';
 
 function NewLeagueForm(props) {
@@ -24,13 +25,12 @@ function NewLeagueForm(props) {
         let name = values.league_name;
         let password = values.league_password;
         let year = 2019; // @TODO move this to the server
-        let user_id = User.user_id; // @TODO move this to DataService
 
         // @TODO send API.create_league post request
         if (props.leagueType === LEAGUE_FORM_TYPE.CREATE) {
-          DataService.createLeague({ name: name, password: password, year: year, user_id: user_id });
+          createLeague(name, password, year);
         } else {
-          DataService.joinLeague({ name: name, password: password, user_id: user_id });
+          // DataService.joinLeague({ name: name, password: password, user_id: user_id });
         }
       } else {
         alert('Validation Error');
