@@ -17,7 +17,7 @@ function League(props) {
   const [auctionId, setAuctionId] = useState(props.location.state.auctionId);
   const [role, setRole] = useState(props.location.state.role);
 
-  if (User.user_id) {
+  if (User.authenticated) {
     return (
       <Layout>
         <LeagueNav leagueId={props.leagueId} />

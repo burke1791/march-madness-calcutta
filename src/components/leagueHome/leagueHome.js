@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { Layout, Table, Row } from 'antd';
 import 'antd/dist/antd.css';
-import DataService, { Data } from '../../utilities/data';
+import { Data, getLeagueUserSummaries } from '../../utilities/leagueData';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
 import AuctionChart from '../auctionChart/auctionChart';
@@ -58,7 +58,7 @@ function LeagueHome(props) {
 
   useEffect(() => {
     console.log('leagueId: ' + props.leagueId);
-    DataService.getLeagueUserSummaries(props.leagueId);
+    getLeagueUserSummaries(props.leagueId);
   }, [props.leagueId]);
 
   const getLeagueInfo = () => {

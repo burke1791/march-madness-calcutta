@@ -1,7 +1,8 @@
 export const ENDPOINTS = {
   NEW_LEAGUE: '/createLeague',
   JOIN_LEAGUE: '/joinLeague',
-  LEAGUE_SUMMARIES: '/getLeagueSummaries'
+  LEAGUE_SUMMARIES: '/getLeagueSummaries',
+  LEAGUE_USER_SUMMARIES: '/getLeagueUserSummaries'
 };
 
 export const AUTH_FORM_TYPE = {
