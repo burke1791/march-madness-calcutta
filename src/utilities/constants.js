@@ -1,5 +1,6 @@
 export const ENDPOINTS = {
   NEW_LEAGUE: '/createLeague',
+  JOIN_LEAGUE: '/joinLeague',
   LEAGUE_SUMMARIES: '/getLeagueSummaries'
 };
 

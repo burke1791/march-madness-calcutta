@@ -5,7 +5,7 @@ import { Form, Input, Button } from 'antd';
 import 'antd/dist/antd.css';
 
 import DataService from '../../utilities/data';
-import { createLeague } from '../../utilities/leagueData';
+import { createLeague, joinLeague } from '../../utilities/leagueData';
 import { User } from '../../utilities/authService';
 
 function NewLeagueForm(props) {
@@ -30,7 +30,7 @@ function NewLeagueForm(props) {
         if (props.leagueType === LEAGUE_FORM_TYPE.CREATE) {
           createLeague(name, password, year);
         } else {
-          // DataService.joinLeague({ name: name, password: password, user_id: user_id });
+          joinLeague(name, password);
         }
       } else {
         alert('Validation Error');

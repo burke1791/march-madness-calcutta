@@ -5,6 +5,24 @@ import Pubsub from './pubsub';
 
 let Data = {};
 
+export function getLeagueSummaries() {
+  Axios({
+    method: 'GET',
+    url: process.env.REACT_APP_API_URL + ENDPOINTS.LEAGUE_SUMMARIES,
+    headers: {
+      'x-cognito-token': User.session.idToken.jwtToken || ''
+    }
+  }).then(response => {
+    console.log(response);
+    Data.leagues = packageLeagueSummaries(response.data);
+    if (Data.leagues.length) {
+      Pubsub.publish(NOTIF.LEAGUE_SUMMARIES_FETCHED, null);
+    }
+  }).catch(error => {
+    console.log(error);
+  });
+}
+
 export function createLeague(name, password, year) {
   let league = {
     name: name,
@@ -27,22 +45,26 @@ export function createLeague(name, password, year) {
   });
 }
 
-export function getLeagueSummaries() {
+export function joinLeague(name, password) {
+  let league = {
+    name: name,
+    password: password
+  };
+
   Axios({
-    method: 'GET',
-    url: process.env.REACT_APP_API_URL + ENDPOINTS.LEAGUE_SUMMARIES,
+    method: 'POST',
+    url: process.env.REACT_APP_API_URL + ENDPOINTS.JOIN_LEAGUE,
     headers: {
       'x-cognito-token': User.session.idToken.jwtToken || ''
-    }
+    },
+    data: league
   }).then(response => {
     console.log(response);
-    Data.leagues = packageLeagueSummaries(response.data);
-    Pubsub.publish(NOTIF.LEAGUE_SUMMARIES_FETCHED, null);
+    Pubsub.publish(NOTIF.LEAGUE_JOINED);
   }).catch(error => {
     console.log(error);
   });
 }
-
 
 function packageLeagueSummaries(data) {
   let leagues = data.map(league => {
