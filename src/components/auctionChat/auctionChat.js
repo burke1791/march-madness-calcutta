@@ -18,12 +18,12 @@ function AuctionChat(props) {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    DataService.startChatListener(props.auctionId);
+    // DataService.startChatListener(props.auctionId);
 
     Pubsub.subscribe(NOTIF.NEW_CHAT_MESSAGE, AuctionChat, newMessage);
 
     return (() => {
-      DataService.killChatListener();
+      // DataService.killChatListener();
 
       Pubsub.unsubscribe(NOTIF.NEW_CHAT_MESSAGE, AuctionChat);
     });
@@ -42,7 +42,7 @@ function AuctionChat(props) {
       auctionId: props.auctionId
     };
 
-    DataService.sendChatMessage(params);
+    // DataService.sendChatMessage(params);
     setChatMessage('');
   }
   

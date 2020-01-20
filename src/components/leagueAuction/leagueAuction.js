@@ -11,6 +11,7 @@ import DataService, { Data } from '../../utilities/data';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
 import { User } from '../../utilities/authService';
+import { connectAuction, disconnect } from '../../utilities/auctionService';
 
 function LeagueAuction(props) {
 
@@ -24,7 +25,9 @@ function LeagueAuction(props) {
     // DataService.getAuctionTeams(props.leagueId);
     fetchAuctionTeams();
     updateUserSummaries();
-    DataService.startAuctionListener(props.auctionId);
+    // DataService.startAuctionListener(props.auctionId);
+
+    connectAuction('test');
 
     Pubsub.subscribe(NOTIF.AUCTION_TEAMS_DOWNLOADED, LeagueAuction, auctionTeamsDownloaded);
     Pubsub.subscribe(NOTIF.NEW_AUCTION_DATA, LeagueAuction, handleNewAuctionData);
@@ -35,7 +38,8 @@ function LeagueAuction(props) {
       Pubsub.unsubscribe(NOTIF.NEW_AUCTION_DATA, LeagueAuction);
       Pubsub.unsubscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueAuction);
 
-      DataService.killAuctionListener();
+      // DataService.killAuctionListener();
+      disconnect();
     });
   }, []);
 
@@ -61,16 +65,16 @@ function LeagueAuction(props) {
   }
 
   const updateUserSummaries = () => {
-    console.log(Data.leagueInfo.users);
-    setLeagueUsers(Data.leagueInfo.users);
+    // console.log(Data.leagueInfo.users);
+    // setLeagueUsers(Data.leagueInfo.users);
   }
 
   const fetchAuctionTeams = () => {
-    DataService.getAuctionTeams(props.leagueId);
+    // DataService.getAuctionTeams(props.leagueId);
   }
 
   const fetchUserSummaries = () => {
-    DataService.getLeagueUserSummaries(props.leagueId);
+    // DataService.getLeagueUserSummaries(props.leagueId);
   }
 
   return (

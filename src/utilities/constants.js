@@ -5,6 +5,10 @@ export const ENDPOINTS = {
   LEAGUE_USER_SUMMARIES: '/getLeagueUserSummaries'
 };
 
+export const SOCKETS = {
+  AUCTION: 'wss://us443jod06.execute-api.us-east-1.amazonaws.com/dev'
+}
+
 export const AUTH_FORM_TYPE = {
   SIGN_IN: 'Sign In',
   SIGN_UP: 'Create an Account',
