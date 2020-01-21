@@ -39,7 +39,7 @@ function LeagueAuction(props) {
       Pubsub.unsubscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueAuction);
 
       // DataService.killAuctionListener();
-      disconnect();
+      // disconnect();
     });
   }, []);
 
