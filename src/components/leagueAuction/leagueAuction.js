@@ -11,7 +11,7 @@ import DataService, { Data } from '../../utilities/data';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
 import { User } from '../../utilities/authService';
-import { connectAuction } from '../../utilities/auctionService';
+import { connectAuction, disconnect } from '../../utilities/auctionService';
 
 function LeagueAuction(props) {
 
@@ -39,7 +39,7 @@ function LeagueAuction(props) {
       Pubsub.unsubscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueAuction);
 
       // DataService.killAuctionListener();
-      // disconnect();
+      disconnect();
     });
   }, []);
 
