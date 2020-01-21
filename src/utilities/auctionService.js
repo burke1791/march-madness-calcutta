@@ -2,33 +2,45 @@ import { User } from './authService';
 import Axios from 'axios';
 import Pubsub from './pubsub';
 import { SOCKETS } from './constants';
+import { client as WebsocketClient } from 'websocket';
 
-let socket = null;
+const client = new WebsocketClient();
 
-export function connectAuction(auctionId) {
-  socket = new WebSocket(SOCKETS.AUCTION);
+client.on('connect', connection => {
+  console.log('connected');
+  connection.on('error', error => {
+    console.log(error);
+    connection.close();
+  });
 
-  socket.onopen = function(event) {
-    console.log('open');
-    console.log(event);
-  }
+  connection.on('close', () => {
+    console.log('connection closed');
+  });
 
-  socket.onmessage = function(event) {
-    console.log('message');
-    console.log(event);
-  }
+  connection.on('message', message => {
+    console.log(message);
+  });
 
-  socket.onerror = function(event) {
-    console.log('error');
-    console.log(event);
-  }
+  // pings the connection to keep it alive
+  // const ping = () => {
+  //   if (connection.connected) {
+  //     let pingMessage = {
+  //       action: 'PING'
+  //     };
+  //     connection.sendUTF(JSON.stringify(pingMessage));
+  //     setTimeout(ping, 30000);
+  //   }
+  // }
 
-  socket.onclose = function(event) {
-    console.log('close');
-    console.log(event);
-  }
-}
+  // ping();
+});
 
-export function disconnect() {
-  socket.close();
+client.on('connectFailed', error => {
+  console.log(error);
+  client.abort();
+});
+
+
+export function connectAuction() {
+  client.connect(`${SOCKETS.AUCTION}?Authorizer=${User.session.idToken.jwtToken}`);
 }

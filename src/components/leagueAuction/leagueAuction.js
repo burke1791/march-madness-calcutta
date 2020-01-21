@@ -11,7 +11,7 @@ import DataService, { Data } from '../../utilities/data';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
 import { User } from '../../utilities/authService';
-import { connectAuction, disconnect } from '../../utilities/auctionService';
+import { connectAuction } from '../../utilities/auctionService';
 
 function LeagueAuction(props) {
 
@@ -27,7 +27,7 @@ function LeagueAuction(props) {
     updateUserSummaries();
     // DataService.startAuctionListener(props.auctionId);
 
-    connectAuction('test');
+    connectAuction();
 
     Pubsub.subscribe(NOTIF.AUCTION_TEAMS_DOWNLOADED, LeagueAuction, auctionTeamsDownloaded);
     Pubsub.subscribe(NOTIF.NEW_AUCTION_DATA, LeagueAuction, handleNewAuctionData);
