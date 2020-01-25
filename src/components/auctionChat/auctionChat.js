@@ -9,6 +9,7 @@ import { User } from '../../utilities/authService';
 import DataService, { Data } from '../../utilities/data';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
+import { sendSocketMessage } from '../../utilities/auctionService';
 
 const { Search } = Input;
 
@@ -34,15 +35,23 @@ function AuctionChat(props) {
   }
 
   const sendMessage = (value) => {
-    let params = {
-      author: User.alias,
-      content: value,
-      user_id: User.user_id,
-      uid: User.uid || 'unknown',
-      auctionId: props.auctionId
+    // let params = {
+    //   author: User.alias,
+    //   content: value,
+    //   user_id: User.user_id,
+    //   uid: User.uid || 'unknown',
+    //   auctionId: props.auctionId
+    // };
+
+    let messageObj = {
+      leagueId: props.leagueId,
+      content: value
     };
 
+    sendSocketMessage(messageObj);
+
     // DataService.sendChatMessage(params);
+
     setChatMessage('');
   }
   

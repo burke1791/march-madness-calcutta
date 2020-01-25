@@ -5,8 +5,9 @@ import { SOCKETS } from './constants';
 
 var client = null;
 
-export function connectAuction() {
-  client = new WebSocket(`${SOCKETS.AUCTION}?Authorizer=${User.session.idToken.jwtToken}`);
+export function connectAuction(leagueId) {
+  console.log('leagueId: ' + leagueId);
+  client = new WebSocket(`${SOCKETS.AUCTION}?Authorizer=${User.session.idToken.jwtToken}&leagueId=${leagueId}`);
 
   client.onopen = function(event) {
     console.log(event);
@@ -27,4 +28,10 @@ export function connectAuction() {
 
 export function disconnect() {
   client.close();
+}
+
+export function sendSocketMessage(messageObj) {
+  messageObj.action = 'MESSAGE';
+  console.log('sending socket');
+  client.send(JSON.stringify(messageObj));
 }

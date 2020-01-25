@@ -27,7 +27,7 @@ function LeagueAuction(props) {
     updateUserSummaries();
     // DataService.startAuctionListener(props.auctionId);
 
-    connectAuction();
+    connectAuction(props.leagueId);
 
     Pubsub.subscribe(NOTIF.AUCTION_TEAMS_DOWNLOADED, LeagueAuction, auctionTeamsDownloaded);
     Pubsub.subscribe(NOTIF.NEW_AUCTION_DATA, LeagueAuction, handleNewAuctionData);
@@ -84,7 +84,7 @@ function LeagueAuction(props) {
       </Col>
       <Col span={10} style={{ height: 'calc(100vh - 114px)' }} className='flex-growVert-parent'>
         <AuctionActions auctionId={props.auctionId} role={props.role} leagueId={props.leagueId} />
-        <AuctionChat auctionId={props.auctionId} />
+        <AuctionChat auctionId={props.auctionId} leagueId={props.leagueId} />
       </Col>
       <Col span={6}>
         <MyTeams myTeams={myTeams} />
