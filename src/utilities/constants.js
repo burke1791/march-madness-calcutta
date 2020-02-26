@@ -2,11 +2,12 @@ export const ENDPOINTS = {
   NEW_LEAGUE: '/createLeague',
   JOIN_LEAGUE: '/joinLeague',
   LEAGUE_SUMMARIES: '/getLeagueSummaries',
-  LEAGUE_USER_SUMMARIES: '/getLeagueUserSummaries'
+  LEAGUE_USER_SUMMARIES: '/getLeagueUserSummaries',
+  FETCH_CHAT: ''
 };
 
 export const SOCKETS = {
-  AUCTION: 'wss://us443jod06.execute-api.us-east-1.amazonaws.com/dev'
+  AUCTION: 'wss://m5q6i9kma9.execute-api.us-east-1.amazonaws.com/dev'
 }
 
 export const AUTH_FORM_TYPE = {

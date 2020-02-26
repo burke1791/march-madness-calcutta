@@ -11,7 +11,7 @@ import { User } from '../../utilities/authService';
 import { formatMoney } from '../../utilities/helper';
 import { navigate } from '@reach/router/lib/history';
 import { Redirect } from '@reach/router';
-import { Data, getLeagueSummaries } from '../../utilities/leagueData';
+import { Data, getLeagueSummaries } from '../../utilities/leagueService';
 
 function Main() {
 

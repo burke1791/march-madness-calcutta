@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { Layout, Table, Row } from 'antd';
 import 'antd/dist/antd.css';
-import { Data, getLeagueUserSummaries } from '../../utilities/leagueData';
+import { Data, getLeagueUserSummaries } from '../../utilities/leagueService';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
 import AuctionChart from '../auctionChart/auctionChart';

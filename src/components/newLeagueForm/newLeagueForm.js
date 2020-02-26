@@ -5,7 +5,7 @@ import { Form, Input, Button } from 'antd';
 import 'antd/dist/antd.css';
 
 import DataService from '../../utilities/data';
-import { createLeague, joinLeague } from '../../utilities/leagueData';
+import { createLeague, joinLeague } from '../../utilities/leagueService';
 import { User } from '../../utilities/authService';
 
 function NewLeagueForm(props) {
