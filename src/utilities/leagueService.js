@@ -6,6 +6,9 @@ import { formatMoney } from './helper';
 
 let Data = {};
 
+// @TODO this is temporary - eventually query for user meta data upon sign-in
+var userId = null;
+
 export function getLeagueSummaries() {
   Axios({
     method: 'GET',
@@ -24,11 +27,11 @@ export function getLeagueSummaries() {
   });
 }
 
-export function createLeague(name, password, year) {
+export function createLeague(name, password, tournamentId) {
   let league = {
     name: name,
     password: password,
-    year: year
+    tournamentId: tournamentId
   };
 
   Axios({
@@ -91,11 +94,13 @@ function packageLeagueSummaries(data) {
       buyIn: league.naturalBuyIn + league.taxBuyIn,
       payout: league.return,
       role: league.role,
+      roleId: league.roleId,
       auctionId: league.auctionId
     };
 
     return leagueObj;
   });
+  userId = +data[0].userId;
 
   return leagues;
 }
@@ -142,5 +147,6 @@ export function clearDataOnSignout() {
 }
 
 export {
-  Data
+  Data,
+  userId
 }

@@ -5,11 +5,9 @@ import { formatTimestamp } from '../../utilities/helper';
 
 import { Row, Col, List, Card, Input, Button } from 'antd'
 import 'antd/dist/antd.css';
-import { User } from '../../utilities/authService';
-import DataService, { Data } from '../../utilities/data';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
-import { sendSocketMessage } from '../../utilities/auctionService';
+import { sendSocketMessage, fetchChatMessages, clearChatMessages, chatMessages } from '../../utilities/auctionService';
 
 const { Search } = Input;
 
@@ -19,30 +17,22 @@ function AuctionChat(props) {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    // DataService.startChatListener(props.auctionId);
+    fetchChatMessages(props.leagueId);
 
     Pubsub.subscribe(NOTIF.NEW_CHAT_MESSAGE, AuctionChat, newMessage);
 
     return (() => {
-      // DataService.killChatListener();
+      clearChatMessages();
 
       Pubsub.unsubscribe(NOTIF.NEW_CHAT_MESSAGE, AuctionChat);
     });
   }, []);
 
   const newMessage = () => {
-    setMessages(Data.chatMessages);
+    setMessages([...chatMessages]);
   }
 
   const sendMessage = (value) => {
-    // let params = {
-    //   author: User.alias,
-    //   content: value,
-    //   user_id: User.user_id,
-    //   uid: User.uid || 'unknown',
-    //   auctionId: props.auctionId
-    // };
-
     let messageObj = {
       leagueId: props.leagueId,
       content: value
@@ -50,21 +40,19 @@ function AuctionChat(props) {
 
     sendSocketMessage(messageObj);
 
-    // DataService.sendChatMessage(params);
-
     setChatMessage('');
   }
   
   return (
     <Row style={{ height: 'auto', maxHeight: 'calc(50vh - 70px)', marginTop: '12px' }} className='flex-growVert-child flex-growVert-parent'>
       <Card size='small' className='flex-growVert-child' bodyStyle={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-        <Row>
+        <Row style={{ maxHeight: 'calc(50vh - 70px)', overflow: 'auto' }}>
           <List
             dataSource={messages}
             style={{ overflow: 'auto' }}
             renderItem={message => (
               <div className='chat-message'>
-                <span className='author'>{message.author}</span>
+                <span className='author'>{message.alias}</span>
                 <span className='timestamp'>{formatTimestamp(message.timestamp)}</span>
                 <span className='content'>{message.content}</span>
               </div>

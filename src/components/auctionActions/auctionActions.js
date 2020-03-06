@@ -8,6 +8,8 @@ import 'antd/dist/antd.css';
 
 import { formatMoney } from '../../utilities/helper';
 import DataService, { Auction, Data } from '../../utilities/data';
+import { userBuyIns } from '../../utilities/auctionService';
+import { userId } from '../../utilities/leagueService';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF, AUCTION_STATUS } from '../../utilities/constants';
 import { User } from '../../utilities/authService';
@@ -28,11 +30,11 @@ function AuctionActions(props) {
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.NEW_AUCTION_DATA, AuctionActions, handleAuctionUpdate);
-    Pubsub.subscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, AuctionActions, updateTotalSpent);
+    Pubsub.subscribe(NOTIF.AUCTION_BUYINS_DOWNLOADED, AuctionActions, updateTotalSpent);
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.NEW_AUCTION_DATA, AuctionActions);
-      Pubsub.unsubscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, AuctionActions);
+      Pubsub.unsubscribe(NOTIF.AUCTION_BUYINS_DOWNLOADED, AuctionActions);
     });
   }, []);
 
@@ -50,7 +52,7 @@ function AuctionActions(props) {
     console.log(Auction.status);
 
     // disables bid buttons if the auction is not currently in progress
-    if (Auction.status == AUCTION_STATUS.IN_PROGRESS) {
+    if (Auction.status == AUCTION_STATUS.BIDDING) {
       setBiddingDisabled(false);
     } else {
       setBiddingDisabled(true);
@@ -60,17 +62,19 @@ function AuctionActions(props) {
   }
 
   const generateTeamName = () => {
-    if (Auction.currentItem.name) {
-      return '(' + +Auction.currentItem.seed + ') ' + Auction.currentItem.name;
+    if (Auction.current && Auction.current.name && Auction.current.seed) {
+      return '(' + +Auction.current.seed + ') ' + Auction.current.name;
     }
 
     return '';
   }
 
   const updateTotalSpent = () => {
-    for (var user of Data.leagueInfo.users) {
-      if (user.id == User.user_id) {
-        setTotalSpent(user.buyIn);
+    console.log(userId);
+    for (var user of userBuyIns) {
+      console.log(user);
+      if (user.userId == userId) {
+        setTotalSpent(user.totalBuyIn);
       }
     }
   }
@@ -102,9 +106,9 @@ function AuctionActions(props) {
   }
 
   const generateAdminButtons = () => {
-    if (props.role === 'creator' || props.role === 'admin') {
+    if (props.role == 1 || props.role == 2) {
       return (
-        <AuctionAdmin status={status} auctionId={props.auctionId} leagueId={props.leagueId} />
+        <AuctionAdmin status={status} leagueId={props.leagueId} />
       );
     } else {
       return null;

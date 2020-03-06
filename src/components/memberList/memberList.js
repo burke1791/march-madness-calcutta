@@ -8,13 +8,16 @@ import { formatMoney } from '../../utilities/helper';
 const columns = [
   {
     title: 'Member',
-    dataIndex: 'name',
-    key: 'name'
+    dataIndex: 'alias',
+    key: 'alias',
+    align: 'left'
   },
   {
     title: 'Total Paid',
-    dataIndex: 'buyInFormatted',
-    key: 'buyIn'
+    dataIndex: 'totalBuyIn',
+    key: 'totalBuyIn',
+    align: 'right',
+    render: (value) => formatMoney(value),
   }
 ];
 
@@ -26,6 +29,7 @@ function MemberList(props) {
         <Table
           columns={columns}
           dataSource={props.users}
+          rowKey='userId'
           pagination={false}
           size='small'
           bordered={false}

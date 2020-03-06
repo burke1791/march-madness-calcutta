@@ -47,8 +47,10 @@ function LeagueHome(props) {
   const [leagueName, setLeagueName] = useState('test league name');
   const [userList, setUserList] = useState([]);
   const [status, setStatus] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log(props.roleId);
     Pubsub.subscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHome, getLeagueInfo);
 
     return (() => {
@@ -65,6 +67,7 @@ function LeagueHome(props) {
     setLeagueName(Data.leagueInfo.name);
     setUserList(Data.leagueInfo.users);
     setStatus(Data.leagueInfo.status);
+    setLoading(false);
   }
 
   return (
@@ -79,6 +82,7 @@ function LeagueHome(props) {
             dataSource={userList}
             size='middle'
             pagination={false}
+            loading={loading}
             onRow={
               (record, index) => {
                 return {

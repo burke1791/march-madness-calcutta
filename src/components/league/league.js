@@ -15,7 +15,7 @@ const { Header } = Layout;
 
 function League(props) {
   const [auctionId, setAuctionId] = useState(props.location.state.auctionId);
-  const [role, setRole] = useState(props.location.state.role);
+  const [role, setRole] = useState(props.location.state.roleId);
 
   if (User.authenticated) {
     return (

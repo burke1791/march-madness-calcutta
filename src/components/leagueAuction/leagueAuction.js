@@ -7,11 +7,11 @@ import { Row, Col } from 'antd';
 import 'antd/dist/antd.css';
 import MyTeams from '../myTeams/myTeams';
 import MemberList from '../memberList/memberList';
-import DataService, { Data } from '../../utilities/data';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
 import { User } from '../../utilities/authService';
-import { connectAuction, disconnect } from '../../utilities/auctionService';
+import { connectAuction, disconnect, fetchAuctionTeams, clearAuctionTeams, auctionTeams, fetchUserBuyIns, userBuyIns, fetchAuctionStatus } from '../../utilities/auctionService';
+import { userId } from '../../utilities/leagueService';
 
 function LeagueAuction(props) {
 
@@ -21,35 +21,33 @@ function LeagueAuction(props) {
   const [leagueUsers, setLeagueUsers] = useState([]);
 
   useEffect(() => {
-    // API call to fetch teams
-    // DataService.getAuctionTeams(props.leagueId);
-    fetchAuctionTeams();
-    updateUserSummaries();
-    // DataService.startAuctionListener(props.auctionId);
+    fetchAuctionTeams(props.leagueId);
+    fetchUserBuyIns(props.leagueId);
+    fetchAuctionStatus(props.leagueId);
 
     connectAuction(props.leagueId);
 
     Pubsub.subscribe(NOTIF.AUCTION_TEAMS_DOWNLOADED, LeagueAuction, auctionTeamsDownloaded);
     Pubsub.subscribe(NOTIF.NEW_AUCTION_DATA, LeagueAuction, handleNewAuctionData);
-    Pubsub.subscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueAuction, updateUserSummaries);
+    Pubsub.subscribe(NOTIF.AUCTION_BUYINS_DOWNLOADED, LeagueAuction, updateUserSummaries);
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.AUCTION_TEAMS_DOWNLOADED, LeagueAuction);
       Pubsub.unsubscribe(NOTIF.NEW_AUCTION_DATA, LeagueAuction);
-      Pubsub.unsubscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueAuction);
+      Pubsub.unsubscribe(NOTIF.AUCTION_BUYINS_DOWNLOADED, LeagueAuction);
 
-      // DataService.killAuctionListener();
       disconnect();
+      clearAuctionTeams();
     });
   }, []);
 
   const auctionTeamsDownloaded = () => {
-    setTeams(Data.auctionTeams);
-
+    setTeams(auctionTeams);
+    
     let totalBid = 0;
-    const myTeamsArr = Data.auctionTeams.filter(team => {
+    const myTeamsArr = auctionTeams.filter(team => {
       totalBid += team.price;
-      if (team.user_id === User.user_id) {
+      if (team.owner === userId) {
         return team;
       }
     });
@@ -60,21 +58,13 @@ function LeagueAuction(props) {
   const handleNewAuctionData = (newItem) => {
     if (newItem) {
       fetchAuctionTeams();
-      fetchUserSummaries();
+      fetchUserBuyIns();
     }
   }
 
   const updateUserSummaries = () => {
-    // console.log(Data.leagueInfo.users);
-    // setLeagueUsers(Data.leagueInfo.users);
-  }
-
-  const fetchAuctionTeams = () => {
-    // DataService.getAuctionTeams(props.leagueId);
-  }
-
-  const fetchUserSummaries = () => {
-    // DataService.getLeagueUserSummaries(props.leagueId);
+    console.log(userBuyIns);
+    setLeagueUsers(userBuyIns);
   }
 
   return (
@@ -83,8 +73,8 @@ function LeagueAuction(props) {
         <AuctionTeams teams={teams} prizepool={prizepool} />
       </Col>
       <Col span={10} style={{ height: 'calc(100vh - 114px)' }} className='flex-growVert-parent'>
-        <AuctionActions auctionId={props.auctionId} role={props.role} leagueId={props.leagueId} />
-        <AuctionChat auctionId={props.auctionId} leagueId={props.leagueId} />
+        <AuctionActions role={props.role} leagueId={props.leagueId} />
+        <AuctionChat leagueId={props.leagueId} />
       </Col>
       <Col span={6}>
         <MyTeams myTeams={myTeams} />

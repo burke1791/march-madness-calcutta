@@ -56,7 +56,7 @@ function Main() {
               buyIn: formatMoney(league.buyIn || '0'),
               payout: formatMoney(league.payout || '0'),
               return: formatMoney(league.buyIn && league.payout ? league.payout - league.buyIn : '0'),
-              role: league.role,
+              roleId: league.roleId,
               auctionId: league.auctionId,
               key: league.id
             };

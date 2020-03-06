@@ -8,14 +8,16 @@ import { formatMoney } from '../../utilities/helper';
 const columns = [
   {
     title: 'My Teams',
-    dataIndex: 'team_name',
-    key: 'name'
+    dataIndex: 'name',
+    key: 'name',
+    align: 'left'
   },
   {
     title: 'Paid',
     dataIndex: 'price',
     key: 'price',
-    render: (value) => formatMoney(value)
+    render: (value) => formatMoney(value),
+    align: 'right'
   }
 ];
 
@@ -27,6 +29,7 @@ function MyTeams(props) {
         <Table
           columns={columns}
           dataSource={props.myTeams}
+          rowKey='teamId'
           pagination={false}
           size='small'
           bordered={false}

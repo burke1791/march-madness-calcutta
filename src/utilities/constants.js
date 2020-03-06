@@ -3,7 +3,11 @@ export const ENDPOINTS = {
   JOIN_LEAGUE: '/joinLeague',
   LEAGUE_SUMMARIES: '/getLeagueSummaries',
   LEAGUE_USER_SUMMARIES: '/getLeagueUserSummaries',
-  FETCH_CHAT: ''
+  FETCH_CHAT: '/getAllChatMessages',
+  FETCH_AUCTION_STATUS: '/getAuctionStatus',
+  FETCH_AUCTION_TEAMS: '/getAuctionTeams',
+  FETCH_AUCTION_BUYINS: '/getAuctionMemberBuyIns',
+  START_AUCTION: '/startAuction'
 };
 
 export const SOCKETS = {
@@ -27,8 +31,8 @@ export const MESSAGE_BOARD_FORM_TYPE = {
 
 export const AUCTION_STATUS = {
   INITIAL: 'initial',
-  IN_PROGRESS: 'in-progress',
-  ITEM_COMPLETE: 'item-complete',
+  BIDDING: 'bidding',
+  SOLD: 'sold',
   END: 'end'
 }
 
@@ -46,6 +50,7 @@ export const NOTIF = {
   MESSAGE_THREAD_DOWNLOADED: 'message_thread_downloaded',
   NEW_MESSAGE_POSTED: 'new_message_posted',
   AUCTION_TEAMS_DOWNLOADED: 'auction_teams_downloaded',
+  AUCTION_BUYINS_DOWNLOADED: 'auction_buyins_downloaded',
   SIGN_IN: 'sign_in',
   SIGN_OUT: 'sign_out',
   NEW_CHAT_MESSAGE: 'new_chat_message',

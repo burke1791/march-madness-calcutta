@@ -4,6 +4,7 @@ import { Button } from 'antd';
 import 'antd/dist/antd.css';
 import { AUCTION_STATUS } from '../../utilities/constants';
 import DataService from '../../utilities/data';
+import { startAuction } from '../../utilities/auctionService';
 
 const btnStyle = {
   marginTop: '4px'
@@ -26,7 +27,7 @@ function AuctionAdmin(props) {
     let disabled = false;
     let name = 'start';
 
-    if (props.status === AUCTION_STATUS.IN_PROGRESS || props.status === AUCTION_STATUS.ITEM_COMPLETE) {
+    if (props.status === AUCTION_STATUS.BIDDING || props.status === AUCTION_STATUS.SOLD) {
       btnText = 'Stop Auction';
       btnType = 'danger';
       name = 'stop'
@@ -56,7 +57,7 @@ function AuctionAdmin(props) {
     if (name == 'start') {
       // Start auction
       console.log('auction start clicked');
-      DataService.startAuction(props.auctionId, props.leagueId);
+      startAuction(props.leagueId);
     } else if (name == 'stop') {
       DataService.stopAuction(props.auctionId, props.leagueId);
     }
@@ -65,7 +66,7 @@ function AuctionAdmin(props) {
   const nextItem = (event) => {
     event.preventDefault();
 
-    if (props.status === AUCTION_STATUS.ITEM_COMPLETE) {
+    if (props.status === AUCTION_STATUS.SOLD) {
       setNextLoading(true);
       DataService.nextItem(props.auctionId, props.leagueId).then(response => {
         setNextLoading(false);
@@ -78,7 +79,7 @@ function AuctionAdmin(props) {
   const resetClock = (event) => {
     event.preventDefault();
 
-    if (props.status === AUCTION_STATUS.ITEM_COMPLETE || props.status === AUCTION_STATUS.IN_PROGRESS) {
+    if (props.status === AUCTION_STATUS.SOLD || props.status === AUCTION_STATUS.BIDDING) {
       setResetClockLoading(true);
       DataService.resetClock(props.auctionId, props.leagueId).then(response => {
         setResetClockLoading(false);
