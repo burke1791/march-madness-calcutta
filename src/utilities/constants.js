@@ -57,6 +57,7 @@ export const NOTIF = {
   SIGN_OUT: 'sign_out',
   NEW_CHAT_MESSAGE: 'new_chat_message',
   NEW_AUCTION_DATA: 'new_auction_data',
+  NEW_AUCTION_DATA_AVAILABLE: 'new_auction_data_available',
   TIMER_EXPIRED: 'timer_expired',
   MM_RESULTS_DOWNLOADED: 'mm_results_downloaded',
   MM_SCORE_SET: 'mm_score_set',

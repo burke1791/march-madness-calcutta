@@ -1,7 +1,7 @@
 import { User } from './authService';
 import Axios from 'axios';
 import Pubsub from './pubsub';
-import { SOCKETS, ENDPOINTS, NOTIF } from './constants';
+import { SOCKETS, ENDPOINTS, NOTIF, AUCTION_STATUS } from './constants';
 
 var chatMessages = [];
 var auctionTeams = [];
@@ -169,21 +169,16 @@ export function resetClock(leagueId) {
   };
 
   client.send(JSON.stringify(messageObj));
-  
-  // Axios({
-  //   method: 'POST',
-  //   url: process.env.REACT_APP_API_URL + ENDPOINTS.RESET_CLOCK,
-  //   headers: {
-  //     'x-cognito-token': User.session.idToken.jwtToken || ''
-  //   },
-  //   data: {
-  //     leagueId: leagueId
-  //   }
-  // }).then(response => {
-  //   console.log(response);
-  // }).catch(error => {
-  //   console.log(error);
-  // });
+}
+
+export function setItemComplete(leagueId) {
+  console.log('complete');
+  let messageObj = {
+    action: 'ITEM_COMPLETE',
+    leagueId: leagueId
+  };
+
+  client.send(JSON.stringify(messageObj));
 }
 
 function updateServerPing(pingObj) {
@@ -256,6 +251,8 @@ function packageUserBuyIns(users) {
 }
 
 function updateAuctionStatus(status) {
+  let updatedTeams = status.status === AUCTION_STATUS.SOLD;
+  
   Auction = {
     status: status.status,
     current: {
@@ -269,5 +266,5 @@ function updateAuctionStatus(status) {
     }
   };
 
-  Pubsub.publish(NOTIF.NEW_AUCTION_DATA, null);
+  Pubsub.publish(NOTIF.NEW_AUCTION_DATA, updatedTeams);
 }

@@ -57,8 +57,8 @@ function LeagueAuction(props) {
 
   const handleNewAuctionData = (newItem) => {
     if (newItem) {
-      fetchAuctionTeams();
-      fetchUserBuyIns();
+      fetchAuctionTeams(props.leagueId);
+      fetchUserBuyIns(props.leagueId);
     }
   }
 

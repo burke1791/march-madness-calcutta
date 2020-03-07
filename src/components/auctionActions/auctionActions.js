@@ -7,7 +7,7 @@ import { Button, Card, Statistic, Row, Col, InputNumber } from 'antd';
 import 'antd/dist/antd.css';
 
 import { formatMoney } from '../../utilities/helper';
-import { userBuyIns, Auction, getServerTimestamp } from '../../utilities/auctionService';
+import { userBuyIns, Auction, getServerTimestamp, setItemComplete } from '../../utilities/auctionService';
 import { userId } from '../../utilities/leagueService';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF, AUCTION_STATUS } from '../../utilities/constants';
@@ -72,8 +72,8 @@ function AuctionActions(props) {
   }
 
   const generateTeamName = () => {
-    if (Auction.current && Auction.current.name && Auction.current.seed) {
-      return '(' + +Auction.current.seed + ') ' + Auction.current.name;
+    if (Auction.current && Auction.current.itemName && Auction.current.itemSeed) {
+      return '(' + +Auction.current.itemSeed + ') ' + Auction.current.itemName;
     }
 
     return '';
@@ -100,6 +100,9 @@ function AuctionActions(props) {
 
   const itemComplete = () => {
     //DataService.setItemComplete(props.auctionId);
+    if (props.role == 1 || props.role == 2) {
+      setItemComplete(props.leagueId);
+    }
   }
 
   const bidChange = (value) => {
