@@ -181,6 +181,16 @@ export function setItemComplete(leagueId) {
   client.send(JSON.stringify(messageObj));
 }
 
+export function placeAuctionBid(leagueId, amount) {
+  let bidObj = {
+    action: 'PLACE_BID',
+    leagueId: leagueId,
+    amount: amount
+  };
+
+  client.send(JSON.stringify(bidObj));
+}
+
 function updateServerPing(pingObj) {
   let serverTime = new Date(pingObj).valueOf();
   let local = Date.now();

@@ -7,7 +7,7 @@ import { Button, Card, Statistic, Row, Col, InputNumber } from 'antd';
 import 'antd/dist/antd.css';
 
 import { formatMoney } from '../../utilities/helper';
-import { userBuyIns, Auction, getServerTimestamp, setItemComplete } from '../../utilities/auctionService';
+import { userBuyIns, Auction, getServerTimestamp, setItemComplete, placeAuctionBid } from '../../utilities/auctionService';
 import { userId } from '../../utilities/leagueService';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF, AUCTION_STATUS } from '../../utilities/constants';
@@ -125,6 +125,7 @@ function AuctionActions(props) {
     //   // enable bid buttons because the attempted bid failed
     //   setBiddingDisabled(false);
     // });
+    placeAuctionBid(props.leagueId, value);
   }
 
   const generateAdminButtons = () => {
