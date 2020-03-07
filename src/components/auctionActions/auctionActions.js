@@ -7,8 +7,7 @@ import { Button, Card, Statistic, Row, Col, InputNumber } from 'antd';
 import 'antd/dist/antd.css';
 
 import { formatMoney } from '../../utilities/helper';
-import DataService, { Auction, Data } from '../../utilities/data';
-import { userBuyIns } from '../../utilities/auctionService';
+import { userBuyIns, Auction, getServerTimestamp } from '../../utilities/auctionService';
 import { userId } from '../../utilities/leagueService';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF, AUCTION_STATUS } from '../../utilities/constants';
@@ -27,29 +26,40 @@ function AuctionActions(props) {
   const [bidVal, setBidVal] = useState(0);
   const [endTime, setEndTime] = useState(0);
   const [status, setStatus] = useState(false);
+  const [offset, setOffset] = useState(0);
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.NEW_AUCTION_DATA, AuctionActions, handleAuctionUpdate);
     Pubsub.subscribe(NOTIF.AUCTION_BUYINS_DOWNLOADED, AuctionActions, updateTotalSpent);
+    Pubsub.subscribe(NOTIF.SERVER_SYNCED, AuctionActions, updateOffset);
+
+    getServerTimestamp();
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.NEW_AUCTION_DATA, AuctionActions);
       Pubsub.unsubscribe(NOTIF.AUCTION_BUYINS_DOWNLOADED, AuctionActions);
+      Pubsub.unsubscribe(NOTIF.SERVER_SYNCED, AuctionActions);
     });
   }, []);
+
+  const updateOffset = (offset) => {
+    setOffset(offset);
+  }
 
   // updates local state with the new auction info from global state
   const handleAuctionUpdate = () => {
     setTeamName(generateTeamName());
-    setHighBid(Auction.currentBid);
+    setHighBid(Auction.current.price);
     
     // sets highBidder to the user's alias if Auction.currentWinner is a userId, otherwise sets it to "n/a"
-    setHighBidder(Auction.currentWinner == 'n/a' ? 'n/a' : DataService.getAlias(Auction.currentWinner));
+    setHighBidder(Auction.current == undefined ? 'n/a' : Auction.current.winnerAlias);
 
-    let itemEnd = Auction.endTime == 0 ? 0 : (+Auction.endTime * 1000);
-    itemEnd += 15000;
-    setEndTime(itemEnd);
-    console.log(Auction.status);
+    // let itemEnd = Auction.endTime == 0 ? 0 : (+Auction.endTime * 1000);
+    // itemEnd += 15000;
+    // setEndTime(itemEnd);
+    // console.log(Auction.status);
+
+    updateClock();
 
     // disables bid buttons if the auction is not currently in progress
     if (Auction.status == AUCTION_STATUS.BIDDING) {
@@ -69,6 +79,15 @@ function AuctionActions(props) {
     return '';
   }
 
+  const updateClock = () => {
+    let lastBid = Auction.current.lastBid.valueOf();
+
+    let itemEnd = new Date(lastBid + 15000 - offset);
+
+    console.log(itemEnd);
+    setEndTime(itemEnd);
+  }
+
   const updateTotalSpent = () => {
     console.log(userId);
     for (var user of userBuyIns) {
@@ -80,7 +99,7 @@ function AuctionActions(props) {
   }
 
   const itemComplete = () => {
-    DataService.setItemComplete(props.auctionId);
+    //DataService.setItemComplete(props.auctionId);
   }
 
   const bidChange = (value) => {
@@ -97,12 +116,12 @@ function AuctionActions(props) {
 
   const placeBid = (value) => {
     setBiddingDisabled(true);
-    DataService.placeBid(props.auctionId, value).then(response => {
-      // do nothing for now
-    }).catch(error => {
-      // enable bid buttons because the attempted bid failed
-      setBiddingDisabled(false);
-    });
+    // DataService.placeBid(props.auctionId, value).then(response => {
+    //   // do nothing for now
+    // }).catch(error => {
+    //   // enable bid buttons because the attempted bid failed
+    //   setBiddingDisabled(false);
+    // });
   }
 
   const generateAdminButtons = () => {

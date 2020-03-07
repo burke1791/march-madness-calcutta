@@ -24,8 +24,21 @@ var client = null;
 export {
   chatMessages,
   auctionTeams,
-  userBuyIns
+  userBuyIns,
+  Auction
 };
+
+export function getServerTimestamp() {
+  Axios({
+    method: 'GET',
+    url: process.env.REACT_APP_API_URL + ENDPOINTS.SERVER_TIMESTAMP
+  }).then(response => {
+    console.log(response);
+    updateServerPing(response.data[0].ServerTimestamp);
+  }).catch(error => {
+    console.log(error);
+  });
+}
 
 export function connectAuction(leagueId) {
   console.log('leagueId: ' + leagueId);
@@ -51,7 +64,7 @@ export function connectAuction(leagueId) {
       chatMessages.push(handleNewMessage(data.msgObj));
       Pubsub.publish(NOTIF.NEW_CHAT_MESSAGE, null);
     } else if (data.msgType === 'auction') {
-
+      updateAuctionStatus(data.msgObj);
     }
   }
 }
@@ -94,7 +107,6 @@ export function fetchAuctionStatus(leagueId) {
   }).then(response => {
     console.log(response);
     updateAuctionStatus(response.data[0]);
-    Pubsub.publish(NOTIF.NEW_AUCTION_DATA, null);
   }).catch(error => {
     console.log(error);
   });
@@ -147,7 +159,40 @@ export function startAuction(leagueId) {
     headers: {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     }
-  })
+  });
+}
+
+export function resetClock(leagueId) {
+  let messageObj = {
+    action: 'RESET_CLOCK',
+    leagueId: leagueId
+  };
+
+  client.send(JSON.stringify(messageObj));
+  
+  // Axios({
+  //   method: 'POST',
+  //   url: process.env.REACT_APP_API_URL + ENDPOINTS.RESET_CLOCK,
+  //   headers: {
+  //     'x-cognito-token': User.session.idToken.jwtToken || ''
+  //   },
+  //   data: {
+  //     leagueId: leagueId
+  //   }
+  // }).then(response => {
+  //   console.log(response);
+  // }).catch(error => {
+  //   console.log(error);
+  // });
+}
+
+function updateServerPing(pingObj) {
+  let serverTime = new Date(pingObj).valueOf();
+  let local = Date.now();
+
+  let offset = serverTime - local;
+  
+  Pubsub.publish(NOTIF.SERVER_SYNCED, offset);
 }
 
 function packageChatMessages(messages) {
@@ -220,7 +265,9 @@ function updateAuctionStatus(status) {
       price: status.currentItemPrice,
       winnerId: status.currentItemWinner,
       winnerAlias: status.alias,
-      lastBid: status.lastBidTimestamp
+      lastBid: new Date(status.lastBidTimestamp)
     }
   };
+
+  Pubsub.publish(NOTIF.NEW_AUCTION_DATA, null);
 }

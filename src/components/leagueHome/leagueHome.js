@@ -50,7 +50,7 @@ function LeagueHome(props) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log(props.roleId);
+    console.log(props.role);
     Pubsub.subscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHome, getLeagueInfo);
 
     return (() => {
