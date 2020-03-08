@@ -153,13 +153,23 @@ export function clearAuctionState() {
 }
 
 export function startAuction(leagueId) {
-  Axios({
-    method: 'GET',
-    url: process.env.REACT_APP_API_URL + ENDPOINTS.START_AUCTION + `/${leagueId}`,
-    headers: {
-      'x-cognito-token': User.session.idToken.jwtToken || ''
-    }
-  });
+  let messageObj = {
+    action: 'START_AUCTION',
+    leagueId: leagueId
+  }
+
+  console.log(messageObj);
+
+  client.send(JSON.stringify(messageObj));
+}
+
+export function nextItem(leagueId) {
+  let messageObj = {
+    action: 'NEXT_ITEM',
+    leagueId: leagueId
+  };
+
+  client.send(JSON.stringify(messageObj));
 }
 
 export function resetClock(leagueId) {

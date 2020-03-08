@@ -4,7 +4,7 @@ import { Button } from 'antd';
 import 'antd/dist/antd.css';
 import { AUCTION_STATUS, NOTIF } from '../../utilities/constants';
 import DataService from '../../utilities/data';
-import { startAuction, resetClock } from '../../utilities/auctionService';
+import { startAuction, resetClock, nextItem } from '../../utilities/auctionService';
 import Pubsub from '../../utilities/pubsub';
 
 const btnStyle = {
@@ -32,6 +32,7 @@ function AuctionAdmin(props) {
 
   const handleNewAuctionData = () => {
     setResetClockLoading(false);
+    setNextLoading(false);
   }
   
   const generateStartStopButton = () => {
@@ -76,29 +77,18 @@ function AuctionAdmin(props) {
     }
   }
 
-  const nextItem = (event) => {
-    event.preventDefault();
-
+  const nextAuctionItem = (event) => {
     if (props.status === AUCTION_STATUS.SOLD) {
       setNextLoading(true);
-      DataService.nextItem(props.auctionId, props.leagueId).then(response => {
-        setNextLoading(false);
-      }).catch(error => {
-        setNextLoading(false);
-      });
+      
+      nextItem(props.leagueId);
     }
   }
 
   const resetAuctionClock = (event) => {
-    // event.preventDefault();
-
     if (props.status === AUCTION_STATUS.SOLD || props.status === AUCTION_STATUS.BIDDING) {
       setResetClockLoading(true);
-      // DataService.resetClock(props.auctionId, props.leagueId).then(response => {
-      //   setResetClockLoading(false);
-      // }).catch(error => {
-      //   setResetClockLoading(false);
-      // });
+
       resetClock(props.leagueId);
     }
   }
@@ -106,7 +96,7 @@ function AuctionAdmin(props) {
   return (
     <div className='admin-actions' style={containerStyle}>
       {generateStartStopButton()}
-      <Button type='primary' style={btnStyle} loading={nextLoading} onClick={nextItem}>Next Item</Button>
+      <Button type='primary' style={btnStyle} loading={nextLoading} onClick={nextAuctionItem}>Next Item</Button>
       <Button type='primary' style={btnStyle} loading={resetClockLoading} onClick={resetAuctionClock}>Reset Clock</Button>
     </div>
   );

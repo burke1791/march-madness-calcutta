@@ -52,12 +52,7 @@ function AuctionActions(props) {
     setHighBid(Auction.current.price);
     
     // sets highBidder to the user's alias if Auction.currentWinner is a userId, otherwise sets it to "n/a"
-    setHighBidder(Auction.current == undefined ? 'n/a' : Auction.current.winnerAlias);
-
-    // let itemEnd = Auction.endTime == 0 ? 0 : (+Auction.endTime * 1000);
-    // itemEnd += 15000;
-    // setEndTime(itemEnd);
-    // console.log(Auction.status);
+    setHighBidder(Auction.current == undefined || Auction.current.winnerAlias == null ? 'n/a' : Auction.current.winnerAlias);
 
     updateClock();
 
@@ -119,12 +114,7 @@ function AuctionActions(props) {
 
   const placeBid = (value) => {
     setBiddingDisabled(true);
-    // DataService.placeBid(props.auctionId, value).then(response => {
-    //   // do nothing for now
-    // }).catch(error => {
-    //   // enable bid buttons because the attempted bid failed
-    //   setBiddingDisabled(false);
-    // });
+
     placeAuctionBid(props.leagueId, value);
   }
 
