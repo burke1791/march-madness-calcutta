@@ -19,7 +19,7 @@ export function getLeagueSummaries() {
   }).then(response => {
     console.log(response);
     Data.leagues = packageLeagueSummaries(response.data);
-    if (Data.leagues.length) {
+    if (Data.leagues != null && Data.leagues.length) {
       Pubsub.publish(NOTIF.LEAGUE_SUMMARIES_FETCHED, null);
     }
   }).catch(error => {
