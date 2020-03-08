@@ -87,7 +87,7 @@ export function getLeagueUserSummaries(leagueId) {
 }
 
 function packageLeagueSummaries(data) {
-  if (data && data.length) {
+  if (data != null && data.length) {
     let leagues = data.map(league => {
       let leagueObj = {
         id: league.leagueId,
