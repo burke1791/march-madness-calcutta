@@ -87,22 +87,25 @@ export function getLeagueUserSummaries(leagueId) {
 }
 
 function packageLeagueSummaries(data) {
-  let leagues = data.map(league => {
-    let leagueObj = {
-      id: league.leagueId,
-      name: league.name,
-      buyIn: league.naturalBuyIn + league.taxBuyIn,
-      payout: league.return,
-      role: league.role,
-      roleId: league.roleId,
-      auctionId: league.auctionId
-    };
-
-    return leagueObj;
-  });
-  userId = +data[0].userId;
-
-  return leagues;
+  if (data.length) {
+    let leagues = data.map(league => {
+      let leagueObj = {
+        id: league.leagueId,
+        name: league.name,
+        buyIn: league.naturalBuyIn + league.taxBuyIn,
+        payout: league.return,
+        role: league.role,
+        roleId: league.roleId,
+        auctionId: league.auctionId
+      };
+  
+      return leagueObj;
+    });
+    userId = +data[0].userId;
+  
+    return leagues;
+  }
+  return null;
 }
 
 function packageLeagueInfo(userSummaries) {
