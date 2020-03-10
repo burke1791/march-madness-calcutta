@@ -18,6 +18,7 @@ function LeagueAuction(props) {
   const [teams, setTeams] = useState([]);
   const [prizepool, setPrizepool] = useState(0);
   const [myTeams, setMyTeams] = useState([]);
+  const [myTax, setMyTax] = useState(0);
   const [leagueUsers, setLeagueUsers] = useState([]);
 
   useEffect(() => {
@@ -63,17 +64,17 @@ function LeagueAuction(props) {
   }
 
   const updateUserSummaries = () => {
-    console.log(userBuyIns);
+    let taxBurden = 0;
     const prizepool = userBuyIns.reduce((prev, current, i) => {
-      console.log(current);
-      console.log(prev);
-      console.log(i);
+      
       if (i == 1) {
+        taxBurden += prev.taxBuyIn + current.taxBuyIn;
         return prev.totalBuyIn + current.totalBuyIn;
       }
+      taxBurden += current.taxBuyIn;
       return prev + current.totalBuyIn;
     });
-    console.log(prizepool);
+    setMyTax(taxBurden);
     setLeagueUsers(userBuyIns);
     setPrizepool(prizepool);
   }
@@ -88,7 +89,7 @@ function LeagueAuction(props) {
         <AuctionChat leagueId={props.leagueId} />
       </Col>
       <Col span={6}>
-        <MyTeams myTeams={myTeams} />
+        <MyTeams myTeams={myTeams} myTax={myTax} />
         <MemberList users={leagueUsers} />
       </Col>
     </Row>
