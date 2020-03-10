@@ -24,9 +24,9 @@ function LeagueNav(props) {
         <Menu.Item key='auction'>
           Auction
         </Menu.Item>
-        <Menu.Item key='messageBoard'>
+        {/* <Menu.Item key='messageBoard'>
           Message Board
-        </Menu.Item>
+        </Menu.Item> */}
       </Menu>
     </nav>
   );

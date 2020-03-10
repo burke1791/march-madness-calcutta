@@ -108,7 +108,7 @@ function packageLeagueSummaries(data) {
         id: league.leagueId,
         name: league.name,
         buyIn: league.naturalBuyIn + league.taxBuyIn,
-        payout: league.return,
+        payout: league.totalReturn,
         role: league.role,
         roleId: league.roleId,
         auctionId: league.auctionId

@@ -24,8 +24,8 @@ function League(props) {
         <Router>
           <LeagueHome path='/' />
           <LeagueAuction path='auction' auctionId={auctionId} leagueId={props.leagueId} role={role} />
-          <MessageBoard path='message_board' leagueId={props.leagueId} role={role} />
-          <MessageThread path='message_board/:topicId' leagueId={props.leagueId} role={role} />
+          {/* <MessageBoard path='message_board' leagueId={props.leagueId} role={role} /> */}
+          {/* <MessageThread path='message_board/:topicId' leagueId={props.leagueId} role={role} /> */}
         </Router>
       </Layout>
     );

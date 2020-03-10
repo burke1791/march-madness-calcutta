@@ -69,7 +69,8 @@ function LeagueTable(props) {
           columns={columns} 
           dataSource={data} 
           size='middle' 
-          pagination={false} 
+          pagination={false}
+          loading={props.loading}
         />
       );
     }
