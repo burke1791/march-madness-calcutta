@@ -52,7 +52,7 @@ function LeagueAuction(props) {
       }
     });
     setMyTeams(myTeamsArr);
-    setPrizepool(totalBid);
+    // setPrizepool(totalBid);
   }
 
   const handleNewAuctionData = (newItem) => {
@@ -64,7 +64,18 @@ function LeagueAuction(props) {
 
   const updateUserSummaries = () => {
     console.log(userBuyIns);
+    const prizepool = userBuyIns.reduce((prev, current, i) => {
+      console.log(current);
+      console.log(prev);
+      console.log(i);
+      if (i == 1) {
+        return prev.totalBuyIn + current.totalBuyIn;
+      }
+      return prev + current.totalBuyIn;
+    });
+    console.log(prizepool);
     setLeagueUsers(userBuyIns);
+    setPrizepool(prizepool);
   }
 
   return (
