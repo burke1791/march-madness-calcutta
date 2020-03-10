@@ -45,15 +45,12 @@ function LeagueAuction(props) {
   const auctionTeamsDownloaded = () => {
     setTeams(auctionTeams);
     
-    let totalBid = 0;
     const myTeamsArr = auctionTeams.filter(team => {
-      totalBid += team.price;
       if (team.owner === userId) {
         return team;
       }
     });
     setMyTeams(myTeamsArr);
-    // setPrizepool(totalBid);
   }
 
   const handleNewAuctionData = (newItem) => {
@@ -64,14 +61,12 @@ function LeagueAuction(props) {
   }
 
   const updateUserSummaries = () => {
-    let taxBurden = 0;
+    let taxBurden = userBuyIns.find(user => user.userId == userId).taxBuyIn;
+    
     const prizepool = userBuyIns.reduce((prev, current, i) => {
-      
       if (i == 1) {
-        taxBurden += prev.taxBuyIn + current.taxBuyIn;
         return prev.totalBuyIn + current.totalBuyIn;
       }
-      taxBurden += current.taxBuyIn;
       return prev + current.totalBuyIn;
     });
     setMyTax(taxBurden);
