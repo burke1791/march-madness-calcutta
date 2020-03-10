@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { AUTH_FORM_TYPE, ERROR_MESSAGES } from '../../utilities/constants';
+import { AUTH_FORM_TYPE, ERROR_MESSAGES, NOTIF } from '../../utilities/constants';
 
 import { Form, Icon, Input, Button, Checkbox, Tooltip } from 'antd';
 import 'antd/dist/antd.css';
 import { signUp } from '../../utilities/authService';
+import Pubsub from '../../utilities/pubsub';
 
 const formItemStyle = {
   marginBottom: '6px'
@@ -13,6 +14,19 @@ const formItemStyle = {
 function SignupForm(props) {
 
   const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    Pubsub.subscribe(NOTIF.AUTH_ERROR, SignupForm, handleAuthError);
+
+    return (() => {
+      Pubsub.unsubscribe(NOTIF.AUTH_ERROR, SignupForm);
+    });
+  }, []);
+
+  const handleAuthError = (errorMsg) => {
+    props.toggleLoading(false);
+    setErrorMessage(errorMsg);
+  }
 
   const { getFieldDecorator } = props.form;
 

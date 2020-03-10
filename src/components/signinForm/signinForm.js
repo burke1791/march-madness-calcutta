@@ -1,13 +1,27 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
 import 'antd/dist/antd.css';
-import { AUTH_FORM_TYPE, ERROR_MESSAGES } from '../../utilities/constants';
+import { AUTH_FORM_TYPE, ERROR_MESSAGES, NOTIF } from '../../utilities/constants';
 import { signIn } from '../../utilities/authService';
+import Pubsub from '../../utilities/pubsub';
 
 function SigninForm(props) {
 
   const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    Pubsub.subscribe(NOTIF.AUTH_ERROR, SigninForm, handleAuthError);
+
+    return (() => {
+      Pubsub.unsubscribe(NOTIF.AUTH_ERROR, SigninForm);
+    });
+  }, []);
+
+  const handleAuthError = (errorMsg) => {
+    props.toggleLoading(false);
+    setErrorMessage(errorMsg);
+  }
 
   const { getFieldDecorator } = props.form;
 

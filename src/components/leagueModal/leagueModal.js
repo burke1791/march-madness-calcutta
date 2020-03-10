@@ -4,9 +4,11 @@ import WrappedNewLeagueForm from '../newLeagueForm/newLeagueForm';
 
 import { LEAGUE_FORM_TYPE, NOTIF } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';
+import { fetchTournamentOptions } from '../../utilities/leagueService';
 
 import { Modal } from 'antd';
 import 'antd/dist/antd.css';
+import { User } from '../../utilities/authService';
 
 // @TODO combine this entire component into AuthModal and rename it to CalcuttaModal
 function LeagueModal() {
@@ -18,10 +20,17 @@ function LeagueModal() {
   useEffect(() => {
     Pubsub.subscribe(NOTIF.LEAGUE_MODAL_SHOW, LeagueModal, showModal);
     Pubsub.subscribe(NOTIF.LEAGUE_JOINED, LeagueModal, handleCancel);
+    Pubsub.subscribe(NOTIF.SIGN_IN, LeagueModal, handleSignin);
+
+    if (User.authenticated) {
+      console.log('fetching tournament options');
+      fetchTournamentOptions();
+    }
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.LEAGUE_MODAL_SHOW, LeagueModal);
       Pubsub.unsubscribe(NOTIF.LEAGUE_JOINED, LeagueModal);
+      Pubsub.unsubscribe(NOTIF.SIGN_IN, LeagueModal);
     });
   }, []);
 
@@ -49,6 +58,11 @@ function LeagueModal() {
       console.log('toggle loading literal');
       setLoading(state);
     }
+  }
+
+  const handleSignin = () => {
+    console.log('fetching tournament options');
+    fetchTournamentOptions();
   }
 
   const generateForm = () => {

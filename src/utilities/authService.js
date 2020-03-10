@@ -1,6 +1,6 @@
 import { Auth } from 'aws-amplify';
 import Pubsub from './pubsub';
-import { NOTIF } from './constants';
+import { NOTIF, ERROR_MESSAGES } from './constants';
 
 var User = {};
 
@@ -34,6 +34,9 @@ export function signIn(username, password) {
   }).catch(error => {
     console.log(error);
     User.authenticated = false;
+    if (error.code == 'NotAuthorizedException') {
+      Pubsub.publish(NOTIF.AUTH_ERROR, ERROR_MESSAGES.INVALID_CREDENTIALS);
+    }
     Pubsub.publish(NOTIF.SIGN_OUT, null);
   });
 }

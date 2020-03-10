@@ -1,4 +1,5 @@
 export const ENDPOINTS = {
+  TOURNAMENT_OPTIONS: '/getTournamentOptions',
   NEW_LEAGUE: '/createLeague',
   JOIN_LEAGUE: '/joinLeague',
   LEAGUE_SUMMARIES: '/getLeagueSummaries',
@@ -40,6 +41,8 @@ export const AUCTION_STATUS = {
 export const NOTIF = {
   AUTH_MODAL_SHOW: 'auth_modal_show',
   AUTH_FORM_TOGGLE: 'auth_form_toggle',
+  AUTH_ERROR: 'auth_error',
+  TOURNAMENT_OPTIONS_DOWNLOADED: 'tournament_options_downloaded',
   LEAGUE_MODAL_SHOW: 'league_modal_show',
   LEAGUE_FORM_TOGGLE: 'league_form_toggle',
   LEAGUE_CREATED: 'league_created',
@@ -66,5 +69,6 @@ export const NOTIF = {
 };
 
 export const ERROR_MESSAGES = {
-  GENERAL: 'Error'
+  GENERAL: 'Error',
+  INVALID_CREDENTIALS: 'Invalid Credentials'
 }

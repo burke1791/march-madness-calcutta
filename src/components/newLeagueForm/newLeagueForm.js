@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { LEAGUE_FORM_TYPE } from '../../utilities/constants';
+import React, { useState, useEffect } from 'react';
+import { LEAGUE_FORM_TYPE, NOTIF } from '../../utilities/constants';
 
 import { Form, Input, Button, Select } from 'antd';
 import 'antd/dist/antd.css';
 
-import DataService from '../../utilities/data';
-import { createLeague, joinLeague } from '../../utilities/leagueService';
+import { createLeague, joinLeague, Data } from '../../utilities/leagueService';
 import { User } from '../../utilities/authService';
+import Pubsub from '../../utilities/pubsub';
 
 const { Option } = Select;
 
@@ -60,14 +60,21 @@ function NewLeagueForm(props) {
       return (
         <Form.Item label='Tournament' required={true}>
           <Select onChange={tournamentSelected}>
-            <Option value='1'>2019 Big Ten Tournament</Option>
-            <Option value='2'>2019 March Madness</Option>
+            {generateTournamentOptions()}
           </Select>
         </Form.Item>
       );
     } else {
       return null;
     }
+  }
+
+  const generateTournamentOptions = () => {
+    const options = Data.tournaments.map(tournament => {
+      return <Option value={tournament.id} key={tournament.id}>{tournament.name}</Option>;
+    });
+
+    return (options);
   }
 
   return (

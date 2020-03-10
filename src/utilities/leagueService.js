@@ -9,6 +9,21 @@ let Data = {};
 // @TODO this is temporary - eventually query for user meta data upon sign-in
 var userId = null;
 
+export function fetchTournamentOptions() {
+  Axios({
+    method: 'GET',
+    url: process.env.REACT_APP_API_URL + ENDPOINTS.TOURNAMENT_OPTIONS,
+    headers: {
+      'x-cognito-token': User.session.idToken.jwtToken || ''
+    }
+  }).then(response => {
+    Data.tournaments = response.data;
+    Pubsub.publish(NOTIF.TOURNAMENT_OPTIONS_DOWNLOADED, null);
+  }).catch(error => {
+    console.log(error);
+  })
+}
+
 export function getLeagueSummaries() {
   Axios({
     method: 'GET',
