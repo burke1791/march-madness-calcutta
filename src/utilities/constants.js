@@ -53,6 +53,7 @@ export const NOTIF = {
   SERVER_SYNCED: 'server_synced',
   AUCTION_TEAMS_DOWNLOADED: 'auction_teams_downloaded',
   AUCTION_BUYINS_DOWNLOADED: 'auction_buyins_downloaded',
+  AUCTION_ERROR: 'auction_error',
   SIGN_IN: 'sign_in',
   SIGN_OUT: 'sign_out',
   NEW_CHAT_MESSAGE: 'new_chat_message',

@@ -85,7 +85,7 @@ function SignupForm(props) {
         label={
           <span>
             Password &nbsp;
-            <Tooltip title='Password must be at least 6 characters long and include at least one uppercase, lowercase, and number'>
+            <Tooltip title='Password must be at least 8 characters long and include at least one uppercase, lowercase, and number'>
               <Icon type='question-circle-o' />
             </Tooltip>
           </span>
@@ -100,7 +100,7 @@ function SignupForm(props) {
               message: 'Please input your password!'
             },
             {
-              pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,})/g,
+              pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/g,
               message: 'Password not strong enough'
             },
             {

@@ -44,7 +44,7 @@ const columns = [
 
 function LeagueHome(props) {
   
-  const [leagueName, setLeagueName] = useState('test league name');
+  const [leagueName, setLeagueName] = useState('');
   const [userList, setUserList] = useState([]);
   const [status, setStatus] = useState(false);
   const [loading, setLoading] = useState(true);

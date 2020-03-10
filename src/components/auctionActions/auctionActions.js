@@ -32,6 +32,7 @@ function AuctionActions(props) {
     Pubsub.subscribe(NOTIF.NEW_AUCTION_DATA, AuctionActions, handleAuctionUpdate);
     Pubsub.subscribe(NOTIF.AUCTION_BUYINS_DOWNLOADED, AuctionActions, updateTotalSpent);
     Pubsub.subscribe(NOTIF.SERVER_SYNCED, AuctionActions, updateOffset);
+    Pubsub.subscribe(NOTIF.AUCTION_ERROR, AuctionActions, handleAuctionError);
 
     getServerTimestamp();
 
@@ -39,11 +40,16 @@ function AuctionActions(props) {
       Pubsub.unsubscribe(NOTIF.NEW_AUCTION_DATA, AuctionActions);
       Pubsub.unsubscribe(NOTIF.AUCTION_BUYINS_DOWNLOADED, AuctionActions);
       Pubsub.unsubscribe(NOTIF.SERVER_SYNCED, AuctionActions);
+      Pubsub.unsubscribe(NOTIF.AUCTION_ERROR, AuctionActions);
     });
   }, []);
 
   const updateOffset = (offset) => {
     setOffset(offset);
+  }
+
+  const handleAuctionError = () => {
+    setBiddingDisabled(false);
   }
 
   // updates local state with the new auction info from global state
@@ -101,7 +107,7 @@ function AuctionActions(props) {
   }
 
   const bidChange = (value) => {
-    setBidVal(value);
+    setBidVal(Math.floor(value));
   }
 
   const placeCustomBid = () => {
@@ -162,6 +168,7 @@ function AuctionActions(props) {
                   formatter={value => `\$ ${value}`}
                   parser={value => value.replace(/\$\s?/g, '')}
                   onChange={bidChange}
+                  precision={0}
                   style={{ width: '50%' }}
                 />
                 <Button type='primary' style={{ width: '30%' }} disabled={biddingDisabled} onClick={placeCustomBid}>Bid</Button>

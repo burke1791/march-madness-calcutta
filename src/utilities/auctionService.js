@@ -65,6 +65,8 @@ export function connectAuction(leagueId) {
       Pubsub.publish(NOTIF.NEW_CHAT_MESSAGE, null);
     } else if (data.msgType === 'auction') {
       updateAuctionStatus(data.msgObj);
+    } else if (data.msgType === 'auction_error') {
+      Pubsub.publish(NOTIF.AUCTION_ERROR, null);
     }
   }
 }
