@@ -193,6 +193,15 @@ export function setItemComplete(leagueId) {
   client.send(JSON.stringify(messageObj));
 }
 
+export function closeAuction(leagueId) {
+  let messageObj = {
+    action: 'CLOSE_AUCTION',
+    leagueId: leagueId
+  };
+
+  client.send(JSON.stringify(messageObj));
+}
+
 export function placeAuctionBid(leagueId, amount) {
   let bidObj = {
     action: 'PLACE_BID',
