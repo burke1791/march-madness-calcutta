@@ -36,17 +36,17 @@ function AuctionAdmin(props) {
   }
   
   const generateStartStopButton = () => {
-    let btnText = 'Start Auction';
+    let btnText = 'Open Auction';
     let btnType = 'primary';
     let disabled = false;
     let name = 'start';
 
     if (props.status === AUCTION_STATUS.BIDDING || props.status === AUCTION_STATUS.SOLD) {
-      btnText = 'Stop Auction';
+      btnText = 'Close Auction';
       btnType = 'danger';
       name = 'stop'
     } else if (props.status === AUCTION_STATUS.END) {
-      btnText = 'Auction Complete';
+      btnText = 'Auction Closed';
       btnType = 'primary'
       disabled = true;
       name = 'n/a';
