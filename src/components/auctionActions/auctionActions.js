@@ -92,7 +92,6 @@ function AuctionActions(props) {
   const updateTotalSpent = () => {
     console.log(userId);
     for (var user of userBuyIns) {
-      console.log(user);
       if (user.userId == userId) {
         setTotalSpent(user.totalBuyIn);
       }
