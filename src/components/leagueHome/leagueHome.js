@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 
-import { Layout, Table, Row } from 'antd';
+import { Layout, Table, Row, Typography } from 'antd';
 import 'antd/dist/antd.css';
 import { Data, getLeagueUserSummaries } from '../../utilities/leagueService';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
 import AuctionChart from '../auctionChart/auctionChart';
+import { navigate } from '@reach/router';
+import { formatMoney } from '../../utilities/helper';
 
 const { Header, Content } = Layout;
+const { Text } = Typography;
 
 const columns = [
   {
@@ -24,21 +27,30 @@ const columns = [
   },
   {
     title: 'Buy In',
-    dataIndex: 'buyInFormatted',
+    dataIndex: 'buyIn',
     align: 'center',
-    width: 150
+    width: 150,
+    render: (text, record) => {
+      return <Text>{formatMoney(record.buyIn)}</Text>
+    }
   },
   {
     title: 'Current Payout',
-    dataIndex: 'payoutFormatted',
+    dataIndex: 'payout',
     align: 'center',
-    width: 150
+    width: 150,
+    render: (text, record) => {
+      return <Text>{formatMoney(record.payout)}</Text>
+    }
   },
   {
     title: 'Net Return',
-    dataIndex: 'returnFormatted',
+    dataIndex: 'return',
     align: 'center',
-    width: 150
+    width: 150,
+    render: (text, record) => {
+      return <Text type={record.return < 0 ? 'danger' : ''}>{formatMoney(record.return)}</Text>
+    }
   }
 ];
 
@@ -50,7 +62,6 @@ function LeagueHome(props) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log(props.role);
     Pubsub.subscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHome, getLeagueInfo);
 
     return (() => {
@@ -59,7 +70,6 @@ function LeagueHome(props) {
   }, []);
 
   useEffect(() => {
-    console.log('leagueId: ' + props.leagueId);
     getLeagueUserSummaries(props.leagueId);
   }, [props.leagueId]);
 
@@ -87,7 +97,7 @@ function LeagueHome(props) {
               (record, index) => {
                 return {
                   onClick: (event) => {
-                    console.log('user page coming soon');
+                    navigate(`/leagues/${props.leagueId}/member`, { state: { userId: record.id }});
                   }
                 };
               }

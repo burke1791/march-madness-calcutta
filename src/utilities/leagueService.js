@@ -32,7 +32,6 @@ export function getLeagueSummaries() {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     }
   }).then(response => {
-    console.log(response);
     Data.leagues = packageLeagueSummaries(response.data);
     if (Data.leagues != null && Data.leagues.length) {
       Pubsub.publish(NOTIF.LEAGUE_SUMMARIES_FETCHED, null);
@@ -57,7 +56,6 @@ export function createLeague(name, password, tournamentId) {
     },
     data: league
   }).then(response => {
-    console.log(response);
     Pubsub.publish(NOTIF.LEAGUE_JOINED);
   }).catch(error => {
     console.log(error);
@@ -78,7 +76,6 @@ export function joinLeague(name, password) {
     },
     data: league
   }).then(response => {
-    console.log(response);
     Pubsub.publish(NOTIF.LEAGUE_JOINED);
   }).catch(error => {
     console.log(error);
@@ -93,12 +90,34 @@ export function getLeagueUserSummaries(leagueId) {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     }
   }).then(response => {
-    console.log(response);
     Data.leagueInfo = packageLeagueInfo(response.data);
     Pubsub.publish(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED);
   }).catch(error => {
     console.log(error);
   });
+}
+
+export function fetchUserTeams(leagueId, userId) {
+  console.log(leagueId, userId);
+  Axios({
+    method: 'GET',
+    url: process.env.REACT_APP_API_URL + ENDPOINTS.LEAGUE_USER_TEAMS + `/${leagueId}/${userId}`,
+    headers: {
+      'x-cognito-token': User.session.idToken.jwtToken || ''
+    }
+  }).then(response => {
+    console.log(response);
+    Data.userTeams = packageUserTeams(response.data);
+    Data.userAlias = parseUserAlias(response.data);
+    Pubsub.publish(NOTIF.LEAGUE_USER_TEAMS_FETCHED, null);
+  }).catch(error => {
+    console.log(error);
+  })
+}
+
+export function clearUserTeams() {
+  Data.userTeams = [];
+  Data.userAlias = '';
 }
 
 function packageLeagueSummaries(data) {
@@ -144,20 +163,51 @@ function packageLeagueInfo(userSummaries) {
     });
 
     // sorts the users in descending order by their net return
-    leagueInfo.users.sort(function (a, b) { return b.return - a.return });
+    leagueInfo.users.sort(function(a, b) { return b.return - a.return });
 
     // adds a rank property to each user after being sorted
     // and formats the money value into a friendlier string representation
     leagueInfo.users.forEach((user, index) => {
       user.rank = index + 1;
-      user.buyInFormatted = formatMoney(user.buyIn || 0);
-      user.payoutFormatted = formatMoney(user.payout || 0);
-      user.returnFormatted = formatMoney(user.return || 0);
     });
 
     return leagueInfo;
   }
   return null;
+}
+
+function packageUserTeams(teams) {
+  const userTeams = teams.map(team => {
+    return {
+      teamId: team.teamId,
+      name: team.name,
+      seed: team.seed,
+      price: team.price,
+      payout: team.payout,
+      netReturn: team.payout - team.price
+    };
+  });
+
+  // sorting the teams in descending order by their net return
+  userTeams.sort(function(a, b) { return b.netReturn - a.netReturn });
+
+  // adding a tax object to the list of user teams
+  if (teams[0].taxBuyIn > 0) {
+    userTeams.push({
+      teamId: 0,
+      name: 'Tax',
+      seed: null,
+      price: teams[0].taxBuyIn,
+      payout: 0,
+      netReturn: -teams[0].taxBuyIn
+    });
+  }
+
+  return userTeams;
+}
+
+function parseUserAlias(teams) {
+  return teams[0].alias;
 }
 
 export function clearDataOnSignout() {
