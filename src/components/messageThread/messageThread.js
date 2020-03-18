@@ -3,7 +3,8 @@ import './messageThread.css';
 
 import { navigate } from '@reach/router';
 
-import { Layout, Row, Button, Comment, List, Form, Input, Avatar, Icon } from 'antd';
+import { Layout, Row, Button, Comment, List, Form, Input, Avatar } from 'antd';
+import { LeftOutlined, UserOutlined } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 import DataService, { Data } from '../../utilities/data';
 import Pubsub from '../../utilities/pubsub';
@@ -68,7 +69,7 @@ function MessageThread(props) {
           <div style={{ display: 'flex' }}>
             <div style={{ flex: 1 }}>
               <Button type='primary' onClick={backBtnClicked}>
-                <Icon type='left' />
+                <LeftOutlined />
                 Message Board
               </Button>
             </div>
@@ -89,7 +90,7 @@ function MessageThread(props) {
                     //actions={item.actions}
                     author={<Button type='link' style={{ padding: '0' }} size='small' onClick={() => userClicked(item.authorId)}>{item.author}</Button>}
                     avatar={
-                      <Avatar icon='user' />
+                      <Avatar icon={<UserOutlined />} />
                     }
                     content={
                       <p>

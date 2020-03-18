@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import { Layout, Table, Row, Typography, Card, Avatar } from 'antd';
-import { UserOutline } from '@ant-design/icons';
+import { UserOutlined } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 import { Data, getLeagueUserSummaries } from '../../utilities/leagueService';
 import Pubsub from '../../utilities/pubsub';
@@ -98,7 +98,7 @@ function LeagueHome(props) {
         <Row type='flex' justify='center'>
           <Card title='Users'>
             <Meta
-              avatar={<Avatar icon={<UserOutline />} />}
+              avatar={<Avatar icon={<UserOutlined />} />}
               title={`${userCount} Users`}
             />
           </Card>

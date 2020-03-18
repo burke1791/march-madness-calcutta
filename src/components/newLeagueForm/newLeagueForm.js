@@ -11,6 +11,8 @@ import Pubsub from '../../utilities/pubsub';
 const { Option } = Select;
 
 function NewLeagueForm(props) {
+  
+  const [form] = Form.useForm();
 
   const [errorMessage, setErrorMessage] = useState('');
   const [tournamentId, setTournamentId] = useState('');
@@ -19,30 +21,30 @@ function NewLeagueForm(props) {
     setTournamentId(Number(id));
   }
 
-  const { getFieldDecorator } = props.form;
+  const handleSubmit = (values) => {
+    // event.preventDefault();
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+    console.log(values);
 
     // validate fields and make the post request
-    props.form.validateFields((err, values) => {
-      if (!err) {
-        props.toggleLoading();
+  //   props.form.validateFields((err, values) => {
+  //     if (!err) {
+  //       props.toggleLoading();
 
-        let name = values.league_name;
-        let password = values.league_password;
-        let tourneyId = tournamentId; // @TODO make this built in to the 'tournamentId' from the database
+  //       let name = values.league_name;
+  //       let password = values.league_password;
+  //       let tourneyId = tournamentId; // @TODO make this built in to the 'tournamentId' from the database
 
-        // @TODO send API.create_league post request
-        if (props.leagueType === LEAGUE_FORM_TYPE.CREATE) {
-          createLeague(name, password, tourneyId);
-        } else {
-          joinLeague(name, password);
-        }
-      } else {
-        alert('Validation Error');
-      }
-    })
+  //       // @TODO send API.create_league post request
+  //       if (props.leagueType === LEAGUE_FORM_TYPE.CREATE) {
+  //         createLeague(name, password, tourneyId);
+  //       } else {
+  //         joinLeague(name, password);
+  //       }
+  //     } else {
+  //       alert('Validation Error');
+  //     }
+  //   })
   }
 
   const generateErrorMessage = () => {
@@ -78,32 +80,38 @@ function NewLeagueForm(props) {
   }
 
   return (
-    <Form onSubmit={handleSubmit} className='new-league-form' style={{ maxWidth: '300px' }} size='small'>
+    <Form 
+      form={form}
+      onFinish={handleSubmit} 
+      className='new-league-form'
+      style={{ maxWidth: '300px' }}
+      size='small'
+    >
       {generateErrorMessage()}
       {generateTournamentType()}
-      <Form.Item label='League Name'>
-        {getFieldDecorator('league_name', {
-          rules: [
-            {
-              required: true,
-              message: 'Please input a league name!'
-            }
-          ]
-        })(
-          <Input placeholder='league name' />
-        )}
+      <Form.Item 
+        name='leagueName'
+        label='League Name'
+        rules={[
+          {
+            required: true,
+            message: 'Please input a league name!'
+          }
+        ]}
+      >
+        <Input placeholder='league name' />
       </Form.Item>
-      <Form.Item label='League Password'>
-        {getFieldDecorator('league_password', {
-          rules: [
-            {
-              required: true,
-              message: 'Please input a league name!'
-            }
-          ]
-        })(
-          <Input placeholder='league password' />
-        )}
+      <Form.Item 
+        name='leaguePassword'
+        label='League Password'
+        rules={[
+          {
+            required: true,
+            message: 'Please input a league name!'
+          }
+        ]}  
+      >
+        <Input placeholder='league password' />
       </Form.Item>
       <Form.Item>
         <Button type='primary' loading={props.loading} htmlType='submit' className='new-league-button' style={{ width: '100%' }}>Submit</Button>
@@ -121,6 +129,4 @@ function NewLeagueForm(props) {
   )
 }
 
-const WrappedNewLeagueForm = Form.create({ name: 'new_league_form' })(NewLeagueForm);
-
-export default WrappedNewLeagueForm;
+export default NewLeagueForm;

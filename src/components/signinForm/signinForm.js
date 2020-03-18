@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from 'react';
 
-import { Form, Icon, Input, Button, Checkbox } from 'antd';
+import { Form, Input, Button, Checkbox } from 'antd';
+import { MailOutlined, LockOutlined } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 import { AUTH_FORM_TYPE, ERROR_MESSAGES, NOTIF } from '../../utilities/constants';
 import { signIn } from '../../utilities/authService';
 import Pubsub from '../../utilities/pubsub';
 
+const lineHeightStyle = {
+  lineHeight: '40px'
+};
+
 function SigninForm(props) {
 
+  const [form] = Form.useForm();
+
+  const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
@@ -18,35 +26,37 @@ function SigninForm(props) {
     });
   }, []);
 
+  const onRememberChange = (event) => {
+    setRememberMe(event.target.checked);
+  }
+
   const handleAuthError = (errorMsg) => {
     props.toggleLoading(false);
     setErrorMessage(errorMsg);
   }
 
-  const { getFieldDecorator } = props.form;
+  const handleSubmit = (values) => {
+    // event.preventDefault();
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+    let email = values.email;
+    let password = values.password;
+    
+    signIn(email, password);
 
-    props.form.validateFields((err, values) => {
-      if (!err) {
-        props.toggleLoading();
+    // props.form.validateFields((err, values) => {
+    //   if (!err) {
+    //     props.toggleLoading();
         
-        let email = values.email;
-        let password = values.password;
-        let remember = values.remember;
+    //     let email = values.email;
+    //     let password = values.password;
+    //     let remember = values.remember;
 
-        // @TODO refactor error handling
-        signIn(email, password);
-
-        // AuthService.sendSigninRequest({ email: email, password: password }).catch(errorCode => {
-        //   setErrorMessage(ERROR_MESSAGES[errorCode]);
-        //   props.toggleLoading(false);
-        // })
-      } else {
-        alert('Validation Error');
-      }
-    });
+    //     // @TODO refactor error handling
+    //     signIn(email, password);
+    //   } else {
+    //     alert('Validation Error');
+    //   }
+    // });
   }
 
   const generateErrorMessage = () => {
@@ -60,47 +70,66 @@ function SigninForm(props) {
   }
 
   return (
-    <Form onSubmit={handleSubmit} className='login-form' style={{maxWidth: '300px'}}>
+    <Form 
+      form={form}
+      onFinish={handleSubmit}
+      className='login-form'
+      style={{maxWidth: '300px'}}
+    >
       {generateErrorMessage()}
-      <Form.Item>
-        {getFieldDecorator('email', {
-          rules: [
-            { 
-              required: true, 
-              message: 'Please input your email!'
-            }
-          ],
-        })(
-          <Input 
-            prefix={<Icon type='mail' style={{ color: 'rgba(0,0,0,.25)' }} />} 
-            placeholder='email' 
-          />,
-        )}
+      <Form.Item
+        name='email'
+        // label='Email Address'
+        rules={[
+          {
+            required: true, 
+            message: 'Please input your email!'
+          }
+        ]}
+      >
+        <Input 
+          prefix={<MailOutlined style={{ color: 'rgba(0,0,0,.25)' }} />} 
+          placeholder='email' 
+        />
+      </Form.Item>
+      <Form.Item
+        name='password'
+        rules={[
+          { required: true, message: 'Please input your password!'}
+        ]}
+      >
+        <Input 
+          prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />} 
+          type='password'
+          placeholder='password' 
+        />
       </Form.Item>
       <Form.Item>
-        {getFieldDecorator('password', {
-          rules: [{ required: true, message: 'Please input your password!'}],
-        })(
-          <Input 
-            prefix={<Icon type='lock' style={{ color: 'rgba(0,0,0,.25)' }} />} 
-            type='password'
-            placeholder='password' 
-          />,
-        )}
-      </Form.Item>
-      <Form.Item>
-        {getFieldDecorator('remember', {
-          valuePropName: 'checked',
-          initialValue: true,
-        })(<Checkbox>Remember me</Checkbox>)}
-        <a href='#' className='login-form-forgot' style={{float: 'right'}}>Forgot password</a>
-        <Button type='primary' loading={props.loading} htmlType='submit' className='login-form-button' style={{width: '100%'}} data-testid='signin-submit'>Sign In</Button>
-        <Button type='link' onClick={() => props.toggleAuthForm(AUTH_FORM_TYPE.SIGN_UP)} style={{padding: '0'}}>Create an Account</Button>
+        <Checkbox checked={rememberMe} onChange={onRememberChange} style={lineHeightStyle}>
+          Remember me
+        </Checkbox>
+        <a href='#' className='login-form-forgot' style={{...lineHeightStyle, float: 'right'}}>
+          Forgot password
+        </a>
+        <Button 
+          type='primary'
+          loading={props.loading}
+          htmlType='submit'
+          className='login-form-button'
+          style={{width: '100%'}}
+          data-testid='signin-submit'
+        >
+          Sign In
+        </Button>
+        <Button 
+          type='link'
+          onClick={() => props.toggleAuthForm(AUTH_FORM_TYPE.SIGN_UP)} style={{padding: '0'}}
+        >
+          Create an Account
+        </Button>
       </Form.Item>
     </Form>
   );
 }
 
-const WrappedSigninForm = Form.create({ name: 'signin_form' })(SigninForm);
-
-export default WrappedSigninForm;
+export default SigninForm;
