@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-import { Layout, Table, Row, Typography } from 'antd';
+import { Layout, Table, Row, Typography, Card, Avatar } from 'antd';
+import { UserOutline } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 import { Data, getLeagueUserSummaries } from '../../utilities/leagueService';
 import Pubsub from '../../utilities/pubsub';
@@ -11,6 +12,7 @@ import { formatMoney } from '../../utilities/helper';
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
+const { Meta } = Card;
 
 const columns = [
   {
@@ -57,7 +59,9 @@ const columns = [
 function LeagueHome(props) {
   
   const [leagueName, setLeagueName] = useState('');
+  const [tournamentName, setTournamentName] = useState('');
   const [userList, setUserList] = useState([]);
+  const [userCount, setUserCount] = useState(0);
   const [status, setStatus] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -75,7 +79,9 @@ function LeagueHome(props) {
 
   const getLeagueInfo = () => {
     setLeagueName(Data.leagueInfo.name);
+    setTournamentName(Data.leagueInfo.tournamentName);
     setUserList(Data.leagueInfo.users);
+    setUserCount(Data.leagueInfo.users.length);
     setStatus(Data.leagueInfo.status);
     setLoading(false);
   }
@@ -83,9 +89,20 @@ function LeagueHome(props) {
   return (
     <Layout>
       <Header style={{ background: 'none', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '32px' }}>{leagueName}</h1>
+        <h1 style={{ fontSize: '32px', margin: '0' }}>{leagueName}</h1>
+      </Header>
+      <Header style={{ background: 'none', textAlign: 'center', height: '48px' }}>
+        <h2 style={{ lineHeight: '32px', fontWeight: '400', margin: '0'}}>{tournamentName}</h2>
       </Header>
       <Content>
+        <Row type='flex' justify='center'>
+          <Card title='Users'>
+            <Meta
+              avatar={<Avatar icon={<UserOutline />} />}
+              title={`${userCount} Users`}
+            />
+          </Card>
+        </Row>
         <Row type='flex' justify='center'>
           <Table
             columns={columns}

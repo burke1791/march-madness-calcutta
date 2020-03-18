@@ -126,6 +126,7 @@ function packageLeagueSummaries(data) {
       let leagueObj = {
         id: league.leagueId,
         name: league.name,
+        tournamentName: league.tournamentName,
         buyIn: league.naturalBuyIn + league.taxBuyIn,
         payout: league.totalReturn,
         role: league.role,
@@ -146,6 +147,7 @@ function packageLeagueInfo(userSummaries) {
   if (userSummaries.length) {
     let leagueInfo = {
       name: userSummaries[0].name,
+      tournamentName: userSummaries[0].tournamentName,
       auctionId: userSummaries[0].auctionId,
       status: userSummaries[0].status,
       users: []
