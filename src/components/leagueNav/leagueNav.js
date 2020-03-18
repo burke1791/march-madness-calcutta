@@ -22,7 +22,7 @@ function LeagueNav(props) {
           League Home
         </Menu.Item>
         <Menu.Item key='auction'>
-          Auction
+          Auction Room
         </Menu.Item>
         {/* <Menu.Item key='messageBoard'>
           Message Board

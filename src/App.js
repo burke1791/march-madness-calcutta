@@ -20,14 +20,14 @@ function App() {
         <Header style={{ padding: '0 25px' }}>
           <Topnav />
         </Header>
-        <Content style={{ margin: '0' }}>
+        {/* <Content style={{ margin: '0' }}> */}
           <Router>
             <LandingPage path='/' />
             <Admin path='/admin' />
             <Main path='/home' />
             <League path='leagues/:leagueId/*' />
           </Router>
-        </Content>
+        {/* </Content> */}
       </Layout>
     </div>
   );
