@@ -1,9 +1,27 @@
-import React from 'react';
-import { Menu } from 'antd';
+import React, { useState, useEffect } from 'react';
+import Pubsub from '../../utilities/pubsub';
+import { NOTIF } from '../../utilities/constants';
+import { Menu, Layout } from 'antd';
 import 'antd/dist/antd.css';
 import { navigate } from '@reach/router';
 
+const { Sider } = Layout;
+
 function LeagueNav(props) {
+
+  const [displaySider, setDisplaySider] = useState(true);
+
+  useEffect(() => {
+    Pubsub.subscribe(NOTIF.LEAGUE_MENU_TOGGLE, LeagueNav, handleMenuToggle);
+
+    return (() => {
+      Pubsub.unsubscribe(NOTIF.LEAGUE_MENU_TOGGLE, LeagueNav);
+    });
+  }, []);
+
+  const handleMenuToggle = () => {
+    setDisplaySider(!displaySider);
+  }
 
   const handleLeagueNavClick = (event) => {
     if (event.key == 'leagueHome') {
@@ -11,25 +29,69 @@ function LeagueNav(props) {
     } else if (event.key == 'auction') {
       navigate(`/leagues/${props.leagueId}/auction`);
     } else if (event.key == 'messageBoard') {
-      navigate(`/leagues/${props.leagueId}/message_board`)
+      // navigate(`/leagues/${props.leagueId}/message_board`)
     }
   }
 
-  return (
-    <nav className='leaguenav'>
-      <Menu mode='horizontal' onClick={handleLeagueNavClick} style={{ lineHeight: '48px', padding: '0 70px' }}>
-        <Menu.Item key='leagueHome'>
-          League Home
-        </Menu.Item>
-        <Menu.Item key='auction'>
-          Auction Room
-        </Menu.Item>
-        {/* <Menu.Item key='messageBoard'>
-          Message Board
-        </Menu.Item> */}
-      </Menu>
-    </nav>
-  );
+  // const generateLeagueMenu = () => {
+    if (displaySider) {
+      return (
+        <Sider width={200}>
+          <Menu
+            mode='inline'
+            onClick={handleLeagueNavClick}
+            defaultSelectedKeys={['leagueHome']}
+            style={{ height: '100%', borderRight: 0 }}
+          >
+            <Menu.Item key='leagueHome'>
+              League Home
+            </Menu.Item>
+            <Menu.Item key='auction'>
+              Auction Room
+            </Menu.Item>
+            <Menu.Item key='myTeams'>
+              My Teams
+            </Menu.Item>
+            <Menu.Item key='messageBoard'>
+              Message Board
+            </Menu.Item>
+            <Menu.Item key='settings'>
+              Settings
+            </Menu.Item>
+          </Menu>
+        </Sider>
+      );
+    } else {
+      return (
+        <Menu
+          mode='horizontal'
+          onClick={handleLeagueNavClick}
+          defaultSelectedKeys={['leagueHome']}
+          style={{ lineHeight: '48px', padding: '0 70px' }}
+        >
+          <Menu.Item key='leagueHome'>
+            League Home
+          </Menu.Item>
+          <Menu.Item key='auction'>
+            Auction Room
+          </Menu.Item>
+          <Menu.Item key='myTeams'>
+            My Teams
+          </Menu.Item>
+          <Menu.Item key='messageBoard'>
+            Message Board
+          </Menu.Item>
+          <Menu.Item key='settings'>
+            Settings
+          </Menu.Item>
+        </Menu>
+      );
+    }
+  // }
+
+  // return (
+  //   generateLeagueMenu();
+  // );
 }
 
 export default LeagueNav;

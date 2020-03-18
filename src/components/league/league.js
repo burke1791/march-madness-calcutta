@@ -20,43 +20,20 @@ function League(props) {
 
   if (User.authenticated) {
     return (
-      <Layout>
+      <Layout style={{ height: 'calc(100vh - 64px)' }}>
         <LeagueNav leagueId={props.leagueId} />
-        <Router>
-          <LeagueHome path='/' />
-          <LeagueAuction path='auction' auctionId={auctionId} leagueId={props.leagueId} role={role} />
-          {/* <MessageBoard path='message_board' leagueId={props.leagueId} role={role} /> */}
-          {/* <MessageThread path='message_board/:topicId' leagueId={props.leagueId} role={role} /> */}
-          <MemberPage path='member' leagueId={props.leagueId} />
-        </Router>
+        <Layout>
+          <Content>
+            <Router>
+              <LeagueHome path='/' />
+              <LeagueAuction path='auction' auctionId={auctionId} leagueId={props.leagueId} role={role} />
+              {/* <MessageBoard path='message_board' leagueId={props.leagueId} role={role} /> */}
+              {/* <MessageThread path='message_board/:topicId' leagueId={props.leagueId} role={role} /> */}
+              <MemberPage path='member' leagueId={props.leagueId} />
+            </Router>
+          </Content>
+        </Layout>
       </Layout>
-
-      // <Layout style={{ height: 'calc(100vh - 64px)' }}>
-      //   <Sider width={200}>
-      //     <Menu
-      //       mode='inline'
-      //       defaultSelectedKeys={['1']}
-      //       style={{ height: '100%', borderRight: 0 }}
-      //     >
-      //       <Menu.Item key='1'>League Home</Menu.Item>
-      //       <Menu.Item key='2'>Auction Room</Menu.Item>
-      //       <Menu.Item key='3'>My Teams</Menu.Item>
-      //       <Menu.Item key='4'>Message Board</Menu.Item>
-      //       <Menu.Item key='5'>Settings</Menu.Item>
-      //     </Menu>
-      //   </Sider>
-      //   <Layout>
-      //     <Content>
-      //       <Router>
-      //         <LeagueHome path='/' />
-      //         <LeagueAuction path='auction' auctionId={auctionId} leagueId={props.leagueId} role={role} />
-      //         {/* <MessageBoard path='message_board' leagueId={props.leagueId} role={role} /> */}
-      //         {/* <MessageThread path='message_board/:topicId' leagueId={props.leagueId} role={role} /> */}
-      //         <MemberPage path='member' leagueId={props.leagueId} />
-      //       </Router>
-      //     </Content>
-      //   </Layout>
-      // </Layout>
     );
   } else {
     return (
