@@ -8,11 +8,11 @@ import MessageBoard from '../messageBoard/messageBoard';
 import MessageThread from '../messageThread/messageThread';
 import MemberPage from '../memberPage/memberPage';
 
-import { Layout } from 'antd';
+import { Layout, Menu } from 'antd';
 import 'antd/dist/antd.css';
 import { User } from '../../utilities/authService';
 
-const { Header } = Layout;
+const { Header, Sider, Content } = Layout;
 
 function League(props) {
   const [auctionId, setAuctionId] = useState(props.location.state.auctionId);
@@ -20,15 +20,19 @@ function League(props) {
 
   if (User.authenticated) {
     return (
-      <Layout>
+      <Layout style={{ height: 'calc(100vh - 64px)' }}>
         <LeagueNav leagueId={props.leagueId} />
-        <Router>
-          <LeagueHome path='/' />
-          <LeagueAuction path='auction' auctionId={auctionId} leagueId={props.leagueId} role={role} />
-          {/* <MessageBoard path='message_board' leagueId={props.leagueId} role={role} /> */}
-          {/* <MessageThread path='message_board/:topicId' leagueId={props.leagueId} role={role} /> */}
-          <MemberPage path='member' leagueId={props.leagueId} />
-        </Router>
+        <Layout>
+          <Content>
+            <Router>
+              <LeagueHome path='/' />
+              <LeagueAuction path='auction' auctionId={auctionId} leagueId={props.leagueId} role={role} />
+              {/* <MessageBoard path='message_board' leagueId={props.leagueId} role={role} /> */}
+              {/* <MessageThread path='message_board/:topicId' leagueId={props.leagueId} role={role} /> */}
+              <MemberPage path='member' leagueId={props.leagueId} />
+            </Router>
+          </Content>
+        </Layout>
       </Layout>
     );
   } else {
