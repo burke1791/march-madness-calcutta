@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-import { Layout, Table, Row, Typography, Card, Avatar } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { Layout, Table, Row, Typography, Col } from 'antd';
+import LeagueHomeCards from './leagueHomeCards';
 import 'antd/dist/antd.css';
-import { Data, getLeagueUserSummaries } from '../../utilities/leagueService';
+import { Data, getLeagueUserSummaries, userId } from '../../utilities/leagueService';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
 import AuctionChart from '../auctionChart/auctionChart';
@@ -12,7 +12,6 @@ import { formatMoney } from '../../utilities/helper';
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
-const { Meta } = Card;
 
 const columns = [
   {
@@ -56,12 +55,40 @@ const columns = [
   }
 ];
 
+const upcomingColumns = [
+  {
+    title: 'Home',
+    dataIndex: 'homeTeamName',
+    align: 'center',
+    width: 200
+  },
+  {
+    title: 'Away',
+    dataIndex: 'awayTeamName',
+    align: 'center',
+    width: 200
+  },
+  {
+    title: 'Region',
+    dataIndex: 'region',
+    align: 'center',
+    width: 150
+  },
+  {
+    title: 'Date',
+    dataIndex: 'datetime',
+    align: 'center',
+    width: 250
+  }
+]
+
 function LeagueHome(props) {
   
   const [leagueName, setLeagueName] = useState('');
   const [tournamentName, setTournamentName] = useState('');
   const [userList, setUserList] = useState([]);
   const [userCount, setUserCount] = useState(0);
+  const [prizepool, setPrizepool] = useState(0);
   const [status, setStatus] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -84,6 +111,14 @@ function LeagueHome(props) {
     setUserCount(Data.leagueInfo.users.length);
     setStatus(Data.leagueInfo.status);
     setLoading(false);
+
+    let prizepool = 0;
+
+    Data.leagueInfo.users.forEach(user => {
+      prizepool += user.buyIn
+    });
+
+    setPrizepool(prizepool);
   }
 
   return (
@@ -95,31 +130,32 @@ function LeagueHome(props) {
         <h2 style={{ lineHeight: '32px', fontWeight: '400', margin: '0'}}>{tournamentName}</h2>
       </Header>
       <Content>
-        <Row type='flex' justify='center'>
-          <Card title='Users'>
-            <Meta
-              avatar={<Avatar icon={<UserOutlined />} />}
-              title={`${userCount} Users`}
-            />
-          </Card>
-        </Row>
-        <Row type='flex' justify='center'>
-          <Table
-            columns={columns}
-            dataSource={userList}
-            size='middle'
-            pagination={false}
-            loading={loading}
-            onRow={
-              (record, index) => {
-                return {
-                  onClick: (event) => {
-                    navigate(`/leagues/${props.leagueId}/member`, { state: { userId: record.id }});
-                  }
-                };
+        <LeagueHomeCards userCount={userCount} prizepool={prizepool} />
+        <Row type='flex' justify='center' style={{ marginTop: '8px' }}>
+          <Col span={16}>
+            <Table
+              columns={columns}
+              dataSource={userList}
+              size='middle'
+              pagination={false}
+              loading={loading}
+              onRow={
+                (record, index) => {
+                  return {
+                    onClick: (event) => {
+                      navigate(`/leagues/${props.leagueId}/member`, { state: { userId: record.id }});
+                    }
+                  };
+                }
               }
-            }
-          />
+            />
+          </Col>
+          <Col span={8}>
+            <Table
+              columns={upcomingColumns}
+              size='middle'
+            />
+          </Col>
         </Row>
         <Row type='flex' justify='center'>
           <AuctionChart status={status} />
