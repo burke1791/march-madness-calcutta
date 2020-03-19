@@ -10,6 +10,12 @@ import Pubsub from '../../utilities/pubsub';
 
 const { Option } = Select;
 
+const layout = {
+  labelCol: {
+    span: 24
+  }
+};
+
 function NewLeagueForm(props) {
   
   const [form] = Form.useForm();
@@ -22,29 +28,17 @@ function NewLeagueForm(props) {
   }
 
   const handleSubmit = (values) => {
-    // event.preventDefault();
+    props.toggleLoading();
 
-    console.log(values);
+    let name = values.league_name;
+    let password = values.league_password;
+    let tourneyId = tournamentId;
 
-    // validate fields and make the post request
-  //   props.form.validateFields((err, values) => {
-  //     if (!err) {
-  //       props.toggleLoading();
-
-  //       let name = values.league_name;
-  //       let password = values.league_password;
-  //       let tourneyId = tournamentId; // @TODO make this built in to the 'tournamentId' from the database
-
-  //       // @TODO send API.create_league post request
-  //       if (props.leagueType === LEAGUE_FORM_TYPE.CREATE) {
-  //         createLeague(name, password, tourneyId);
-  //       } else {
-  //         joinLeague(name, password);
-  //       }
-  //     } else {
-  //       alert('Validation Error');
-  //     }
-  //   })
+    if (props.leagueType === LEAGUE_FORM_TYPE.CREATE) {
+      createLeague(name, password, tourneyId);
+    } else {
+      joinLeague(name, password);
+    }
   }
 
   const generateErrorMessage = () => {
@@ -60,7 +54,15 @@ function NewLeagueForm(props) {
   const generateTournamentType = () => {
     if (props.leagueType === LEAGUE_FORM_TYPE.CREATE) {
       return (
-        <Form.Item label='Tournament' required={true}>
+        <Form.Item 
+          label='Tournament' 
+          rules={[
+            {
+              required: true,
+              message: 'Please select a tournament'
+            }
+          ]}
+        >
           <Select onChange={tournamentSelected}>
             {generateTournamentOptions()}
           </Select>
@@ -82,6 +84,7 @@ function NewLeagueForm(props) {
   return (
     <Form 
       form={form}
+      {...layout}
       onFinish={handleSubmit} 
       className='new-league-form'
       style={{ maxWidth: '300px' }}

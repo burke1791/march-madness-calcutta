@@ -46,44 +46,14 @@ function SignupForm(props) {
     setErrorMessage(errorMsg);
   }
 
-  // const compareToFirstPassword = (rule, value, callback) => {
-  //   const { form } = props;
-  //   if (value && value !== form.getFieldValue('password')) {
-  //     callback('Passwords do not match!');
-  //   } else {
-  //     callback();
-  //   }
-  // }
-
-  // const validateToNextPassword = (rule, value, callback) => {
-  //   const { form } = props;
-  //   if (value) {
-  //     form.validateFields(['confirm'], { force: true });
-  //   }
-  //   callback();
-  // }
-
   const handleSubmit = (values) => {
-    // event.preventDefault();
+    props.toggleLoading();
+    
+    let email = values.email;
+    let username = values.username;
+    let password = values.password;
 
-    console.log(values);
-
-    // props.form.validateFields((err, values) => {
-    //   console.log(values);
-    //   if (!err) {
-    //     props.toggleLoading();
-        
-    //     let email = values.email;
-    //     let username = values.username;
-    //     let password = values.password;
-    //     let remember = values.remember;
-
-    //     // @TODO refactor error handling
-    //     signUp(username, email, password);
-    //   } else {
-    //     alert('Validation Error');
-    //   }
-    // });
+    signUp(username, email, password);
   }
 
   const generateErrorMessage = () => {
@@ -173,6 +143,7 @@ function SignupForm(props) {
         <Input type='password' />
       </Form.Item>
       <Form.Item
+        name='username'
         label={
           <span>
             Username&nbsp;

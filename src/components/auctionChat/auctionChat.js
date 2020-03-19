@@ -49,7 +49,7 @@ function AuctionChat(props) {
         <Row style={{ maxHeight: 'calc(50vh - 70px)', overflow: 'auto' }}>
           <List
             dataSource={messages}
-            style={{ overflow: 'auto' }}
+            style={{ overflow: 'auto', width: '100%' }}
             renderItem={message => (
               <div className='chat-message'>
                 <span className='author'>{message.alias}</span>

@@ -36,27 +36,12 @@ function SigninForm(props) {
   }
 
   const handleSubmit = (values) => {
-    // event.preventDefault();
-
+    props.toggleLoading();
+    
     let email = values.email;
     let password = values.password;
     
     signIn(email, password);
-
-    // props.form.validateFields((err, values) => {
-    //   if (!err) {
-    //     props.toggleLoading();
-        
-    //     let email = values.email;
-    //     let password = values.password;
-    //     let remember = values.remember;
-
-    //     // @TODO refactor error handling
-    //     signIn(email, password);
-    //   } else {
-    //     alert('Validation Error');
-    //   }
-    // });
   }
 
   const generateErrorMessage = () => {
@@ -79,7 +64,6 @@ function SigninForm(props) {
       {generateErrorMessage()}
       <Form.Item
         name='email'
-        // label='Email Address'
         rules={[
           {
             required: true, 
