@@ -1,10 +1,14 @@
 import React from 'react';
 import './alivePie.css';
 import { THEME_COLORS } from '../../utilities/constants';
+import { Tooltip } from 'antd';
+import 'antd/dist/antd.css';
 
 function AlivePie(props) {
 
-  const pieColor = (function(percent) {
+  const pieColor = (function(alive, total) {
+    let percent = total == 0 ? 0 : alive / total;
+
     if (percent >= 0.7) {
       return THEME_COLORS.GREEN;
     } else if (percent >= 0.35) {
@@ -12,17 +16,19 @@ function AlivePie(props) {
     } else {
       return THEME_COLORS.RED;
     }
-  })(props.percent);
+  })(props.numTeamsAlive, props.numTeams);
 
   const style = {
     backgroundImage: `conic-gradient(
-      rgb(255, 255, 255) ${Math.floor(360 * (1 - props.percent))}deg,
+      rgb(255, 255, 255) ${Math.floor(360 * (1 - (props.numTeams == 0 ? 0 : props.numTeamsAlive / props.numTeams)))}deg,
       ${pieColor} 0 
     )`
   };
 
   return (
-    <div className='alivePie' style={style}></div>
+    <Tooltip placement='topLeft' title={`${props.numTeamsAlive} of ${props.numTeams} teams still alive`}>
+      <div className='alivePie' style={style}></div>
+    </Tooltip>
   );
 }
 
