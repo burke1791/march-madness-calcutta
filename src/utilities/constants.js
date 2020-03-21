@@ -13,6 +13,12 @@ export const ENDPOINTS = {
   START_AUCTION: '/startAuction'
 };
 
+export const THEME_COLORS = {
+  RED: '#ff5356',
+  YELLOW: '#faad14',
+  GREEN: '#52c41a'
+}
+
 export const SOCKETS = {
   AUCTION: 'wss://m5q6i9kma9.execute-api.us-east-1.amazonaws.com/dev'
 }
