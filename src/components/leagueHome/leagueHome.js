@@ -7,6 +7,7 @@ import { Data, getLeagueUserSummaries, userId } from '../../utilities/leagueServ
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
 import AuctionChart from '../auctionChart/auctionChart';
+import AlivePie from '../alivePie/alivePie';
 import { navigate } from '@reach/router';
 import { formatMoney } from '../../utilities/helper';
 
@@ -51,6 +52,14 @@ const columns = [
     width: 150,
     render: (text, record) => {
       return <Text type={record.return < 0 ? 'danger' : ''}>{formatMoney(record.return)}</Text>
+    }
+  },
+  {
+    dataIndex: 'teamsAlive',
+    align: 'center',
+    width: 75,
+    render: (text, record) => {
+      return <AlivePie percent={0.69} />
     }
   }
 ];
@@ -131,8 +140,8 @@ function LeagueHome(props) {
       </Header>
       <Content>
         <LeagueHomeCards userCount={userCount} prizepool={prizepool} />
-        <Row type='flex' justify='center' style={{ marginTop: '8px' }}>
-          <Col span={16}>
+        <Row type='flex' justify='center' gutter={[12, 8]}>
+          <Col md={20} xxl={12}>
             <Table
               columns={columns}
               dataSource={userList}
@@ -150,14 +159,19 @@ function LeagueHome(props) {
               }
             />
           </Col>
-          <Col span={8}>
+        </Row>
+        <Row type='flex' justify='center' gutter={[12, 8]}>
+          <Col md={20} xxl={12}>
             <Table
               columns={upcomingColumns}
               size='middle'
+              pagination={false}
+              
             />
           </Col>
         </Row>
         <Row type='flex' justify='center'>
+          {/* @TODO move this to the auction results page */}
           <AuctionChart status={status} />
         </Row>
       </Content>
