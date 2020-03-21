@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, Avatar, Row, Col } from 'antd';
-import { UserOutlined, DollarOutlined } from '@ant-design/icons';
+import { Card, Avatar, Row, Col, Statistic } from 'antd';
+import { UserOutlined, DollarOutlined, DollarTwoTone } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 import { formatMoney } from '../../utilities/helper';
 
@@ -12,34 +12,22 @@ function LeagueHomeCards(props) {
     <Row type='flex' justify='center' gutter={[12, 8]}>
       <Col md={5} xxl={3}>
         <Card style={{ textAlign: 'center' }}>
-          <Meta
-            avatar={<Avatar icon={<UserOutlined />} />}
-            title={`${props.userCount} Users`}
-          />
+          <Statistic title='Users' value={props.userCount} prefix={<UserOutlined />} />
         </Card>
       </Col>
       <Col md={5} xxl={3}>
         <Card style={{ textAlign: 'center' }}>
-          <Meta
-            avatar={<Avatar icon={<DollarOutlined />} />}
-            title={formatMoney(props.prizepool)}
-          />
+          <Statistic title='Prizepool' value={props.prizepool} precision={2} prefix={<DollarTwoTone />} />
         </Card>
       </Col>
       <Col md={5} xxl={3}>
         <Card style={{ textAlign: 'center' }}>
-          <Meta
-            avatar={<Avatar icon={<UserOutlined />} />}
-            title={`${props.userCount} Users`}
-          />
+          <Statistic title='Users' value={props.userCount} prefix={<UserOutlined />} />
         </Card>
       </Col>
       <Col md={5} xxl={3}>
         <Card style={{ textAlign: 'center' }}>
-          <Meta
-            avatar={<Avatar icon={<DollarOutlined />} />}
-            title={formatMoney(props.prizepool)}
-          />
+          <Statistic title='Prizepool' value={props.prizepool} precision={2} prefix={<DollarTwoTone />} />
         </Card>
       </Col>
     </Row>

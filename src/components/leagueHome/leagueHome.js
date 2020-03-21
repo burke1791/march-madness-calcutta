@@ -170,7 +170,7 @@ function LeagueHome(props) {
             />
           </Col>
         </Row>
-        <Row type='flex' justify='center'>
+        <Row type='flex' justify='center' gutter={[12, 8]}>
           {/* @TODO move this to the auction results page */}
           <AuctionChart status={status} />
         </Row>
