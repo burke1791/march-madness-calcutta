@@ -97,6 +97,21 @@ export function getLeagueUserSummaries(leagueId) {
   });
 }
 
+export function getUpcomingGames(leagueId) {
+  Axios({
+    method: 'GET',
+    url: process.env.REACT_APP_API_URL + ENDPOINTS.UPCOMING_GAMES + `/${leagueId}`,
+    headers: {
+      'x-cognito-token': User.session.idToken.jwtToken || ''
+    }
+  }).then(response => {
+    Data.upcomingGames = packageUpcomingGames(response.data);
+    Pubsub.publish(NOTIF.UPCOMING_GAMES_DOWNLOADED);
+  }).catch(error => {
+    console.log(error);
+  });
+}
+
 export function fetchUserTeams(leagueId, userId) {
   console.log(leagueId, userId);
   Axios({
@@ -160,7 +175,9 @@ function packageLeagueInfo(userSummaries) {
         name: user.alias,
         buyIn: user.naturalBuyIn + user.taxBuyIn,
         payout: user.totalReturn,
-        return: user.totalReturn - user.naturalBuyIn - user.taxBuyIn
+        return: user.totalReturn - user.naturalBuyIn - user.taxBuyIn,
+        numTeams: user.numTeams,
+        numTeamsAlive: user.numTeamsAlive
       };
     });
 
@@ -175,6 +192,20 @@ function packageLeagueInfo(userSummaries) {
 
     return leagueInfo;
   }
+  return null;
+}
+
+function packageUpcomingGames(games) {
+  console.log(games);
+
+  if (games.length) {
+    let upcomingGames = games.map(game => {
+      return game;
+    });
+
+    return upcomingGames;
+  }
+
   return null;
 }
 
