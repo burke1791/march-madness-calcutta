@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-import { Layout, Table, Row, Typography, Col } from 'antd';
+import { Layout, Table, Row, Typography, Col, Tooltip } from 'antd';
 import LeagueHomeCards from './leagueHomeCards';
 import 'antd/dist/antd.css';
-import { Data, getLeagueUserSummaries, userId } from '../../utilities/leagueService';
+import { Data, getLeagueUserSummaries, getUpcomingGames, userId } from '../../utilities/leagueService';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
 import AuctionChart from '../auctionChart/auctionChart';
@@ -59,7 +59,9 @@ const columns = [
     align: 'center',
     width: 75,
     render: (text, record) => {
-      return <AlivePie percent={0.69} />
+      return (
+        <AlivePie numTeamsAlive={record.numTeamsAlive} numTeams={record.numTeams} />
+      );
     }
   }
 ];
@@ -69,25 +71,31 @@ const upcomingColumns = [
     title: 'Home',
     dataIndex: 'homeTeamName',
     align: 'center',
-    width: 200
+    width: 200,
+    render: (text, record) => {
+      let teamName = record.homeTeamName == null ? 'TBD' : `(${record.homeTeamSeed}) ${record.homeTeamName}`
+      return <Text>{teamName}</Text>
+    }
   },
   {
     title: 'Away',
     dataIndex: 'awayTeamName',
     align: 'center',
-    width: 200
-  },
-  {
-    title: 'Region',
-    dataIndex: 'region',
-    align: 'center',
-    width: 150
+    width: 200,
+    render: (text, record) => {
+      let teamName = record.awayTeamName == null ? 'TBD' : `(${record.awayTeamSeed}) ${record.awayTeamName}`
+      return <Text>{teamName}</Text>
+    }
   },
   {
     title: 'Date',
-    dataIndex: 'datetime',
+    dataIndex: 'eventDate',
     align: 'center',
-    width: 250
+    width: 250,
+    render: (text, record) => {
+      let gametime = new Date(record.eventDate).toLocaleString()
+      return <Text>{gametime}</Text>
+    }
   }
 ]
 
@@ -96,21 +104,26 @@ function LeagueHome(props) {
   const [leagueName, setLeagueName] = useState('');
   const [tournamentName, setTournamentName] = useState('');
   const [userList, setUserList] = useState([]);
+  const [upcomingGames, setUpcomingGames] = useState([]);
   const [userCount, setUserCount] = useState(0);
   const [prizepool, setPrizepool] = useState(0);
   const [status, setStatus] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [upcomingLoading, setUpcomingLoading] = useState(true);
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHome, getLeagueInfo);
+    Pubsub.subscribe(NOTIF.UPCOMING_GAMES_DOWNLOADED, LeagueHome, handleUpcomingGames);
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHome);
+      Pubsub.unsubscribe(NOTIF.UPCOMING_GAMES_DOWNLOADED, LeagueHome);
     });
   }, []);
 
   useEffect(() => {
     getLeagueUserSummaries(props.leagueId);
+    getUpcomingGames(props.leagueId);
   }, [props.leagueId]);
 
   const getLeagueInfo = () => {
@@ -128,6 +141,11 @@ function LeagueHome(props) {
     });
 
     setPrizepool(prizepool);
+  }
+
+  const handleUpcomingGames = () => {
+    setUpcomingGames(Data.upcomingGames);
+    setUpcomingLoading(false);
   }
 
   return (
@@ -164,9 +182,11 @@ function LeagueHome(props) {
           <Col md={20} xxl={12}>
             <Table
               columns={upcomingColumns}
+              dataSource={upcomingGames}
               size='middle'
               pagination={false}
-              
+              loading={upcomingLoading}
+              rowKey='gameId'
             />
           </Col>
         </Row>
