@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CanvasJSReact from '../../canvas/canvasjs.react';
 import './auctionChart.css';
 import { Data } from '../../utilities/data';
+import { AUCTION_STATUS } from '../../utilities/constants';
 
 const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
@@ -42,7 +43,7 @@ function AuctionChart(props) {
     ]
   };
 
-  if (props.status == 'in-progress') {
+  if (props.status != AUCTION_STATUS.INITIAL) {
     return (
       <div className='auction-breakdown'>
         <CanvasJSChart options={options} />
