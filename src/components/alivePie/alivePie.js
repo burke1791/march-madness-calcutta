@@ -26,7 +26,7 @@ function AlivePie(props) {
   };
 
   return (
-    <Tooltip placement='topLeft' title={`${props.numTeamsAlive} of ${props.numTeams} teams still alive`}>
+    <Tooltip placement='topRight' title={`${props.numTeamsAlive} of ${props.numTeams} teams still alive`}>
       <div className='alivePie' style={style}></div>
     </Tooltip>
   );
