@@ -10,13 +10,15 @@ const columns = [
     title: 'Member',
     dataIndex: 'alias',
     key: 'alias',
-    align: 'left'
+    align: 'left',
+    width: '70%'
   },
   {
     title: 'Total Paid',
     dataIndex: 'totalBuyIn',
     key: 'totalBuyIn',
     align: 'right',
+    colSpan: '30%',
     render: (value) => formatMoney(value),
   }
 ];
@@ -25,18 +27,20 @@ const columns = [
 function MemberList(props) {
   return (
     <Row style={{ height: 'calc(50vh - 70px)', marginTop: '12px' }}>
-      <Card style={{ height: '100%' }} bodyStyle={{ padding: '0' }} size='small'>
-        <Table
-          columns={columns}
-          dataSource={props.users}
-          rowKey='userId'
-          pagination={false}
-          size='small'
-          bordered={false}
-          scroll={{ y: 'calc(50vh - 107px)' }}
-          style={{ border: 'none' }}
-        />
-      </Card>
+      <Col>
+        <Card style={{ height: '100%', width: '100%' }} bodyStyle={{ padding: '0' }} size='small'>
+          <Table
+            columns={columns}
+            dataSource={props.users}
+            rowKey='userId'
+            pagination={false}
+            size='small'
+            bordered={false}
+            scroll={{ y: 'calc(50vh - 107px)' }}
+            style={{ border: 'none' }}
+          />
+        </Card>
+      </Col>
     </Row>
   );
 }
