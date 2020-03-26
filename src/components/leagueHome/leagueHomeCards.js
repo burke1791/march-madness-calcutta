@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Avatar, Row, Col, Statistic } from 'antd';
-import { UserOutlined, DollarOutlined, DollarTwoTone } from '@ant-design/icons';
+import { UserOutlined, ClockCircleOutlined, DollarTwoTone } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 import { formatMoney } from '../../utilities/helper';
 
@@ -22,7 +22,7 @@ function LeagueHomeCards(props) {
       </Col>
       <Col md={5} xxl={3}>
         <Card style={{ textAlign: 'center' }}>
-          <Statistic title='Users' value={props.userCount} prefix={<UserOutlined />} />
+          <Statistic title='Remaining Games' value={props.remainingGames} prefix={<ClockCircleOutlined />} />
         </Card>
       </Col>
       <Col md={5} xxl={3}>
