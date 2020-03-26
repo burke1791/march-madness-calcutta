@@ -30,8 +30,8 @@ function NewLeagueForm(props) {
   const handleSubmit = (values) => {
     props.toggleLoading();
 
-    let name = values.league_name;
-    let password = values.league_password;
+    let name = values.leagueName;
+    let password = values.leaguePassword;
     let tourneyId = tournamentId;
 
     if (props.leagueType === LEAGUE_FORM_TYPE.CREATE) {
