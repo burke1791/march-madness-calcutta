@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Layout, Table, Row, Typography, Col, Tooltip } from 'antd';
 import LeagueHomeCards from './leagueHomeCards';
 import 'antd/dist/antd.css';
-import { Data, getLeagueUserSummaries, getUpcomingGames, userId } from '../../utilities/leagueService';
+import { Data, getLeagueUserSummaries, getUpcomingGames, getRemainingGamesCount, userId } from '../../utilities/leagueService';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
 import AuctionChart from '../auctionChart/auctionChart';
@@ -178,6 +178,7 @@ function LeagueHome(props) {
   const [tournamentName, setTournamentName] = useState('');
   const [userList, setUserList] = useState([]);
   const [upcomingGames, setUpcomingGames] = useState([]);
+  const [remainingGameCount, setRemainingGameCount] = useState(0)
   const [userCount, setUserCount] = useState(0);
   const [prizepool, setPrizepool] = useState(0);
   const [status, setStatus] = useState(false);
@@ -187,10 +188,12 @@ function LeagueHome(props) {
   useEffect(() => {
     Pubsub.subscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHome, getLeagueInfo);
     Pubsub.subscribe(NOTIF.UPCOMING_GAMES_DOWNLOADED, LeagueHome, handleUpcomingGames);
+    Pubsub.subscribe(NOTIF.REMAINING_GAMES_COUNT_DOWNLOADED, LeagueHome, handleRemainingGameCount);
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHome);
       Pubsub.unsubscribe(NOTIF.UPCOMING_GAMES_DOWNLOADED, LeagueHome);
+      Pubsub.unsubscribe(NOTIF.REMAINING_GAMES_COUNT_DOWNLOADED, LeagueHome);
     });
   }, []);
 
@@ -198,6 +201,10 @@ function LeagueHome(props) {
     getLeagueUserSummaries(props.leagueId);
     getUpcomingGames(props.leagueId);
   }, [props.leagueId]);
+
+  useEffect(() => {
+    getRemainingGamesCount(props.tournamentId);
+  }, [props.tournamentId]);
 
   const getLeagueInfo = () => {
     setLeagueName(Data.leagueInfo.name);
@@ -221,6 +228,10 @@ function LeagueHome(props) {
     setUpcomingLoading(false);
   }
 
+  const handleRemainingGameCount = () => {
+    setRemainingGameCount(Data.remainingGames);
+  }
+
   return (
     <Layout>
       <Header style={{ background: 'none', textAlign: 'center' }}>
@@ -230,12 +241,13 @@ function LeagueHome(props) {
         <h2 style={{ lineHeight: '32px', fontWeight: '400', margin: '0'}}>{tournamentName}</h2>
       </Header>
       <Content>
-        <LeagueHomeCards userCount={userCount} prizepool={prizepool} />
+        <LeagueHomeCards userCount={userCount} prizepool={prizepool} remainingGames={remainingGameCount} />
         <Row type='flex' justify='center' gutter={[12, 8]}>
           <Col md={20} xxl={12}>
             <Table
               columns={columns}
               dataSource={userList}
+              rowClassName='pointer'
               size='middle'
               pagination={false}
               loading={loading}
@@ -263,10 +275,10 @@ function LeagueHome(props) {
             />
           </Col>
         </Row>
-        <Row type='flex' justify='center' gutter={[12, 8]}>
-          {/* @TODO move this to the auction results page */}
+        {/* <Row type='flex' justify='center' gutter={[12, 8]}>
+          @TODO move this to the auction results page
           <AuctionChart status={status} />
-        </Row>
+        </Row> */}
       </Content>
     </Layout>
   );
