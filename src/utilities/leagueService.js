@@ -112,6 +112,18 @@ export function getUpcomingGames(leagueId) {
   });
 }
 
+export function getRemainingGamesCount(tournamentId) {
+  Axios({
+    method: 'GET',
+    url: process.env.REACT_APP_API_URL + ENDPOINTS.REMAINING_GAMES_COUNT + `/${tournamentId}`
+  }).then(response => {
+    Data.remainingGames = response.data[0].numGamesRemaining;
+    Pubsub.publish(NOTIF.REMAINING_GAMES_COUNT_DOWNLOADED, null);
+  }).catch(error => {
+    console.log(error);
+  });
+}
+
 export function fetchUserTeams(leagueId, userId) {
   console.log(leagueId, userId);
   Axios({
@@ -141,6 +153,7 @@ function packageLeagueSummaries(data) {
       let leagueObj = {
         id: league.leagueId,
         name: league.name,
+        tournamentId: league.tournamentId,
         tournamentName: league.tournamentName,
         buyIn: league.naturalBuyIn + league.taxBuyIn,
         payout: league.totalReturn,
@@ -196,8 +209,6 @@ function packageLeagueInfo(userSummaries) {
 }
 
 function packageUpcomingGames(games) {
-  console.log(games);
-
   if (games.length) {
     let upcomingGames = games.map(game => {
       return game;
