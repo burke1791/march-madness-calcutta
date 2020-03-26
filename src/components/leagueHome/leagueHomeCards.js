@@ -1,8 +1,7 @@
 import React from 'react';
-import { Card, Avatar, Row, Col, Statistic } from 'antd';
+import { Card, Row, Col, Statistic } from 'antd';
 import { UserOutlined, ClockCircleOutlined, DollarTwoTone, FundTwoTone } from '@ant-design/icons';
 import 'antd/dist/antd.css';
-import { formatMoney } from '../../utilities/helper';
 
 const { Meta } = Card;
 
@@ -39,7 +38,6 @@ function LeagueHomeCards(props) {
             prefix={<FundTwoTone />}
             suffix="%"
           />
-          {/* <Statistic title='Prizepool' value={props.prizepool} precision={2} prefix={<FundTwoTone />} /> */}
         </Card>
       </Col>
     </Row>
