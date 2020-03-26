@@ -180,6 +180,8 @@ function LeagueHome(props) {
   const [upcomingGames, setUpcomingGames] = useState([]);
   const [remainingGameCount, setRemainingGameCount] = useState(0)
   const [userCount, setUserCount] = useState(0);
+  const [myBuyIn, setMyBuyIn] = useState(0);
+  const [myPayout, setMyPayout] = useState(0);
   const [prizepool, setPrizepool] = useState(0);
   const [status, setStatus] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -217,6 +219,11 @@ function LeagueHome(props) {
     let prizepool = 0;
 
     Data.leagueInfo.users.forEach(user => {
+      if (user.id == userId) {
+        setMyBuyIn(user.buyIn);
+        setMyPayout(user.payout);
+      }
+
       prizepool += user.buyIn
     });
 
@@ -241,7 +248,7 @@ function LeagueHome(props) {
         <h2 style={{ lineHeight: '32px', fontWeight: '400', margin: '0'}}>{tournamentName}</h2>
       </Header>
       <Content>
-        <LeagueHomeCards userCount={userCount} prizepool={prizepool} remainingGames={remainingGameCount} />
+        <LeagueHomeCards userCount={userCount} prizepool={prizepool} remainingGames={remainingGameCount} buyIn={myBuyIn} payout={myPayout} />
         <Row type='flex' justify='center' gutter={[12, 8]}>
           <Col md={20} xxl={12}>
             <Table

@@ -254,6 +254,7 @@ function packageAuctionTeams(teams) {
     let team = {
       teamId: Number(teamObj.id),
       price: teamObj.price,
+      displayName: teamObj.seed ? `(${teamObj.seed}) ${teamObj.name}` : teamObj.name,
       name: teamObj.name,
       seed: teamObj.seed,
       owner: Number(teamObj.userId)

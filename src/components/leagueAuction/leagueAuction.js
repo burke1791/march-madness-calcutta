@@ -72,6 +72,7 @@ function LeagueAuction(props) {
     });
     setMyTax(taxBurden);
     setLeagueUsers(userBuyIns);
+    console.log(prizepool);
     setPrizepool(prizepool);
   }
 
