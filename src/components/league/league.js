@@ -25,7 +25,7 @@ function League(props) {
         <Layout>
           <Content>
             <Router>
-              <LeagueHome path='/' />
+              <LeagueHome path='/' tournamentId={props.location.state.tournamentId} />
               <LeagueAuction path='auction' auctionId={auctionId} leagueId={props.leagueId} role={role} />
               {/* <MessageBoard path='message_board' leagueId={props.leagueId} role={role} /> */}
               {/* <MessageThread path='message_board/:topicId' leagueId={props.leagueId} role={role} /> */}
