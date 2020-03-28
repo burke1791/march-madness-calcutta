@@ -99,6 +99,7 @@ function Main() {
               return: league.payout - league.buyIn, //formatMoney(league.payout - league.buyIn),
               roleId: league.roleId,
               auctionId: league.auctionId,
+              tournamentId: league.tournamentId,
               key: league.id
             };
           });
@@ -162,7 +163,7 @@ function Main() {
                   onClick: (event) => {
                     // utilize the router to go to the league page
                     if (record.key > 0) {
-                      navigate(`/leagues/${record.key}`, { state: { auctionId: record.auctionId, roleId: record.roleId }});
+                      navigate(`/leagues/${record.key}`, { state: { auctionId: record.auctionId, roleId: record.roleId, tournamentId: record.tournamentId }});
                     }
                   }
                 };

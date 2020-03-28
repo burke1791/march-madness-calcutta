@@ -97,6 +97,33 @@ export function getLeagueUserSummaries(leagueId) {
   });
 }
 
+export function getUpcomingGames(leagueId) {
+  Axios({
+    method: 'GET',
+    url: process.env.REACT_APP_API_URL + ENDPOINTS.UPCOMING_GAMES + `/${leagueId}`,
+    headers: {
+      'x-cognito-token': User.session.idToken.jwtToken || ''
+    }
+  }).then(response => {
+    Data.upcomingGames = packageUpcomingGames(response.data);
+    Pubsub.publish(NOTIF.UPCOMING_GAMES_DOWNLOADED);
+  }).catch(error => {
+    console.log(error);
+  });
+}
+
+export function getRemainingGamesCount(tournamentId) {
+  Axios({
+    method: 'GET',
+    url: process.env.REACT_APP_API_URL + ENDPOINTS.REMAINING_GAMES_COUNT + `/${tournamentId}`
+  }).then(response => {
+    Data.remainingGames = response.data[0].numGamesRemaining;
+    Pubsub.publish(NOTIF.REMAINING_GAMES_COUNT_DOWNLOADED, null);
+  }).catch(error => {
+    console.log(error);
+  });
+}
+
 export function fetchUserTeams(leagueId, userId) {
   console.log(leagueId, userId);
   Axios({
@@ -126,6 +153,8 @@ function packageLeagueSummaries(data) {
       let leagueObj = {
         id: league.leagueId,
         name: league.name,
+        tournamentId: league.tournamentId,
+        tournamentName: league.tournamentName,
         buyIn: league.naturalBuyIn + league.taxBuyIn,
         payout: league.totalReturn,
         role: league.role,
@@ -146,6 +175,7 @@ function packageLeagueInfo(userSummaries) {
   if (userSummaries.length) {
     let leagueInfo = {
       name: userSummaries[0].name,
+      tournamentName: userSummaries[0].tournamentName,
       auctionId: userSummaries[0].auctionId,
       status: userSummaries[0].status,
       users: []
@@ -158,7 +188,9 @@ function packageLeagueInfo(userSummaries) {
         name: user.alias,
         buyIn: user.naturalBuyIn + user.taxBuyIn,
         payout: user.totalReturn,
-        return: user.totalReturn - user.naturalBuyIn - user.taxBuyIn
+        return: user.totalReturn - user.naturalBuyIn - user.taxBuyIn,
+        numTeams: user.numTeams,
+        numTeamsAlive: user.numTeamsAlive
       };
     });
 
@@ -173,6 +205,18 @@ function packageLeagueInfo(userSummaries) {
 
     return leagueInfo;
   }
+  return null;
+}
+
+function packageUpcomingGames(games) {
+  if (games.length) {
+    let upcomingGames = games.map(game => {
+      return game;
+    });
+
+    return upcomingGames;
+  }
+
   return null;
 }
 

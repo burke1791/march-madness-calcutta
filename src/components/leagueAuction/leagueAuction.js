@@ -20,6 +20,7 @@ function LeagueAuction(props) {
   const [myTeams, setMyTeams] = useState([]);
   const [myTax, setMyTax] = useState(0);
   const [leagueUsers, setLeagueUsers] = useState([]);
+  const [sidebarInUse, setSidebarInUse] = useState(true);
 
   useEffect(() => {
     fetchAuctionTeams(props.leagueId);
@@ -71,15 +72,17 @@ function LeagueAuction(props) {
     });
     setMyTax(taxBurden);
     setLeagueUsers(userBuyIns);
+    console.log(prizepool);
     setPrizepool(prizepool);
   }
 
   return (
-    <Row style={{ height: 'calc(100vh - 114px)' }}>
+    // @TODO refactor this styling after implementing a toggle functionality for the league navigation
+    <Row style={sidebarInUse ? { height: 'calc(100vh - 64px)' } : { height: 'calc(100vh - 114px)' }}>
       <Col span={8}>
         <AuctionTeams teams={teams} prizepool={prizepool} />
       </Col>
-      <Col span={10} style={{ height: 'calc(100vh - 114px)' }} className='flex-growVert-parent'>
+      <Col span={10} className='flex-growVert-parent'>
         <AuctionActions role={props.role} leagueId={props.leagueId} />
         <AuctionChat leagueId={props.leagueId} />
       </Col>

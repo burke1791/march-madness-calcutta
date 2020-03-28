@@ -4,6 +4,8 @@ export const ENDPOINTS = {
   JOIN_LEAGUE: '/joinLeague',
   LEAGUE_SUMMARIES: '/getLeagueSummaries',
   LEAGUE_USER_SUMMARIES: '/getLeagueUserSummaries',
+  UPCOMING_GAMES: '/getUpcomingGames',
+  REMAINING_GAMES_COUNT: '/getRemainingGamesCount',
   LEAGUE_USER_TEAMS: '/getLeagueUserTeams',
   SERVER_TIMESTAMP: '/getServerTime',
   FETCH_CHAT: '/getAllChatMessages',
@@ -12,6 +14,12 @@ export const ENDPOINTS = {
   FETCH_AUCTION_BUYINS: '/getAuctionMemberBuyIns',
   START_AUCTION: '/startAuction'
 };
+
+export const THEME_COLORS = {
+  RED: '#ff5356',
+  YELLOW: '#faad14',
+  GREEN: '#52c41a'
+}
 
 export const SOCKETS = {
   AUCTION: 'wss://m5q6i9kma9.execute-api.us-east-1.amazonaws.com/dev'
@@ -51,6 +59,8 @@ export const NOTIF = {
   LEAGUE_MENU_TOGGLE: 'league_menu_toggle',
   LEAGUE_SUMMARIES_FETCHED: 'league_summaries_fetched',
   LEAGUE_USER_SUMMARIES_FETCHED: 'league_user_summaries_fetched',
+  UPCOMING_GAMES_DOWNLOADED: 'upcoming_games_downloaded',
+  REMAINING_GAMES_COUNT_DOWNLOADED: 'remaining_games_count_downloaded',
   LEAGUE_USER_TEAMS_FETCHED: 'league_user_teams_fetched',
   MESSAGE_BOARD_TOPICS_DOWNLOADED: 'message_board_topics_downloaded',
   MESSAGE_BOARD_MODAL_SHOW: 'message_board_modal_show',

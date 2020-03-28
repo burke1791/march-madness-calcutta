@@ -135,7 +135,7 @@ function AuctionActions(props) {
   
   return (
     <Row>
-      <Card size='small'>
+      <Card size='small' style={{ width: '100%' }}>
         <div className='team-name'>
           <span>{teamName}</span>
         </div>
@@ -172,7 +172,7 @@ function AuctionActions(props) {
                 />
                 <Button type='primary' style={{ width: '30%' }} disabled={biddingDisabled} onClick={placeCustomBid}>Bid</Button>
               </Row>
-              <Row style={{ textAlign: 'center', marginTop: '6px' }} gutter={8}>
+              <Row type='flex' justify='center' style={{ textAlign: 'center', marginTop: '6px' }} gutter={8}>
                 <Button type='primary' disabled={biddingDisabled} style={{ width: '90%' }} onClick={placeMinimumBid}>${highBid + 1} (Min Bid)</Button>
               </Row>
             </Card>

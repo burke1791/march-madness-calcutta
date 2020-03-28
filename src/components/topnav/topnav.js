@@ -3,7 +3,8 @@ import { navigate, Link } from '@reach/router';
 
 import AuthModal from '../authModal/authModal';
 
-import { Menu, Button, Icon } from 'antd';
+import { Menu, Button } from 'antd';
+import { SettingOutlined } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 
 import { AUTH_FORM_TYPE, NOTIF } from '../../utilities/constants';
@@ -74,7 +75,7 @@ function Topnav() {
         <SubMenu
           title={
             <span className="submenu-title-wrapper">
-              <Icon type="setting" />
+              <SettingOutlined />
               My Account
             </span>
           }

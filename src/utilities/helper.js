@@ -22,8 +22,21 @@ const formatDatestamp = (value) => {
   return date.toLocaleString();
 }
 
+const formatDateTime = (value) => {
+  let date = new Date(value);
+  let options = {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  };
+  return date.toLocaleString(undefined, options);
+}
+
 export {
   formatMoney,
   formatTimestamp,
-  formatDatestamp
+  formatDatestamp,
+  formatDateTime
 };
