@@ -1,21 +1,62 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Button } from 'antd';
+import { Row, Col, Button, Table, Typography } from 'antd';
 import 'antd/dist/antd.css';
 
-import LeagueTable from '../leagueTable/leagueTable';
 import LeagueModal from '../leagueModal/leagueModal';
 
 import { NOTIF, LEAGUE_FORM_TYPE } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';
 import { User } from '../../utilities/authService';
 import { formatMoney } from '../../utilities/helper';
-import { navigate } from '@reach/router/lib/history';
-import { Redirect } from '@reach/router';
+import { Redirect, navigate } from '@reach/router';
 import { Data, getLeagueSummaries } from '../../utilities/leagueService';
+
+const { Text } = Typography;
+
+let columns = [
+  {
+    title: 'League Name',
+    dataIndex: 'name',
+    align: 'left',
+    width: 250
+  },
+  {
+    title: 'Buy In',
+    dataIndex: 'buyIn',
+    align: 'center',
+    width: 150,
+    render: (text) => {return formatMoney(+text)}
+  },
+  {
+    title: 'Current Payout',
+    dataIndex: 'payout',
+    align: 'center',
+    width: 150,
+    render: (text) => {return formatMoney(+text)}
+  },
+  {
+    title: 'Net Return',
+    dataIndex: 'return',
+    align: 'center',
+    width: 150,
+    render: (text, record) => {
+      return <Text type={+text < 0 ? 'danger' : ''}>{formatMoney(+text)}</Text>;
+    }
+  }
+];
 
 function Main() {
 
-  const [leagueSummaries, setLeagueSummaries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [leagueSummaries, setLeagueSummaries] = useState([
+    {
+      key: 0,
+      name: 'You haven\'t joined any leagues yet',
+      buyIn: '',
+      payout: '',
+      return: ''
+    }
+  ]);
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.SIGN_IN, Main, handleSignin);
@@ -53,16 +94,18 @@ function Main() {
           return Data.leagues.map(league => {
             return {
               name: league.name,
-              buyIn: formatMoney(league.buyIn || '0'),
-              payout: formatMoney(league.payout || '0'),
-              return: formatMoney(league.payout - league.buyIn),
+              buyIn: league.buyIn, //formatMoney(league.buyIn || '0'),
+              payout: league.payout, //formatMoney(league.payout || '0'),
+              return: league.payout - league.buyIn, //formatMoney(league.payout - league.buyIn),
               roleId: league.roleId,
               auctionId: league.auctionId,
+              tournamentId: league.tournamentId,
               key: league.id
             };
           });
         })()
       );
+      setLoading(false);
     } else {
       // in case this component gets rendered after the sign in notification
       fetchLeagueInfo();
@@ -108,7 +151,25 @@ function Main() {
           <Button type='primary' onClick={joinLeague} style={{ margin: '20px 12px' }}>Join a League</Button>
         </Row>
         <Row type='flex' justify='center'>
-          <LeagueTable type='in-progress' list={leagueSummaries} />
+          <Table 
+            columns={columns} 
+            dataSource={leagueSummaries} 
+            size='middle' 
+            pagination={false}
+            loading={loading}
+            onRow={
+              (record) => {
+                return {
+                  onClick: (event) => {
+                    // utilize the router to go to the league page
+                    if (record.key > 0) {
+                      navigate(`/leagues/${record.key}`, { state: { auctionId: record.auctionId, roleId: record.roleId, tournamentId: record.tournamentId }});
+                    }
+                  }
+                };
+              }
+            }
+          />
         </Row>
         <LeagueModal />
       </div>

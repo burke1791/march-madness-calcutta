@@ -8,25 +8,32 @@ import 'antd/dist/antd.css';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
 import { sendSocketMessage, fetchChatMessages, clearChatMessages, chatMessages } from '../../utilities/auctionService';
+import { useLeagueState } from '../../context/leagueContext';
 
 const { Search } = Input;
 
-function AuctionChat(props) {
+function AuctionChat() {
   
   const [chatMessage, setChatMessage] = useState('');
   const [messages, setMessages] = useState([]);
 
-  useEffect(() => {
-    fetchChatMessages(props.leagueId);
+  const { leagueId } = useLeagueState();
 
+  useEffect(() => {
     Pubsub.subscribe(NOTIF.NEW_CHAT_MESSAGE, AuctionChat, newMessage);
 
     return (() => {
-      clearChatMessages();
-
       Pubsub.unsubscribe(NOTIF.NEW_CHAT_MESSAGE, AuctionChat);
     });
   }, []);
+
+  useEffect(() => {
+    fetchChatMessages(leagueId);
+
+    return (() => {
+      clearChatMessages();
+    })
+  }, [leagueId]);
 
   const newMessage = () => {
     setMessages([...chatMessages]);
@@ -34,7 +41,7 @@ function AuctionChat(props) {
 
   const sendMessage = (value) => {
     let messageObj = {
-      leagueId: props.leagueId,
+      leagueId: leagueId,
       content: value
     };
 
@@ -49,7 +56,7 @@ function AuctionChat(props) {
         <Row style={{ maxHeight: 'calc(50vh - 70px)', overflow: 'auto' }}>
           <List
             dataSource={messages}
-            style={{ overflow: 'auto' }}
+            style={{ overflow: 'auto', width: '100%' }}
             renderItem={message => (
               <div className='chat-message'>
                 <span className='author'>{message.alias}</span>

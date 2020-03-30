@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Row, Card, Table } from 'antd';
+import { Row, Col, Card, Table } from 'antd';
 import 'antd/dist/antd.css';
 
 import { formatMoney } from '../../utilities/helper';
@@ -11,6 +11,7 @@ const columns = [
     dataIndex: 'name',
     key: 'name',
     align: 'left',
+    width: '70%',
     render: (text, record) => {
       if (record.teamId == -1) {
         return <span style={{ fontWeight: 'bold', color: 'red' }}>{text}</span>;
@@ -24,6 +25,7 @@ const columns = [
     dataIndex: 'price',
     key: 'price',
     align: 'right',
+    width: '30%',
     render: (text, record) => {
       if (record.teamId == -1) {
         return <span style={{ fontWeight: 'bold', color: 'red' }}>{formatMoney(text)}</span>;
@@ -54,18 +56,20 @@ function MyTeams(props) {
 
   return (
     <Row style={{ height: 'calc(50vh - 70px)' }}>
-      <Card style={{ height: '100%' }} bodyStyle={{ padding: '0', height: '100%' }} size='small'>
-        <Table
-          columns={columns}
-          dataSource={teamsArr}
-          rowKey='teamId'
-          pagination={false}
-          size='small'
-          bordered={false}
-          scroll={{ y: 'calc(50vh - 107px)' }}
-          style={{ border: 'none' }}
-        />
-      </Card>
+      <Col>
+        <Card style={{ height: '100%' }} bodyStyle={{ padding: '0', height: '100%' }} size='small'>
+          <Table
+            columns={columns}
+            dataSource={teamsArr}
+            rowKey='teamId'
+            pagination={false}
+            size='small'
+            bordered={false}
+            scroll={{ y: 'calc(50vh - 107px)' }}
+            style={{ border: 'none' }}
+          />
+        </Card>
+      </Col>
     </Row>
   );
 }

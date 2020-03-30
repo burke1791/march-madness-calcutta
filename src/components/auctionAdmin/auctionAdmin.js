@@ -4,8 +4,9 @@ import { Button } from 'antd';
 import 'antd/dist/antd.css';
 import { AUCTION_STATUS, NOTIF } from '../../utilities/constants';
 import DataService from '../../utilities/data';
-import { startAuction, resetClock, nextItem } from '../../utilities/auctionService';
+import { startAuction, resetClock, nextItem, closeAuction } from '../../utilities/auctionService';
 import Pubsub from '../../utilities/pubsub';
+import { useLeagueState } from '../../context/leagueContext';
 
 const btnStyle = {
   marginTop: '4px'
@@ -22,6 +23,8 @@ function AuctionAdmin(props) {
   const [nextLoading, setNextLoading] = useState(false);
   const [resetClockLoading, setResetClockLoading] = useState(false);
 
+  const { leagueId } = useLeagueState();
+
   useEffect(() => {
     Pubsub.subscribe(NOTIF.NEW_AUCTION_DATA, AuctionAdmin, handleNewAuctionData);
 
@@ -36,17 +39,17 @@ function AuctionAdmin(props) {
   }
   
   const generateStartStopButton = () => {
-    let btnText = 'Start Auction';
+    let btnText = 'Open Auction';
     let btnType = 'primary';
     let disabled = false;
     let name = 'start';
 
     if (props.status === AUCTION_STATUS.BIDDING || props.status === AUCTION_STATUS.SOLD) {
-      btnText = 'Stop Auction';
+      btnText = 'Close Auction';
       btnType = 'danger';
       name = 'stop'
     } else if (props.status === AUCTION_STATUS.END) {
-      btnText = 'Auction Complete';
+      btnText = 'Auction Closed';
       btnType = 'primary'
       disabled = true;
       name = 'n/a';
@@ -71,9 +74,9 @@ function AuctionAdmin(props) {
     if (name == 'start') {
       // Start auction
       console.log('auction start clicked');
-      startAuction(props.leagueId);
+      startAuction(leagueId);
     } else if (name == 'stop') {
-      DataService.stopAuction(props.auctionId, props.leagueId);
+      closeAuction(leagueId);
     }
   }
 
@@ -81,7 +84,7 @@ function AuctionAdmin(props) {
     if (props.status === AUCTION_STATUS.SOLD) {
       setNextLoading(true);
       
-      nextItem(props.leagueId);
+      nextItem(leagueId);
     }
   }
 
@@ -89,7 +92,7 @@ function AuctionAdmin(props) {
     if (props.status === AUCTION_STATUS.SOLD || props.status === AUCTION_STATUS.BIDDING) {
       setResetClockLoading(true);
 
-      resetClock(props.leagueId);
+      resetClock(leagueId);
     }
   }
   

@@ -9,25 +9,22 @@ import MyTeams from '../myTeams/myTeams';
 import MemberList from '../memberList/memberList';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
-import { User } from '../../utilities/authService';
 import { connectAuction, disconnect, fetchAuctionTeams, clearAuctionTeams, auctionTeams, fetchUserBuyIns, userBuyIns, fetchAuctionStatus } from '../../utilities/auctionService';
 import { userId } from '../../utilities/leagueService';
+import { useLeagueState } from '../../context/leagueContext';
 
-function LeagueAuction(props) {
+function LeagueAuction() {
 
   const [teams, setTeams] = useState([]);
   const [prizepool, setPrizepool] = useState(0);
   const [myTeams, setMyTeams] = useState([]);
   const [myTax, setMyTax] = useState(0);
   const [leagueUsers, setLeagueUsers] = useState([]);
+  const [sidebarInUse, setSidebarInUse] = useState(true);
+
+  const { leagueId } = useLeagueState();
 
   useEffect(() => {
-    fetchAuctionTeams(props.leagueId);
-    fetchUserBuyIns(props.leagueId);
-    fetchAuctionStatus(props.leagueId);
-
-    connectAuction(props.leagueId);
-
     Pubsub.subscribe(NOTIF.AUCTION_TEAMS_DOWNLOADED, LeagueAuction, auctionTeamsDownloaded);
     Pubsub.subscribe(NOTIF.NEW_AUCTION_DATA, LeagueAuction, handleNewAuctionData);
     Pubsub.subscribe(NOTIF.AUCTION_BUYINS_DOWNLOADED, LeagueAuction, updateUserSummaries);
@@ -36,11 +33,24 @@ function LeagueAuction(props) {
       Pubsub.unsubscribe(NOTIF.AUCTION_TEAMS_DOWNLOADED, LeagueAuction);
       Pubsub.unsubscribe(NOTIF.NEW_AUCTION_DATA, LeagueAuction);
       Pubsub.unsubscribe(NOTIF.AUCTION_BUYINS_DOWNLOADED, LeagueAuction);
+    });
+  }, []);
 
+  useEffect(() => {
+    if (leagueId) {
+      fetchAuctionTeams(leagueId);
+      fetchUserBuyIns(leagueId);
+      fetchAuctionStatus(leagueId);
+      connectAuction(leagueId);
+    } else {
+      console.log('leagueId is falsy');
+    }
+
+    return (() => {
       disconnect();
       clearAuctionTeams();
     });
-  }, []);
+  }, [leagueId]);
 
   const auctionTeamsDownloaded = () => {
     setTeams(auctionTeams);
@@ -55,8 +65,8 @@ function LeagueAuction(props) {
 
   const handleNewAuctionData = (newItem) => {
     if (newItem) {
-      fetchAuctionTeams(props.leagueId);
-      fetchUserBuyIns(props.leagueId);
+      fetchAuctionTeams(leagueId);
+      fetchUserBuyIns(leagueId);
     }
   }
 
@@ -71,17 +81,19 @@ function LeagueAuction(props) {
     });
     setMyTax(taxBurden);
     setLeagueUsers(userBuyIns);
+    console.log(prizepool);
     setPrizepool(prizepool);
   }
 
   return (
-    <Row style={{ height: 'calc(100vh - 114px)' }}>
+    // @TODO refactor this styling after implementing a toggle functionality for the league navigation
+    <Row style={sidebarInUse ? { height: 'calc(100vh - 64px)' } : { height: 'calc(100vh - 114px)' }}>
       <Col span={8}>
         <AuctionTeams teams={teams} prizepool={prizepool} />
       </Col>
-      <Col span={10} style={{ height: 'calc(100vh - 114px)' }} className='flex-growVert-parent'>
-        <AuctionActions role={props.role} leagueId={props.leagueId} />
-        <AuctionChat leagueId={props.leagueId} />
+      <Col span={10} className='flex-growVert-parent'>
+        <AuctionActions />
+        <AuctionChat />
       </Col>
       <Col span={6}>
         <MyTeams myTeams={myTeams} myTax={myTax} />
