@@ -9,6 +9,7 @@ import { NOTIF } from '../../utilities/constants';
 import AuctionChart from '../auctionChart/auctionChart';
 import AlivePie from '../alivePie/alivePie';
 import { navigate } from '@reach/router';
+import { useLeagueState } from '../../context/leagueContext';
 import { formatMoney, formatDateTime } from '../../utilities/helper';
 
 const { Header, Content } = Layout;
@@ -172,7 +173,7 @@ const upcomingColumns = [
   }
 ]
 
-function LeagueHome(props) {
+function LeagueHome() {
   
   const [leagueName, setLeagueName] = useState('');
   const [tournamentName, setTournamentName] = useState('');
@@ -187,6 +188,8 @@ function LeagueHome(props) {
   const [loading, setLoading] = useState(true);
   const [upcomingLoading, setUpcomingLoading] = useState(true);
 
+  const { tournamentId, leagueId } = useLeagueState();
+
   useEffect(() => {
     Pubsub.subscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHome, getLeagueInfo);
     Pubsub.subscribe(NOTIF.UPCOMING_GAMES_DOWNLOADED, LeagueHome, handleUpcomingGames);
@@ -200,13 +203,17 @@ function LeagueHome(props) {
   }, []);
 
   useEffect(() => {
-    getLeagueUserSummaries(props.leagueId);
-    getUpcomingGames(props.leagueId);
-  }, [props.leagueId]);
+    if (leagueId) {
+      getLeagueUserSummaries(leagueId);
+      getUpcomingGames(leagueId);
+    }
+  }, [leagueId]);
 
   useEffect(() => {
-    getRemainingGamesCount(props.tournamentId);
-  }, [props.tournamentId]);
+    if (tournamentId) {
+      getRemainingGamesCount(tournamentId);
+    }
+  }, [tournamentId]);
 
   const getLeagueInfo = () => {
     setLeagueName(Data.leagueInfo.name);
@@ -262,7 +269,11 @@ function LeagueHome(props) {
                 (record, index) => {
                   return {
                     onClick: (event) => {
-                      navigate(`/leagues/${props.leagueId}/member`, { state: { userId: record.id }});
+                      if (leagueId) {
+                        navigate(`/leagues/${leagueId}/member`, { state: { userId: record.id }});
+                      } else {
+                        console.log('leagueId is falsy');
+                      }
                     }
                   };
                 }

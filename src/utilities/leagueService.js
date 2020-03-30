@@ -125,7 +125,6 @@ export function getRemainingGamesCount(tournamentId) {
 }
 
 export function fetchUserTeams(leagueId, userId) {
-  console.log(leagueId, userId);
   Axios({
     method: 'GET',
     url: process.env.REACT_APP_API_URL + ENDPOINTS.LEAGUE_USER_TEAMS + `/${leagueId}/${userId}`,
@@ -133,7 +132,6 @@ export function fetchUserTeams(leagueId, userId) {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     }
   }).then(response => {
-    console.log(response);
     Data.userTeams = packageUserTeams(response.data);
     Data.userAlias = parseUserAlias(response.data);
     Pubsub.publish(NOTIF.LEAGUE_USER_TEAMS_FETCHED, null);

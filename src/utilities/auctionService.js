@@ -33,7 +33,6 @@ export function getServerTimestamp() {
     method: 'GET',
     url: process.env.REACT_APP_API_URL + ENDPOINTS.SERVER_TIMESTAMP
   }).then(response => {
-    console.log(response);
     updateServerPing(response.data[0].ServerTimestamp);
   }).catch(error => {
     console.log(error);
@@ -41,7 +40,6 @@ export function getServerTimestamp() {
 }
 
 export function connectAuction(leagueId) {
-  console.log('leagueId: ' + leagueId);
   client = new WebSocket(`${SOCKETS.AUCTION}?Authorizer=${User.session.idToken.jwtToken}&leagueId=${leagueId}`);
 
   client.onopen = function(event) {
@@ -57,9 +55,8 @@ export function connectAuction(leagueId) {
   }
 
   client.onmessage = function(event) {
-    console.log(event);
     let data = JSON.parse(event.data);
-    console.log(data);
+
     if (data.msgType === 'chat') {
       chatMessages.push(handleNewMessage(data.msgObj));
       Pubsub.publish(NOTIF.NEW_CHAT_MESSAGE, null);
@@ -107,7 +104,6 @@ export function fetchAuctionStatus(leagueId) {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     }
   }).then(response => {
-    console.log(response);
     updateAuctionStatus(response.data[0]);
   }).catch(error => {
     console.log(error);
@@ -122,7 +118,6 @@ export function fetchAuctionTeams(leagueId) {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     }
   }).then(response => {
-    console.log(response);
     auctionTeams = packageAuctionTeams(response.data);
     Pubsub.publish(NOTIF.AUCTION_TEAMS_DOWNLOADED, null);
   }).catch(error => {
@@ -138,7 +133,6 @@ export function fetchUserBuyIns(leagueId) {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     }
   }).then(response => {
-    console.log(response);
     userBuyIns = packageUserBuyIns(response.data);
     Pubsub.publish(NOTIF.AUCTION_BUYINS_DOWNLOADED, null);
   }).catch(error => {
@@ -159,8 +153,6 @@ export function startAuction(leagueId) {
     action: 'START_AUCTION',
     leagueId: leagueId
   }
-
-  console.log(messageObj);
 
   client.send(JSON.stringify(messageObj));
 }
@@ -184,7 +176,6 @@ export function resetClock(leagueId) {
 }
 
 export function setItemComplete(leagueId) {
-  console.log('complete');
   let messageObj = {
     action: 'ITEM_COMPLETE',
     leagueId: leagueId

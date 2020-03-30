@@ -6,6 +6,7 @@ import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
 import { Data, fetchUserTeams, clearUserTeams } from '../../utilities/leagueService';
 import { formatMoney } from '../../utilities/helper';
+import { useLeagueState } from '../../context/leagueContext';
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
@@ -58,10 +59,12 @@ function MemberPage(props) {
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const { leagueId } = useLeagueState();
+
   useEffect(() => {
     Pubsub.subscribe(NOTIF.LEAGUE_USER_TEAMS_FETCHED, MemberPage, handleTeams);
 
-    fetchUserTeams(props.leagueId, props.location.state.userId);
+    fetchUserTeams(leagueId, props.location.state.userId);
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.LEAGUE_USER_TEAMS_FETCHED, MemberPage);
