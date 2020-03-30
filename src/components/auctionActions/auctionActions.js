@@ -12,11 +12,12 @@ import { userId } from '../../utilities/leagueService';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF, AUCTION_STATUS } from '../../utilities/constants';
 import { User } from '../../utilities/authService';
+import { useLeagueState } from '../../context/leagueContext';
 
 const { Countdown } = Statistic;
 
 // @TODO this component does wayyyyy too much - break it up please!
-function AuctionActions(props) {
+function AuctionActions() {
   
   const [teamName, setTeamName] = useState('');
   const [biddingDisabled, setBiddingDisabled] = useState(true);
@@ -27,6 +28,8 @@ function AuctionActions(props) {
   const [endTime, setEndTime] = useState(0);
   const [status, setStatus] = useState(false);
   const [offset, setOffset] = useState(0);
+
+  const { roleId, leagueId } = useLeagueState();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.NEW_AUCTION_DATA, AuctionActions, handleAuctionUpdate);
@@ -100,8 +103,8 @@ function AuctionActions(props) {
 
   const itemComplete = () => {
     //DataService.setItemComplete(props.auctionId);
-    if (props.role == 1 || props.role == 2) {
-      setItemComplete(props.leagueId);
+    if (roleId == 1 || roleId == 2) {
+      setItemComplete(leagueId);
     }
   }
 
@@ -120,13 +123,13 @@ function AuctionActions(props) {
   const placeBid = (value) => {
     setBiddingDisabled(true);
 
-    placeAuctionBid(props.leagueId, value);
+    placeAuctionBid(leagueId, value);
   }
 
   const generateAdminButtons = () => {
-    if (props.role == 1 || props.role == 2) {
+    if (roleId == 1 || roleId == 2) {
       return (
-        <AuctionAdmin status={status} leagueId={props.leagueId} />
+        <AuctionAdmin status={status} />
       );
     } else {
       return null;

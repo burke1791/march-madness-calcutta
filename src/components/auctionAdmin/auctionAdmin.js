@@ -6,6 +6,7 @@ import { AUCTION_STATUS, NOTIF } from '../../utilities/constants';
 import DataService from '../../utilities/data';
 import { startAuction, resetClock, nextItem, closeAuction } from '../../utilities/auctionService';
 import Pubsub from '../../utilities/pubsub';
+import { useLeagueState } from '../../context/leagueContext';
 
 const btnStyle = {
   marginTop: '4px'
@@ -21,6 +22,8 @@ function AuctionAdmin(props) {
   const [startLoading, setStartLoading] = useState(false);
   const [nextLoading, setNextLoading] = useState(false);
   const [resetClockLoading, setResetClockLoading] = useState(false);
+
+  const { leagueId } = useLeagueState();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.NEW_AUCTION_DATA, AuctionAdmin, handleNewAuctionData);
@@ -71,9 +74,9 @@ function AuctionAdmin(props) {
     if (name == 'start') {
       // Start auction
       console.log('auction start clicked');
-      startAuction(props.leagueId);
+      startAuction(leagueId);
     } else if (name == 'stop') {
-      closeAuction(props.leagueId);
+      closeAuction(leagueId);
     }
   }
 
@@ -81,7 +84,7 @@ function AuctionAdmin(props) {
     if (props.status === AUCTION_STATUS.SOLD) {
       setNextLoading(true);
       
-      nextItem(props.leagueId);
+      nextItem(leagueId);
     }
   }
 
@@ -89,7 +92,7 @@ function AuctionAdmin(props) {
     if (props.status === AUCTION_STATUS.SOLD || props.status === AUCTION_STATUS.BIDDING) {
       setResetClockLoading(true);
 
-      resetClock(props.leagueId);
+      resetClock(leagueId);
     }
   }
   

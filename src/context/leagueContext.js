@@ -4,7 +4,6 @@ const LeagueStateContext = createContext()
 const LeagueDispatchContext = createContext()
 
 function leagueReducer(state, action) {
-  console.log(action);
   switch (action.type) {
     case 'setTournamentId': {
       return { 
@@ -16,6 +15,12 @@ function leagueReducer(state, action) {
       return {
         ...state,
         leagueId: action.leagueId
+      }
+    }
+    case 'setRoleId': {
+      return {
+        ...state,
+        roleId: action.roleId
       }
     }
     case 'clear': {
@@ -31,7 +36,7 @@ function leagueReducer(state, action) {
 }
 
 function LeagueProvider({children}) {
-  const [state, dispatch] = useReducer(leagueReducer, { tournamentId: null });
+  const [state, dispatch] = useReducer(leagueReducer, {});
   return (
     <LeagueStateContext.Provider value={state}>
       <LeagueDispatchContext.Provider value={dispatch}>

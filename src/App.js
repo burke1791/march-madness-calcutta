@@ -9,8 +9,9 @@ import { Layout } from 'antd';
 import League from './components/league/league';
 import LandingPage from './landingPage/landingPage';
 import Admin from './components/adminPage/admin';
+import { LeagueProvider } from './context/leagueContext';
 
-const { Header, Footer, Content } = Layout;
+const { Header } = Layout;
 
 function App() {
 
@@ -20,14 +21,14 @@ function App() {
         <Header style={{ padding: '0 25px' }}>
           <Topnav />
         </Header>
-        {/* <Content style={{ margin: '0' }}> */}
+        <LeagueProvider>
           <Router>
             <LandingPage path='/' />
             <Admin path='/admin' />
             <Main path='/home' />
             <League path='leagues/:leagueId/*' />
           </Router>
-        {/* </Content> */}
+        </LeagueProvider>
       </Layout>
     </div>
   );
