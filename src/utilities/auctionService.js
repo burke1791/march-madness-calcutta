@@ -175,7 +175,7 @@ export function resetClock(leagueId) {
   client.send(JSON.stringify(messageObj));
 }
 
-export function setItemComplete(leagueId) {\
+export function setItemComplete(leagueId) {
   let messageObj = {
     action: 'ITEM_COMPLETE',
     leagueId: leagueId
