@@ -78,6 +78,8 @@ function AuctionActions() {
   const generateTeamName = () => {
     if (Auction.current && Auction.current.itemName && Auction.current.itemSeed) {
       return '(' + +Auction.current.itemSeed + ') ' + Auction.current.itemName;
+    } else if (Auction.current.itemName) {
+      return Auction.current.itemName;
     }
 
     return '';

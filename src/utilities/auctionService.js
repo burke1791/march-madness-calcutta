@@ -56,6 +56,7 @@ export function connectAuction(leagueId) {
 
   client.onmessage = function(event) {
     let data = JSON.parse(event.data);
+    console.log(data);
 
     if (data.msgType === 'chat') {
       chatMessages.push(handleNewMessage(data.msgObj));
