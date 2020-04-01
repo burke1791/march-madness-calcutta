@@ -15,7 +15,7 @@ before_script:
   - npm install
 
 script:
-  - npm run build
+  - CI=false npm run build
 
 after_success:
   - firebase deploy --token $FIREBASE_TOKEN --non-interactive
