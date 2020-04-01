@@ -18,7 +18,7 @@ script:
   - CI=false npm run build
 
 after_success:
-  - firebase deploy --token $FIREBASE_TOKEN --non-interactive
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; firebase deploy --token $FIREBASE_TOKEN --non-interactive; else echo "PR skip deploy"; fi
 
 notifications:
   email:
