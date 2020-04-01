@@ -1,6 +1,10 @@
 language: node_js
 node_js:
-  - '12.14.0'
+  - 'stable'
+
+cache:
+  directories:
+    - node_modules
 
 branches:
   only:
@@ -11,7 +15,7 @@ before_script:
   - npm install
 
 script:
-  - npm build
+  - npm run build
 
 after_success:
   - firebase deploy --token $FIREBASE_TOKEN --non-interactive
