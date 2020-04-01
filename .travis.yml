@@ -11,10 +11,10 @@ branches:
     - master
 
 before_install:
+  - npm install -g firebase-tools
   - chmod +x deploy.sh
 
 before_script:
-  - npm install -g firebase-tools
   - npm install
 
 script:
