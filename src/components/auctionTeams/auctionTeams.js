@@ -10,7 +10,7 @@ function AuctionTeams(props) {
   return (
     <div style={{ padding: '0 6px' }}>
       <Row type='flex' justify='space-between' style={{ padding: '6px 10px' }}>
-        <h3>Auction Order</h3>
+        <h3>Auction Items</h3>
         <h3>
           Prizepool: {props.prizepool ? formatMoney(props.prizepool) : '$0.00'}
         </h3>
@@ -23,7 +23,6 @@ function AuctionTeams(props) {
           style={{ padding: '6px 10px', maxHeight: 'calc(100vh - 160px)', overflow: 'auto', width: '100%' }}
           renderItem={team => (
             <List.Item className={team.price ? 'purchased' : ''} style={{ justifyContent: 'space-between' }}>
-              {/* <h3>({+team.seed}) {team.name}</h3> */}
               <h3>{team.displayName}</h3>
               <h4>{team.price ? formatMoney(team.price) : 'undrafted'}</h4>
             </List.Item>

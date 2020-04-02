@@ -1,6 +1,7 @@
 import { Auth } from 'aws-amplify';
 import Pubsub from './pubsub';
 import { NOTIF, ERROR_MESSAGES } from './constants';
+import { clearDataOnSignout } from './leagueService';
 
 var User = {};
 
@@ -20,6 +21,7 @@ export function signUp(username, email, password) {
   }).catch(error => {
     console.log(error);
     User.authenticated = false;
+    clearDataOnSignout();
     Pubsub.publish(NOTIF.SIGN_OUT, null);
   });
 }
@@ -34,6 +36,7 @@ export function signIn(username, password) {
   }).catch(error => {
     console.log(error);
     User.authenticated = false;
+    clearDataOnSignout();
     if (error.code == 'NotAuthorizedException') {
       Pubsub.publish(NOTIF.AUTH_ERROR, ERROR_MESSAGES.INVALID_CREDENTIALS);
     }
@@ -45,6 +48,7 @@ export function signOut() {
   Auth.signOut().then(response => {
     console.log(response);
     User.authenticated = false;
+    clearDataOnSignout();
     Pubsub.publish(NOTIF.SIGN_OUT, null);
   }).catch(error => {
     console.log(error);

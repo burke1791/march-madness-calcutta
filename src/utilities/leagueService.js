@@ -5,6 +5,7 @@ import Pubsub from './pubsub';
 import { formatMoney } from './helper';
 
 let Data = {};
+let leaguesFetched = false;
 
 // @TODO this is temporary - eventually query for user meta data upon sign-in
 var userId = null;
@@ -24,21 +25,24 @@ export function fetchTournamentOptions() {
   })
 }
 
-export function getLeagueSummaries() {
-  Axios({
-    method: 'GET',
-    url: process.env.REACT_APP_API_URL + ENDPOINTS.LEAGUE_SUMMARIES,
-    headers: {
-      'x-cognito-token': User.session.idToken.jwtToken || ''
-    }
-  }).then(response => {
-    Data.leagues = packageLeagueSummaries(response.data);
-    if (Data.leagues != null && Data.leagues.length) {
+export function getLeagueSummaries(override = false) {
+  if ((User.authenticated && !leaguesFetched) || (User.authenticated && override)) {
+    Axios({
+      method: 'GET',
+      url: process.env.REACT_APP_API_URL + ENDPOINTS.LEAGUE_SUMMARIES,
+      headers: {
+        'x-cognito-token': User.session.idToken.jwtToken || ''
+      }
+    }).then(response => {
+      console.log(response);
+      Data.leagues = packageLeagueSummaries(response.data);
+      leaguesFetched = true;
       Pubsub.publish(NOTIF.LEAGUE_SUMMARIES_FETCHED, null);
-    }
-  }).catch(error => {
-    console.log(error);
-  });
+    }).catch(error => {
+      Data.leagues.fetched = false;
+      console.log(error);
+    });
+  }
 }
 
 export function createLeague(name, password, tournamentId) {
@@ -258,5 +262,6 @@ export function clearDataOnSignout() {
 
 export {
   Data,
-  userId
+  userId,
+  leaguesFetched
 }
