@@ -21,8 +21,10 @@ before_deploy:
   - chmod +x deploy.sh
 
 deploy:
-  provider: script
-  script: ./deploy.sh
+  provider: firebase
+  token: $FIREBASE_TOKEN
+  only: 'hosting'
+  edge: true
 
 notifications:
   email:
