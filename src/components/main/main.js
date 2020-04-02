@@ -9,7 +9,7 @@ import Pubsub from '../../utilities/pubsub';
 import { User } from '../../utilities/authService';
 import { formatMoney } from '../../utilities/helper';
 import { Redirect, navigate } from '@reach/router';
-import { Data, getLeagueSummaries } from '../../utilities/leagueService';
+import { Data, getLeagueSummaries, leaguesFetched } from '../../utilities/leagueService';
 
 const { Text } = Typography;
 
@@ -25,14 +25,20 @@ let columns = [
     dataIndex: 'buyIn',
     align: 'center',
     width: 150,
-    render: (text) => {return formatMoney(+text)}
+    render: (text) => {
+      if (text === null) return '';
+      return formatMoney(+text);
+    }
   },
   {
     title: 'Current Payout',
     dataIndex: 'payout',
     align: 'center',
     width: 150,
-    render: (text) => {return formatMoney(+text)}
+    render: (text) => {
+      if (text === null) return '';
+      return formatMoney(+text);
+    }
   },
   {
     title: 'Net Return',
@@ -40,6 +46,7 @@ let columns = [
     align: 'center',
     width: 150,
     render: (text, record) => {
+      if (text === null) return '';
       return <Text type={+text < 0 ? 'danger' : ''}>{formatMoney(+text)}</Text>;
     }
   }
@@ -52,9 +59,9 @@ function Main() {
     {
       key: 0,
       name: 'You haven\'t joined any leagues yet',
-      buyIn: '',
-      payout: '',
-      return: ''
+      buyIn: null,
+      payout: null,
+      return: null
     }
   ]);
 
@@ -76,14 +83,12 @@ function Main() {
     handleNewLeagueInfo();
   }, []);
 
-  const fetchLeagueInfo = () => {
-    if (User.authenticated) {
-      getLeagueSummaries();
-    }
+  const fetchLeagueInfo = (override = false) => {
+    getLeagueSummaries(override);
   }
 
   const handleLeagueJoin = () => {
-    fetchLeagueInfo();
+    fetchLeagueInfo(true);
   }
 
   // copy the summary info from Data into local state, which triggers a rerender
@@ -105,6 +110,9 @@ function Main() {
           });
         })()
       );
+      setLoading(false);
+    } else if (leaguesFetched) {
+      // user does not belong to any leagues
       setLoading(false);
     } else {
       // in case this component gets rendered after the sign in notification

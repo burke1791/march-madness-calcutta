@@ -18,7 +18,7 @@ const columns = [
     dataIndex: 'totalBuyIn',
     key: 'totalBuyIn',
     align: 'right',
-    colSpan: '30%',
+    width: '30%',
     render: (value) => formatMoney(value),
   }
 ];
