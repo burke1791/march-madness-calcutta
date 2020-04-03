@@ -55,13 +55,13 @@ function LeagueNav() {
           <Menu.Item key='auction'>
             Auction Room
           </Menu.Item>
-          <Menu.Item key='myTeams'>
+          <Menu.Item key='myTeams' disabled>
             My Teams
           </Menu.Item>
-          <Menu.Item key='messageBoard'>
+          <Menu.Item key='messageBoard' disabled>
             Message Board
           </Menu.Item>
-          <Menu.Item key='settings'>
+          <Menu.Item key='settings' disabled>
             Settings
           </Menu.Item>
         </Menu>
