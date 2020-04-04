@@ -23,20 +23,10 @@ before_deploy:
 
 deploy:
   provider: firebase
-  token: $FIREBASE_TOKEN_DEV
-  project: $FIREBASE_PROJECT_DEV
+  token: $FIREBASE_TOKEN
+  project: $FIREBASE_PROJECT
   only: 'hosting'
   edge: true
-  on:
-    branch: develop
-  provider: firebase
-  token: $FIREBASE_TOKEN_PROD
-  project: $FIREBASE_PROJECT_PROD
-  only: 'hosting'
-  edge: true
-  on:
-    branch: master
-
 
 notifications:
   email:
