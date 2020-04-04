@@ -9,6 +9,7 @@ cache:
 branches:
   only:
     - master
+    - develop
 
 before_script:
   - npm install
@@ -23,6 +24,7 @@ before_deploy:
 deploy:
   provider: firebase
   token: $FIREBASE_TOKEN
+  project: $FIREBASE_PROJECT
   only: 'hosting'
   edge: true
 
