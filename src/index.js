@@ -14,15 +14,6 @@ Amplify.configure({
     userPoolId: amplifyConfig.cognito.USER_POOL_ID,
     identityPoolId: amplifyConfig.cognito.IDENTITY_POOL_ID,
     userPoolWebClientId: amplifyConfig.cognito.APP_CLIENT_ID
-  },
-  API: {
-    endpoints: [
-      {
-        name: 'testLambda',
-        endpoint: amplifyConfig.apiGateway.URL,
-        region: amplifyConfig.apiGateway.REGION
-      }
-    ]
   }
 });
 

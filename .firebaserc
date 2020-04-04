@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "calcutta-test"
+    "dev": "calcutta-test",
+    "prod": "calcutta-prod"
   }
 }
