@@ -23,6 +23,10 @@ deploy:
   project: $FIREBASE_PROJECT
   only: 'hosting'
   edge: true
+  on:
+    branch:
+      - master
+      - develop
 
 notifications:
   email:
