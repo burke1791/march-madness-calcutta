@@ -17,10 +17,6 @@ before_script:
 script:
   - CI=false npm run build
 
-before_deploy:
-  - npm install -g firebase-tools
-  - chmod +x deploy.sh
-
 deploy:
   provider: firebase
   token: $FIREBASE_TOKEN
