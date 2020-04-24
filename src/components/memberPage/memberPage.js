@@ -19,9 +19,9 @@ const columns = [
     width: 250,
     render: (text, record) => {
       if (record.seed != null) {
-        return `(${record.seed}) ${text}`;
+        return <Text delete={record.eliminated}>{`(${record.seed}) ${text}`}</Text>;
       }
-      return text;
+      return <Text delete={record.eliminated}>{text}</Text>;
     }
   },
   {
