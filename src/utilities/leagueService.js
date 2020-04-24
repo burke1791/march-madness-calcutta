@@ -230,7 +230,8 @@ function packageUserTeams(teams) {
       seed: team.seed,
       price: team.price,
       payout: team.payout,
-      netReturn: team.payout - team.price
+      netReturn: team.payout - team.price,
+      eliminated: !team.alive
     };
   });
 
