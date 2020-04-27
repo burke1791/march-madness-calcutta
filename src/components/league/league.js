@@ -4,6 +4,7 @@ import { Router, Redirect } from '@reach/router';
 import LeagueNav from '../leagueNav/leagueNav';
 import LeagueHome from '../leagueHome/leagueHome';
 import LeagueAuction from '../leagueAuction/leagueAuction';
+import Tournament from '../tournament/tournament';
 import MessageBoard from '../messageBoard/messageBoard';
 import MessageThread from '../messageThread/messageThread';
 import MemberPage from '../memberPage/memberPage';
@@ -39,6 +40,7 @@ function League(props) {
             <Router>
               <LeagueHome path='/' />
               <LeagueAuction path='auction' />
+              <Tournament path='tournament' />
               {/* <MessageBoard path='message_board' leagueId={props.leagueId} role={role} /> */}
               {/* <MessageThread path='message_board/:topicId' leagueId={props.leagueId} role={role} /> */}
               <MemberPage path='member' />
