@@ -32,6 +32,8 @@ function LeagueNav() {
         navigate(`/leagues/${leagueId}`);
       } else if (event.key == 'auction') {
         navigate(`/leagues/${leagueId}/auction`);
+      } else if (event.key == 'tournament') {
+        navigate(`/leagues/${leagueId}/tournament`);
       } else if (event.key == 'messageBoard') {
         // navigate(`/leagues/${leagueId}/message_board`)
       }
@@ -54,6 +56,9 @@ function LeagueNav() {
           </Menu.Item>
           <Menu.Item key='auction'>
             Auction Room
+          </Menu.Item>
+          <Menu.Item key='tournament'>
+            Tournament
           </Menu.Item>
           <Menu.Item key='myTeams' disabled>
             My Teams
@@ -80,6 +85,9 @@ function LeagueNav() {
         </Menu.Item>
         <Menu.Item key='auction'>
           Auction Room
+        </Menu.Item>
+        <Menu.Item key='tournament'>
+          Tournament
         </Menu.Item>
         <Menu.Item key='myTeams'>
           My Teams

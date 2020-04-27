@@ -128,6 +128,24 @@ export function getRemainingGamesCount(tournamentId) {
   });
 }
 
+export function getTournamentGamesForBracket(leagueId) {
+  if (leagueId != undefined && leagueId != null) {
+    Axios({
+      method: 'GET',
+      url: process.env.REACT_APP_API_URL + ENDPOINTS.TOURNAMENT_BRACKET_GAMES + `/${leagueId}`,
+      headers: {
+        'x-cognito-token': User.session.idToken.jwtToken || ''
+      }
+    }).then(response => {
+      console.log(response);
+      Data.tournamentBracketGames = packageBracketGames(response.data);
+      Pubsub.publish(NOTIF.TOURNAMENT_BRACKET_GAMES, Data.tournamentBracketGames);
+    }).catch(error => {
+      console.log(error);
+    });
+  }
+}
+
 export function fetchUserTeams(leagueId, userId) {
   Axios({
     method: 'GET',
@@ -147,6 +165,22 @@ export function fetchUserTeams(leagueId, userId) {
 export function clearUserTeams() {
   Data.userTeams = [];
   Data.userAlias = '';
+}
+
+function packageBracketGames(games) {
+  return games.map(game => {
+    // refactor to account for no seeds, etc.
+    return {
+      gameId: game.gameId,
+      nextGameId: game.nextGameId,
+      team1Id: game.team1Id,
+      team1Name: game.team1Id == null ? null : `(${game.team1Seed}) ${game.team1Name}`,
+      team1Score: game.team1Score,
+      team2Id: game.team2Id,
+      team2Name: game.team2Id == null ? null : `(${game.team2Seed}) ${game.team2Name}`,
+      team2Score: game.team2Score
+    };
+  });
 }
 
 function packageLeagueSummaries(data) {

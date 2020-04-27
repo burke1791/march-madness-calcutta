@@ -12,7 +12,8 @@ export const ENDPOINTS = {
   FETCH_AUCTION_STATUS: '/getAuctionStatus',
   FETCH_AUCTION_TEAMS: '/getAuctionTeams',
   FETCH_AUCTION_BUYINS: '/getAuctionMemberBuyIns',
-  START_AUCTION: '/startAuction'
+  START_AUCTION: '/startAuction',
+  TOURNAMENT_BRACKET_GAMES: '/getTournamentGamesForBracket'
 };
 
 export const THEME_COLORS = {
@@ -76,6 +77,7 @@ export const NOTIF = {
   NEW_AUCTION_DATA: 'new_auction_data',
   NEW_AUCTION_DATA_AVAILABLE: 'new_auction_data_available',
   TIMER_EXPIRED: 'timer_expired',
+  TOURNAMENT_BRACKET_GAMES: 'tournament_bracket_games',
   MM_RESULTS_DOWNLOADED: 'mm_results_downloaded',
   MM_SCORE_SET: 'mm_score_set',
   MM_SCORE_SET_ERR: 'mm_score_set_err'
