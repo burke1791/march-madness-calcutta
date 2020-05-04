@@ -31,7 +31,10 @@ export {
 export function getServerTimestamp() {
   Axios({
     method: 'GET',
-    url: process.env.REACT_APP_API_URL + ENDPOINTS.SERVER_TIMESTAMP
+    url: process.env.REACT_APP_API_URL + ENDPOINTS.SERVER_TIMESTAMP,
+    headers: {
+      'x-cognito-token': User.session.idToken.jwtToken || ''
+    }
   }).then(response => {
     updateServerPing(response.data[0].ServerTimestamp);
   }).catch(error => {

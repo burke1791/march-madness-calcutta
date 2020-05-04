@@ -18,6 +18,7 @@ export function fetchTournamentOptions() {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     }
   }).then(response => {
+    console.log(response);
     Data.tournaments = response.data;
     Pubsub.publish(NOTIF.TOURNAMENT_OPTIONS_DOWNLOADED, null);
   }).catch(error => {
@@ -119,7 +120,10 @@ export function getUpcomingGames(leagueId) {
 export function getRemainingGamesCount(tournamentId) {
   Axios({
     method: 'GET',
-    url: process.env.REACT_APP_API_URL + ENDPOINTS.REMAINING_GAMES_COUNT + `/${tournamentId}`
+    url: process.env.REACT_APP_API_URL + ENDPOINTS.REMAINING_GAMES_COUNT + `/${tournamentId}`,
+    headers: {
+      'x-cognito-token': User.session.idToken.jwtToken || ''
+    }
   }).then(response => {
     Data.remainingGames = response.data[0].numGamesRemaining;
     Pubsub.publish(NOTIF.REMAINING_GAMES_COUNT_DOWNLOADED, null);
