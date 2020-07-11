@@ -143,8 +143,8 @@ function BracketTeam(props) {
       onMouseEnter={() => sendHoverMsg(true)}
       onMouseLeave={() => sendHoverMsg(false)}
     >
-      <div className='team-name'>
-        <span className='team-name-text'>{props.name}</span>
+      <div className='bracket-team-name'>
+        <span className='bracket-team-name-text'>{props.name}</span>
       </div>
       <div className='score'>
         <span className='score-text'>{props.score}</span>

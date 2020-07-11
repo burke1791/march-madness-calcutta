@@ -42,7 +42,7 @@
   border-radius: 0 0 2px 2px;
 }
 
-.team-name {
+.bracket-team-name {
   flex-grow: 1;
   line-height: 13.75px;
   padding: 0 2px;
@@ -57,12 +57,12 @@
   width: 24px;
 }
 
-.team-name-text {
+.bracket-team-name-text {
   max-width: 174px;
 }
 
 .score-text,
-.team-name-text {
+.bracket-team-name-text {
   display: inline-block;
   font-size: 12px;
   overflow: hidden;
