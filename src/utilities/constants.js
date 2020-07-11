@@ -1,3 +1,7 @@
+export const API_CONFIG = {
+  BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_API_URL : process.env.REACT_APP_API_URL
+}
+
 export const ENDPOINTS = {
   TOURNAMENT_OPTIONS: '/getTournamentOptions',
   NEW_LEAGUE: '/createLeague',
@@ -23,7 +27,7 @@ export const THEME_COLORS = {
 }
 
 export const SOCKETS = {
-  AUCTION: 'wss://m5q6i9kma9.execute-api.us-east-1.amazonaws.com/dev'
+  AUCTION: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_WEBSOCKET_ENDPOINT : process.env.REACT_APP_WEBSOCKET_ENDPOINT
 }
 
 export const AUTH_FORM_TYPE = {

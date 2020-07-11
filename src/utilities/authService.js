@@ -73,7 +73,7 @@ export function getCurrentSession() {
     Pubsub.publish(NOTIF.SIGN_IN, null);
   }).catch(error => {
     console.log(error);
-  })
+  });
 }
 
 export {

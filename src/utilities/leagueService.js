@@ -1,5 +1,5 @@
 import { User } from './authService';
-import { ENDPOINTS, NOTIF } from './constants';
+import { API_CONFIG, ENDPOINTS, NOTIF } from './constants';
 import Axios from 'axios';
 import Pubsub from './pubsub';
 import { formatMoney } from './helper';
@@ -13,7 +13,7 @@ var userId = null;
 export function fetchTournamentOptions() {
   Axios({
     method: 'GET',
-    url: process.env.REACT_APP_API_URL + ENDPOINTS.TOURNAMENT_OPTIONS,
+    url: API_CONFIG.BASE_URL + ENDPOINTS.TOURNAMENT_OPTIONS,
     headers: {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     }
@@ -30,7 +30,7 @@ export function getLeagueSummaries(override = false) {
   if ((User.authenticated && !leaguesFetched) || (User.authenticated && override)) {
     Axios({
       method: 'GET',
-      url: process.env.REACT_APP_API_URL + ENDPOINTS.LEAGUE_SUMMARIES,
+      url: API_CONFIG.BASE_URL + ENDPOINTS.LEAGUE_SUMMARIES,
       headers: {
         'x-cognito-token': User.session.idToken.jwtToken || ''
       }
@@ -40,7 +40,7 @@ export function getLeagueSummaries(override = false) {
       leaguesFetched = true;
       Pubsub.publish(NOTIF.LEAGUE_SUMMARIES_FETCHED, null);
     }).catch(error => {
-      Data.leagues.fetched = false;
+      leaguesFetched = false;
       console.log(error);
     });
   }
@@ -55,7 +55,7 @@ export function createLeague(name, password, tournamentId) {
 
   Axios({
     method: 'POST',
-    url: process.env.REACT_APP_API_URL + ENDPOINTS.NEW_LEAGUE,
+    url: API_CONFIG.BASE_URL + ENDPOINTS.NEW_LEAGUE,
     headers: {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     },
@@ -75,7 +75,7 @@ export function joinLeague(name, password) {
 
   Axios({
     method: 'POST',
-    url: process.env.REACT_APP_API_URL + ENDPOINTS.JOIN_LEAGUE,
+    url: API_CONFIG.BASE_URL + ENDPOINTS.JOIN_LEAGUE,
     headers: {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     },
@@ -90,7 +90,7 @@ export function joinLeague(name, password) {
 export function getLeagueUserSummaries(leagueId) {
   Axios({
     method: 'GET',
-    url: process.env.REACT_APP_API_URL + ENDPOINTS.LEAGUE_USER_SUMMARIES + `/${leagueId}`,
+    url: API_CONFIG.BASE_URL + ENDPOINTS.LEAGUE_USER_SUMMARIES + `/${leagueId}`,
     headers: {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     }
@@ -105,7 +105,7 @@ export function getLeagueUserSummaries(leagueId) {
 export function getUpcomingGames(leagueId) {
   Axios({
     method: 'GET',
-    url: process.env.REACT_APP_API_URL + ENDPOINTS.UPCOMING_GAMES + `/${leagueId}`,
+    url: API_CONFIG.BASE_URL + ENDPOINTS.UPCOMING_GAMES + `/${leagueId}`,
     headers: {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     }
@@ -120,7 +120,7 @@ export function getUpcomingGames(leagueId) {
 export function getRemainingGamesCount(tournamentId) {
   Axios({
     method: 'GET',
-    url: process.env.REACT_APP_API_URL + ENDPOINTS.REMAINING_GAMES_COUNT + `/${tournamentId}`,
+    url: API_CONFIG.BASE_URL + ENDPOINTS.REMAINING_GAMES_COUNT + `/${tournamentId}`,
     headers: {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     }
@@ -136,7 +136,7 @@ export function getTournamentGamesForBracket(leagueId) {
   if (leagueId != undefined && leagueId != null) {
     Axios({
       method: 'GET',
-      url: process.env.REACT_APP_API_URL + ENDPOINTS.TOURNAMENT_BRACKET_GAMES + `/${leagueId}`,
+      url: API_CONFIG.BASE_URL + ENDPOINTS.TOURNAMENT_BRACKET_GAMES + `/${leagueId}`,
       headers: {
         'x-cognito-token': User.session.idToken.jwtToken || ''
       }
@@ -153,7 +153,7 @@ export function getTournamentGamesForBracket(leagueId) {
 export function fetchUserTeams(leagueId, userId) {
   Axios({
     method: 'GET',
-    url: process.env.REACT_APP_API_URL + ENDPOINTS.LEAGUE_USER_TEAMS + `/${leagueId}/${userId}`,
+    url: API_CONFIG.BASE_URL + ENDPOINTS.LEAGUE_USER_TEAMS + `/${leagueId}/${userId}`,
     headers: {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     }

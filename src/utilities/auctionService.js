@@ -1,7 +1,7 @@
 import { User } from './authService';
 import Axios from 'axios';
 import Pubsub from './pubsub';
-import { SOCKETS, ENDPOINTS, NOTIF, AUCTION_STATUS } from './constants';
+import { API_CONFIG, SOCKETS, ENDPOINTS, NOTIF, AUCTION_STATUS } from './constants';
 
 var chatMessages = [];
 var auctionTeams = [];
@@ -31,7 +31,7 @@ export {
 export function getServerTimestamp() {
   Axios({
     method: 'GET',
-    url: process.env.REACT_APP_API_URL + ENDPOINTS.SERVER_TIMESTAMP,
+    url: API_CONFIG.BASE_URL + ENDPOINTS.SERVER_TIMESTAMP,
     headers: {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     }
@@ -84,7 +84,7 @@ export function sendSocketMessage(messageObj) {
 export function fetchChatMessages(leagueId) {
   Axios({
     method: 'GET',
-    url: process.env.REACT_APP_API_URL + ENDPOINTS.FETCH_CHAT + `/${leagueId}`,
+    url: API_CONFIG.BASE_URL + ENDPOINTS.FETCH_CHAT + `/${leagueId}`,
     headers: {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     }
@@ -103,7 +103,7 @@ export function clearChatMessages() {
 export function fetchAuctionStatus(leagueId) {
   Axios({
     method: 'GET',
-    url: process.env.REACT_APP_API_URL + ENDPOINTS.FETCH_AUCTION_STATUS + `/${leagueId}`,
+    url: API_CONFIG.BASE_URL + ENDPOINTS.FETCH_AUCTION_STATUS + `/${leagueId}`,
     headers: {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     }
@@ -117,7 +117,7 @@ export function fetchAuctionStatus(leagueId) {
 export function fetchAuctionTeams(leagueId) {
   Axios({
     method: 'GET',
-    url: process.env.REACT_APP_API_URL + ENDPOINTS.FETCH_AUCTION_TEAMS + `/${leagueId}`,
+    url: API_CONFIG.BASE_URL + ENDPOINTS.FETCH_AUCTION_TEAMS + `/${leagueId}`,
     headers: {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     }
@@ -132,7 +132,7 @@ export function fetchAuctionTeams(leagueId) {
 export function fetchUserBuyIns(leagueId) {
   Axios({
     method: 'GET',
-    url: process.env.REACT_APP_API_URL + ENDPOINTS.FETCH_AUCTION_BUYINS + `/${leagueId}`,
+    url: API_CONFIG.BASE_URL + ENDPOINTS.FETCH_AUCTION_BUYINS + `/${leagueId}`,
     headers: {
       'x-cognito-token': User.session.idToken.jwtToken || ''
     }
