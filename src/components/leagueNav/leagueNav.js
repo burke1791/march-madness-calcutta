@@ -57,7 +57,7 @@ function LeagueNav() {
           <Menu.Item key='auction'>
             Auction Room
           </Menu.Item>
-          <Menu.Item key='tournament'>
+          <Menu.Item key='tournament' disabled>
             Tournament
           </Menu.Item>
           <Menu.Item key='myTeams' disabled>
