@@ -1,3 +1,7 @@
+export const API_CONFIG = {
+  BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_API_URL : process.env.REACT_APP_API_URL
+}
+
 export const ENDPOINTS = {
   TOURNAMENT_OPTIONS: '/getTournamentOptions',
   NEW_LEAGUE: '/createLeague',
@@ -12,7 +16,8 @@ export const ENDPOINTS = {
   FETCH_AUCTION_STATUS: '/getAuctionStatus',
   FETCH_AUCTION_TEAMS: '/getAuctionTeams',
   FETCH_AUCTION_BUYINS: '/getAuctionMemberBuyIns',
-  START_AUCTION: '/startAuction'
+  START_AUCTION: '/startAuction',
+  TOURNAMENT_BRACKET_GAMES: '/getTournamentGamesForBracket'
 };
 
 export const THEME_COLORS = {
@@ -22,7 +27,7 @@ export const THEME_COLORS = {
 }
 
 export const SOCKETS = {
-  AUCTION: 'wss://m5q6i9kma9.execute-api.us-east-1.amazonaws.com/dev'
+  AUCTION: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_WEBSOCKET_ENDPOINT : process.env.REACT_APP_WEBSOCKET_ENDPOINT
 }
 
 export const AUTH_FORM_TYPE = {
@@ -76,6 +81,7 @@ export const NOTIF = {
   NEW_AUCTION_DATA: 'new_auction_data',
   NEW_AUCTION_DATA_AVAILABLE: 'new_auction_data_available',
   TIMER_EXPIRED: 'timer_expired',
+  TOURNAMENT_BRACKET_GAMES: 'tournament_bracket_games',
   MM_RESULTS_DOWNLOADED: 'mm_results_downloaded',
   MM_SCORE_SET: 'mm_score_set',
   MM_SCORE_SET_ERR: 'mm_score_set_err'

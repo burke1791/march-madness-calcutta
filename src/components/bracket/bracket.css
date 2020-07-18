@@ -1,0 +1,72 @@
+.bracket-wrapper {
+  display: flex;
+  margin: 12px;
+  overflow-x: scroll;
+}
+
+.bracket-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.bracket-column-divider {
+  width: 10px;
+}
+
+.bracket-game {
+  display: flex;
+  flex-direction: column;
+  height: 72px;
+  justify-content: center;
+  width: 204px;
+}
+
+.bracket-team {
+  background-color: #ebebeb;
+  border: 1px solid #aaaaaa;
+  display: flex;
+  height: 24px;
+  justify-content: space-between;
+}
+
+.bracket-hover {
+  border: 1px solid #000;
+}
+
+.bracket-team-top {
+  border-radius: 2px 2px 0 0;
+}
+
+.bracket-team-bot {
+  border-radius: 0 0 2px 2px;
+}
+
+.bracket-team-name {
+  flex-grow: 1;
+  line-height: 13.75px;
+  padding: 0 2px;
+  text-align: left;
+  width: 174px;
+}
+
+.score {
+  border-left: 1px solid #aaaaaa;
+  padding: 0 2px;
+  text-align: center;
+  width: 24px;
+}
+
+.bracket-team-name-text {
+  max-width: 174px;
+}
+
+.score-text,
+.bracket-team-name-text {
+  display: inline-block;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+}

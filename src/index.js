@@ -7,13 +7,15 @@ import * as serviceWorker from './serviceWorker';
 import Amplify from 'aws-amplify';
 import amplifyConfig from './utilities/amplifyConfig';
 
+console.log(amplifyConfig);
+
 Amplify.configure({
   Auth: {
     mandatorySignIn: true,
     region: amplifyConfig.cognito.REGION,
     userPoolId: amplifyConfig.cognito.USER_POOL_ID,
-    identityPoolId: amplifyConfig.cognito.IDENTITY_POOL_ID,
-    userPoolWebClientId: amplifyConfig.cognito.APP_CLIENT_ID
+    userPoolWebClientId: amplifyConfig.cognito.APP_CLIENT_ID,
+    authenticationFlowType: amplifyConfig.cognito.AUTH_FLOW
   }
 });
 
