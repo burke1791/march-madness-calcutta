@@ -56,7 +56,7 @@ function MyTeams(props) {
 
   return (
     <Row style={{ height: 'calc(50vh - 70px)' }}>
-      <Col>
+      <Col span={24}>
         <Card style={{ height: '100%' }} bodyStyle={{ padding: '0', height: '100%' }} size='small'>
           <Table
             columns={columns}
