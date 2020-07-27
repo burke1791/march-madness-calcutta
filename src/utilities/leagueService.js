@@ -1,6 +1,6 @@
 import { User } from './authService';
 import { API_CONFIG, ENDPOINTS, NOTIF } from './constants';
-import Axios from 'axios';
+import Axios, { CancelToken } from 'axios';
 import Pubsub from './pubsub';
 import { formatMoney } from './helper';
 
@@ -10,30 +10,50 @@ let leaguesFetched = false;
 // @TODO this is temporary - eventually query for user meta data upon sign-in
 var userId = null;
 
+const leagueServiceApi = Axios.create({
+  baseURL: API_CONFIG.BASE_URL,
+});
+
+leagueServiceApi.interceptors.request.use(config => {
+  if (User.session == undefined || !User.session) {
+    console.log('user not signed in, cancel request');
+
+    return {
+      ...config,
+      cancelToken: new CancelToken((cancel) => cancel(`Cancel request to: ${config.url} - user not authenticated`))
+    };
+  } else {
+    console.log('user signed in, send on api request');
+
+    return {
+      ...config,
+      headers: {
+        'x-cognito-token': User.session.idToken.jwtToken
+      }
+    };
+  }
+
+  
+});
+
 export function fetchTournamentOptions() {
-  Axios({
+  leagueServiceApi({
     method: 'GET',
-    url: API_CONFIG.BASE_URL + ENDPOINTS.TOURNAMENT_OPTIONS,
-    headers: {
-      'x-cognito-token': User.session.idToken.jwtToken || ''
-    }
+    url: ENDPOINTS.TOURNAMENT_OPTIONS
   }).then(response => {
     console.log(response);
     Data.tournaments = response.data;
     Pubsub.publish(NOTIF.TOURNAMENT_OPTIONS_DOWNLOADED, null);
   }).catch(error => {
     console.log(error);
-  })
+  });
 }
 
 export function getLeagueSummaries(override = false) {
-  if ((User.authenticated && !leaguesFetched) || (User.authenticated && override)) {
-    Axios({
+  if (!leaguesFetched || override) {
+    leagueServiceApi({
       method: 'GET',
-      url: API_CONFIG.BASE_URL + ENDPOINTS.LEAGUE_SUMMARIES,
-      headers: {
-        'x-cognito-token': User.session.idToken.jwtToken || ''
-      }
+      url: ENDPOINTS.LEAGUE_SUMMARIES
     }).then(response => {
       console.log(response);
       Data.leagues = packageLeagueSummaries(response.data);
@@ -53,12 +73,9 @@ export function createLeague(name, password, tournamentId) {
     tournamentId: tournamentId
   };
 
-  Axios({
+  leagueServiceApi({
     method: 'POST',
-    url: API_CONFIG.BASE_URL + ENDPOINTS.NEW_LEAGUE,
-    headers: {
-      'x-cognito-token': User.session.idToken.jwtToken || ''
-    },
+    url: ENDPOINTS.NEW_LEAGUE,
     data: league
   }).then(response => {
     Pubsub.publish(NOTIF.LEAGUE_JOINED);
@@ -73,12 +90,9 @@ export function joinLeague(name, password) {
     password: password
   };
 
-  Axios({
+  leagueServiceApi({
     method: 'POST',
-    url: API_CONFIG.BASE_URL + ENDPOINTS.JOIN_LEAGUE,
-    headers: {
-      'x-cognito-token': User.session.idToken.jwtToken || ''
-    },
+    url: ENDPOINTS.JOIN_LEAGUE,
     data: league
   }).then(response => {
     Pubsub.publish(NOTIF.LEAGUE_JOINED);
@@ -88,12 +102,9 @@ export function joinLeague(name, password) {
 }
 
 export function getLeagueUserSummaries(leagueId) {
-  Axios({
+  leagueServiceApi({
     method: 'GET',
-    url: API_CONFIG.BASE_URL + ENDPOINTS.LEAGUE_USER_SUMMARIES + `/${leagueId}`,
-    headers: {
-      'x-cognito-token': User.session.idToken.jwtToken || ''
-    }
+    url: ENDPOINTS.LEAGUE_USER_SUMMARIES + `/${leagueId}`
   }).then(response => {
     Data.leagueInfo = packageLeagueInfo(response.data);
     Pubsub.publish(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED);
@@ -103,12 +114,9 @@ export function getLeagueUserSummaries(leagueId) {
 }
 
 export function getUpcomingGames(leagueId) {
-  Axios({
+  leagueServiceApi({
     method: 'GET',
-    url: API_CONFIG.BASE_URL + ENDPOINTS.UPCOMING_GAMES + `/${leagueId}`,
-    headers: {
-      'x-cognito-token': User.session.idToken.jwtToken || ''
-    }
+    url: ENDPOINTS.UPCOMING_GAMES + `/${leagueId}`
   }).then(response => {
     Data.upcomingGames = packageUpcomingGames(response.data);
     Pubsub.publish(NOTIF.UPCOMING_GAMES_DOWNLOADED);
@@ -118,12 +126,9 @@ export function getUpcomingGames(leagueId) {
 }
 
 export function getRemainingGamesCount(tournamentId) {
-  Axios({
+  leagueServiceApi({
     method: 'GET',
-    url: API_CONFIG.BASE_URL + ENDPOINTS.REMAINING_GAMES_COUNT + `/${tournamentId}`,
-    headers: {
-      'x-cognito-token': User.session.idToken.jwtToken || ''
-    }
+    url: ENDPOINTS.REMAINING_GAMES_COUNT + `/${tournamentId}`
   }).then(response => {
     Data.remainingGames = response.data[0].numGamesRemaining;
     Pubsub.publish(NOTIF.REMAINING_GAMES_COUNT_DOWNLOADED, null);
@@ -134,12 +139,9 @@ export function getRemainingGamesCount(tournamentId) {
 
 export function getTournamentGamesForBracket(leagueId) {
   if (leagueId != undefined && leagueId != null) {
-    Axios({
+    leagueServiceApi({
       method: 'GET',
-      url: API_CONFIG.BASE_URL + ENDPOINTS.TOURNAMENT_BRACKET_GAMES + `/${leagueId}`,
-      headers: {
-        'x-cognito-token': User.session.idToken.jwtToken || ''
-      }
+      url: ENDPOINTS.TOURNAMENT_BRACKET_GAMES + `/${leagueId}`
     }).then(response => {
       console.log(response);
       Data.tournamentBracketGames = packageBracketGames(response.data);
@@ -151,19 +153,16 @@ export function getTournamentGamesForBracket(leagueId) {
 }
 
 export function fetchUserTeams(leagueId, userId) {
-  Axios({
+  leagueServiceApi({
     method: 'GET',
-    url: API_CONFIG.BASE_URL + ENDPOINTS.LEAGUE_USER_TEAMS + `/${leagueId}/${userId}`,
-    headers: {
-      'x-cognito-token': User.session.idToken.jwtToken || ''
-    }
+    url: ENDPOINTS.LEAGUE_USER_TEAMS + `/${leagueId}/${userId}`
   }).then(response => {
     Data.userTeams = packageUserTeams(response.data);
     Data.userAlias = parseUserAlias(response.data);
     Pubsub.publish(NOTIF.LEAGUE_USER_TEAMS_FETCHED, null);
   }).catch(error => {
     console.log(error);
-  })
+  });
 }
 
 export function clearUserTeams() {
