@@ -1,8 +1,9 @@
-import { User } from './authService';
 import { API_CONFIG, ENDPOINTS, NOTIF } from './constants';
-import Axios, { CancelToken } from 'axios';
+import Axios from 'axios';
 import Pubsub from './pubsub';
 import { formatMoney } from './helper';
+import { authInterceptor } from '../services/axiosConfig';
+import ApiService from '../services/apiService';
 
 let Data = {};
 let leaguesFetched = false;
@@ -11,95 +12,10 @@ let leaguesFetched = false;
 var userId = null;
 
 const leagueServiceApi = Axios.create({
-  baseURL: API_CONFIG.BASE_URL,
+  baseURL: API_CONFIG.BASE_URL
 });
 
-leagueServiceApi.interceptors.request.use(config => {
-  if (User.session == undefined || !User.session) {
-    console.log('user not signed in, cancel request');
-
-    return {
-      ...config,
-      cancelToken: new CancelToken((cancel) => cancel(`Cancel request to: ${config.url} - user not authenticated`))
-    };
-  } else {
-    console.log('user signed in, send on api request');
-
-    return {
-      ...config,
-      headers: {
-        'x-cognito-token': User.session.idToken.jwtToken
-      }
-    };
-  }
-
-  
-});
-
-export function fetchTournamentOptions() {
-  leagueServiceApi({
-    method: 'GET',
-    url: ENDPOINTS.TOURNAMENT_OPTIONS
-  }).then(response => {
-    console.log(response);
-    Data.tournaments = response.data;
-    Pubsub.publish(NOTIF.TOURNAMENT_OPTIONS_DOWNLOADED, null);
-  }).catch(error => {
-    console.log(error);
-  });
-}
-
-export function getLeagueSummaries(override = false) {
-  if (!leaguesFetched || override) {
-    leagueServiceApi({
-      method: 'GET',
-      url: ENDPOINTS.LEAGUE_SUMMARIES
-    }).then(response => {
-      console.log(response);
-      Data.leagues = packageLeagueSummaries(response.data);
-      leaguesFetched = true;
-      Pubsub.publish(NOTIF.LEAGUE_SUMMARIES_FETCHED, null);
-    }).catch(error => {
-      leaguesFetched = false;
-      console.log(error);
-    });
-  }
-}
-
-export function createLeague(name, password, tournamentId) {
-  let league = {
-    name: name,
-    password: password,
-    tournamentId: tournamentId
-  };
-
-  leagueServiceApi({
-    method: 'POST',
-    url: ENDPOINTS.NEW_LEAGUE,
-    data: league
-  }).then(response => {
-    Pubsub.publish(NOTIF.LEAGUE_JOINED);
-  }).catch(error => {
-    console.log(error);
-  });
-}
-
-export function joinLeague(name, password) {
-  let league = {
-    name: name,
-    password: password
-  };
-
-  leagueServiceApi({
-    method: 'POST',
-    url: ENDPOINTS.JOIN_LEAGUE,
-    data: league
-  }).then(response => {
-    Pubsub.publish(NOTIF.LEAGUE_JOINED);
-  }).catch(error => {
-    console.log(error);
-  });
-}
+leagueServiceApi.interceptors.request.use(authInterceptor);
 
 export function getLeagueUserSummaries(leagueId) {
   leagueServiceApi({
@@ -302,4 +218,4 @@ export {
   Data,
   userId,
   leaguesFetched
-}
+};

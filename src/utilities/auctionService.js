@@ -2,6 +2,7 @@ import { User } from './authService';
 import Axios from 'axios';
 import Pubsub from './pubsub';
 import { API_CONFIG, SOCKETS, ENDPOINTS, NOTIF, AUCTION_STATUS } from './constants';
+import { authInterceptor } from '../services/axiosConfig';
 
 var chatMessages = [];
 var auctionTeams = [];
@@ -21,20 +22,16 @@ var Auction = {};
 
 var client = null;
 
-export {
-  chatMessages,
-  auctionTeams,
-  userBuyIns,
-  Auction
-};
+const auctionServiceApi = Axios.create({
+  baseURL: API_CONFIG.BASE_URL
+});
+
+auctionServiceApi.interceptors.request.use(authInterceptor);
 
 export function getServerTimestamp() {
-  Axios({
+  auctionServiceApi({
     method: 'GET',
-    url: API_CONFIG.BASE_URL + ENDPOINTS.SERVER_TIMESTAMP,
-    headers: {
-      'x-cognito-token': User.session.idToken.jwtToken || ''
-    }
+    url: ENDPOINTS.SERVER_TIMESTAMP
   }).then(response => {
     updateServerPing(response.data[0].ServerTimestamp);
   }).catch(error => {
@@ -43,37 +40,41 @@ export function getServerTimestamp() {
 }
 
 export function connectAuction(leagueId) {
-  client = new WebSocket(`${SOCKETS.AUCTION}?Authorizer=${User.session.idToken.jwtToken}&leagueId=${leagueId}`);
+  if (client === null) {
+    client = new WebSocket(`${SOCKETS.AUCTION}?Authorizer=${User.session.idToken.jwtToken}&leagueId=${leagueId}`);
 
-  client.onopen = function(event) {
-    console.log(event);
-  }
+    client.onopen = function(event) {
+      console.log(event);
+    }
 
-  client.onerror = function(error) {
-    console.log(error);
-  }
+    client.onerror = function(error) {
+      console.log(error);
+    }
 
-  client.onclose = function(event) {
-    console.log(event);
-  }
+    client.onclose = function(event) {
+      console.log(event);
+    }
 
-  client.onmessage = function(event) {
-    let data = JSON.parse(event.data);
-    console.log(data);
+    client.onmessage = function(event) {
+      let data = JSON.parse(event.data);
+      console.log(data);
 
-    if (data.msgType === 'chat') {
-      chatMessages.push(handleNewMessage(data.msgObj));
-      Pubsub.publish(NOTIF.NEW_CHAT_MESSAGE, null);
-    } else if (data.msgType === 'auction') {
-      updateAuctionStatus(data.msgObj);
-    } else if (data.msgType === 'auction_error') {
-      Pubsub.publish(NOTIF.AUCTION_ERROR, null);
+      if (data.msgType === 'chat') {
+        chatMessages.push(handleNewMessage(data.msgObj));
+        Pubsub.publish(NOTIF.NEW_CHAT_MESSAGE, null);
+      } else if (data.msgType === 'auction') {
+        updateAuctionStatus(data.msgObj);
+      } else if (data.msgType === 'auction_error') {
+        Pubsub.publish(NOTIF.AUCTION_ERROR, null);
+      }
     }
   }
 }
 
 export function disconnect() {
-  client.close();
+  if (client) {
+    client.close();
+  }
 }
 
 export function sendSocketMessage(messageObj) {
@@ -82,12 +83,9 @@ export function sendSocketMessage(messageObj) {
 }
 
 export function fetchChatMessages(leagueId) {
-  Axios({
+  auctionServiceApi({
     method: 'GET',
-    url: API_CONFIG.BASE_URL + ENDPOINTS.FETCH_CHAT + `/${leagueId}`,
-    headers: {
-      'x-cognito-token': User.session.idToken.jwtToken || ''
-    }
+    url: ENDPOINTS.FETCH_CHAT + `/${leagueId}`
   }).then(response => {
     chatMessages = packageChatMessages(response.data);
     Pubsub.publish(NOTIF.NEW_CHAT_MESSAGE, null);
@@ -101,12 +99,9 @@ export function clearChatMessages() {
 }
 
 export function fetchAuctionStatus(leagueId) {
-  Axios({
+  auctionServiceApi({
     method: 'GET',
-    url: API_CONFIG.BASE_URL + ENDPOINTS.FETCH_AUCTION_STATUS + `/${leagueId}`,
-    headers: {
-      'x-cognito-token': User.session.idToken.jwtToken || ''
-    }
+    url: ENDPOINTS.FETCH_AUCTION_STATUS + `/${leagueId}`
   }).then(response => {
     updateAuctionStatus(response.data[0]);
   }).catch(error => {
@@ -115,12 +110,9 @@ export function fetchAuctionStatus(leagueId) {
 }
 
 export function fetchAuctionTeams(leagueId) {
-  Axios({
+  auctionServiceApi({
     method: 'GET',
-    url: API_CONFIG.BASE_URL + ENDPOINTS.FETCH_AUCTION_TEAMS + `/${leagueId}`,
-    headers: {
-      'x-cognito-token': User.session.idToken.jwtToken || ''
-    }
+    url: ENDPOINTS.FETCH_AUCTION_TEAMS + `/${leagueId}`
   }).then(response => {
     auctionTeams = packageAuctionTeams(response.data);
     Pubsub.publish(NOTIF.AUCTION_TEAMS_DOWNLOADED, null);
@@ -130,13 +122,11 @@ export function fetchAuctionTeams(leagueId) {
 }
 
 export function fetchUserBuyIns(leagueId) {
-  Axios({
+  auctionServiceApi({
     method: 'GET',
-    url: API_CONFIG.BASE_URL + ENDPOINTS.FETCH_AUCTION_BUYINS + `/${leagueId}`,
-    headers: {
-      'x-cognito-token': User.session.idToken.jwtToken || ''
-    }
+    url: ENDPOINTS.FETCH_AUCTION_BUYINS + `/${leagueId}`
   }).then(response => {
+    console.log(response);
     userBuyIns = packageUserBuyIns(response.data);
     Pubsub.publish(NOTIF.AUCTION_BUYINS_DOWNLOADED, null);
   }).catch(error => {
@@ -295,3 +285,10 @@ function updateAuctionStatus(status) {
 
   Pubsub.publish(NOTIF.NEW_AUCTION_DATA, updatedTeams);
 }
+
+export {
+  chatMessages,
+  auctionTeams,
+  userBuyIns,
+  Auction
+};

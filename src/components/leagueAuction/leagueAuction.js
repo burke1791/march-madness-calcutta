@@ -12,8 +12,9 @@ import { NOTIF } from '../../utilities/constants';
 import { connectAuction, disconnect, fetchAuctionTeams, clearAuctionTeams, auctionTeams, fetchUserBuyIns, userBuyIns, fetchAuctionStatus } from '../../utilities/auctionService';
 import { userId } from '../../utilities/leagueService';
 import { useLeagueState } from '../../context/leagueContext';
+import withSubscription from '../../HOC/withSubscription';
 
-function LeagueAuction() {
+function LeagueAuction(props) {
 
   const [teams, setTeams] = useState([]);
   const [prizepool, setPrizepool] = useState(0);
@@ -37,11 +38,10 @@ function LeagueAuction() {
   }, []);
 
   useEffect(() => {
-    if (leagueId) {
-      fetchAuctionTeams(leagueId);
-      fetchUserBuyIns(leagueId);
-      fetchAuctionStatus(leagueId);
-      connectAuction(leagueId);
+    console.log(leagueId, props.authenticated);
+    if (leagueId && props.authenticated) {
+      fetchData(leagueId);
+      connectWebsocket(leagueId);
     } else {
       console.log('leagueId is falsy');
     }
@@ -51,6 +51,29 @@ function LeagueAuction() {
       clearAuctionTeams();
     });
   }, [leagueId]);
+
+  useEffect(() => {
+    if (props.authenticated) {
+      handleSignIn();
+    }
+  }, [props.authenticated]);
+
+  const handleSignIn = () => {
+    if (leagueId) {
+      fetchData(leagueId);
+      connectWebsocket(leagueId);
+    }
+  }
+
+  const connectWebsocket = (leagueId) => {
+    connectAuction(leagueId);
+  }
+
+  const fetchData = (leagueId) => {
+    fetchAuctionTeams(leagueId);
+    fetchUserBuyIns(leagueId);
+    fetchAuctionStatus(leagueId);
+  }
 
   const auctionTeamsDownloaded = () => {
     setTeams(auctionTeams);
@@ -103,4 +126,4 @@ function LeagueAuction() {
   );
 }
 
-export default LeagueAuction;
+export default withSubscription(LeagueAuction);

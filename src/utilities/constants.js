@@ -2,6 +2,13 @@ export const API_CONFIG = {
   BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_API_URL : process.env.REACT_APP_API_URL
 }
 
+export const LEAGUE_SERVICE_ENDPOINTS = {
+  TOURNAMENT_OPTIONS: '/getTournamentOptions',
+  LEAGUE_SUMMARIES: '/getLeagueSummaries',
+  NEW_LEAGUE: '/createLeague',
+  JOIN_LEAGUE: '/joinLeague',
+}
+
 export const ENDPOINTS = {
   TOURNAMENT_OPTIONS: '/getTournamentOptions',
   NEW_LEAGUE: '/createLeague',
@@ -53,6 +60,8 @@ export const AUCTION_STATUS = {
 }
 
 export const NOTIF = {
+  AUTH: 'auth',
+  LEAGUE_SERVICE: 'league_service',
   AUTH_MODAL_SHOW: 'auth_modal_show',
   AUTH_FORM_TOGGLE: 'auth_form_toggle',
   AUTH_ERROR: 'auth_error',

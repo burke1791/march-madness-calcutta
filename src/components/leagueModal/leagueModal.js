@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 
 import WrappedNewLeagueForm from '../newLeagueForm/newLeagueForm';
 
-import { LEAGUE_FORM_TYPE, NOTIF } from '../../utilities/constants';
+import { LEAGUE_FORM_TYPE, NOTIF, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';
-import { fetchTournamentOptions } from '../../utilities/leagueService';
+import LeagueService from '../../services/league/league.service'
 
 import { Modal } from 'antd';
 import 'antd/dist/antd.css';
@@ -24,7 +24,7 @@ function LeagueModal() {
 
     if (User.authenticated) {
       console.log('fetching tournament options');
-      fetchTournamentOptions();
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.TOURNAMENT_OPTIONS);
     }
 
     return (() => {
@@ -61,8 +61,7 @@ function LeagueModal() {
   }
 
   const handleSignin = () => {
-    console.log('fetching tournament options');
-    fetchTournamentOptions();
+    LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.TOURNAMENT_OPTIONS);
   }
 
   const generateForm = () => {
