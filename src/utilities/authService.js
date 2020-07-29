@@ -1,7 +1,7 @@
 import { Auth } from 'aws-amplify';
 import Pubsub from './pubsub';
 import { NOTIF, ERROR_MESSAGES } from './constants';
-import { clearDataOnSignout } from './leagueService';
+import { clearDataOnSignout } from '../services/league/endpoints';
 
 /**
  * User object

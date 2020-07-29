@@ -8,7 +8,7 @@ import 'antd/dist/antd.css';
 
 import { formatMoney } from '../../utilities/helper';
 import { userBuyIns, Auction, getServerTimestamp, setItemComplete, placeAuctionBid } from '../../utilities/auctionService';
-import { userId } from '../../utilities/leagueService';
+import { userId } from '../../services/league/endpoints';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF, AUCTION_STATUS } from '../../utilities/constants';
 import { User } from '../../utilities/authService';

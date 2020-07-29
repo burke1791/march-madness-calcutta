@@ -2,7 +2,7 @@ import React from 'react';
 import { Typography } from 'antd';
 import AlivePie from '../../alivePie/alivePie';
 import { formatMoney } from '../../../utilities/helper';
-import { userId } from '../../../utilities/leagueService';
+import { userId } from '../../../services/league/endpoints';
 
 const { Text } = Typography
 

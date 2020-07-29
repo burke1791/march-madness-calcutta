@@ -10,7 +10,7 @@ import MemberList from '../memberList/memberList';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
 import { connectAuction, disconnect, fetchAuctionTeams, clearAuctionTeams, auctionTeams, fetchUserBuyIns, userBuyIns, fetchAuctionStatus } from '../../utilities/auctionService';
-import { userId } from '../../utilities/leagueService';
+import { userId } from '../../services/league/endpoints';
 import { useLeagueState } from '../../context/leagueContext';
 import withSubscription from '../../HOC/withSubscription';
 

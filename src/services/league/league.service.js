@@ -31,5 +31,7 @@ LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.JOIN_LEAGUE, leagueEndpoints.
 LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES, leagueEndpoints.getLeagueUserSummaries);
 LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.UPCOMING_GAMES, leagueEndpoints.getUpcomingGames);
 LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.REMAINING_GAMES_COUNT, leagueEndpoints.getRemainingGamesCount);
+LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.TOURNAMENT_BRACKET_GAMES, leagueEndpoints.getTournamentGamesForBracket);
+LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS, leagueEndpoints.fetchUserTeams);
 
 export default LeagueService;

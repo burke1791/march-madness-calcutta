@@ -77,5 +77,56 @@ export const leagueServiceHelper = {
     }
   
     return null;
+  },
+
+  packageBracketGames: function(games) {
+    return games.map(game => {
+      // refactor to account for no seeds, etc.
+      return {
+        gameId: game.gameId,
+        nextGameId: game.nextGameId,
+        team1Id: game.team1Id,
+        team1Name: game.team1Id == null ? null : `(${game.team1Seed}) ${game.team1Name}`,
+        team1Score: game.team1Score,
+        team2Id: game.team2Id,
+        team2Name: game.team2Id == null ? null : `(${game.team2Seed}) ${game.team2Name}`,
+        team2Score: game.team2Score
+      };
+    });
+  },
+
+  packageUserTeams: function(teams) {
+    const userTeams = teams.map(team => {
+      return {
+        teamId: team.teamId,
+        name: team.name,
+        seed: team.seed,
+        price: team.price,
+        payout: team.payout,
+        netReturn: team.payout - team.price,
+        eliminated: !team.alive
+      };
+    });
+  
+    // sorting the teams in descending order by their net return
+    userTeams.sort(function(a, b) { return b.netReturn - a.netReturn });
+  
+    // adding a tax object to the list of user teams
+    if (teams[0].taxBuyIn > 0) {
+      userTeams.push({
+        teamId: 0,
+        name: 'Tax',
+        seed: null,
+        price: teams[0].taxBuyIn,
+        payout: 0,
+        netReturn: -teams[0].taxBuyIn
+      });
+    }
+  
+    return userTeams;
+  },
+
+  parseUserAlias: function(teams) {
+    return teams[0].alias;
   }
 }

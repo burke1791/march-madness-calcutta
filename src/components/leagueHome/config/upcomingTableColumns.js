@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography } from "antd";
 import { formatDateTime } from '../../../utilities/helper';
-import { userId } from '../../../utilities/leagueService';
+import { userId } from '../../../services/league/endpoints';
 
 const { Text } = Typography
 

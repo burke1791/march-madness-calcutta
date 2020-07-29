@@ -114,7 +114,47 @@ export const leagueEndpoints = {
     }).catch(error => {
       console.log(error);
     });
+  },
+
+  getTournamentGamesForBracket: function(apiService, params) {
+    if (params.leagueId != undefined && params.leagueId != null) {
+      apiService({
+        method: 'GET',
+        url: LEAGUE_SERVICE_ENDPOINTS.TOURNAMENT_BRACKET_GAMES + `/${params.leagueId}`
+      }).then(response => {
+        console.log(response);
+        Data.tournamentBracketGames = leagueServiceHelper.packageBracketGames(response.data);
+        Pubsub.publish(NOTIF.TOURNAMENT_BRACKET_GAMES, Data.tournamentBracketGames);
+      }).catch(error => {
+        console.log(error);
+      });
+    }
+  },
+
+  fetchUserTeams: function(apiService, params) {
+    apiService({
+      method: 'GET',
+      url: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS + `/${params.leagueId}/${params.userId}`
+    }).then(response => {
+      Data.userTeams = leagueServiceHelper.packageUserTeams(response.data);
+      Data.userAlias = leagueServiceHelper.parseUserAlias(response.data);
+      Pubsub.publish(NOTIF.LEAGUE_USER_TEAMS_FETCHED, null);
+    }).catch(error => {
+      console.log(error);
+    });
   }
+};
+
+/**
+ * @todo move clearUserTeams() and clearDataOnSignout() functionality to context
+ */
+export function clearUserTeams() {
+  Data.userTeams = [];
+  Data.userAlias = '';
+}
+
+export function clearDataOnSignout() {
+  Data = {};
 }
 
 

@@ -10,17 +10,17 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   LEAGUE_USER_SUMMARIES: '/getLeagueUserSummaries',
   UPCOMING_GAMES: '/getUpcomingGames',
   REMAINING_GAMES_COUNT: '/getRemainingGamesCount',
+  TOURNAMENT_BRACKET_GAMES: '/getTournamentGamesForBracket',
+  LEAGUE_USER_TEAMS: '/getLeagueUserTeams',
 }
 
 export const ENDPOINTS = {
-  LEAGUE_USER_TEAMS: '/getLeagueUserTeams',
   SERVER_TIMESTAMP: '/getServerTime',
   FETCH_CHAT: '/getAllChatMessages',
   FETCH_AUCTION_STATUS: '/getAuctionStatus',
   FETCH_AUCTION_TEAMS: '/getAuctionTeams',
   FETCH_AUCTION_BUYINS: '/getAuctionMemberBuyIns',
-  START_AUCTION: '/startAuction',
-  TOURNAMENT_BRACKET_GAMES: '/getTournamentGamesForBracket'
+  START_AUCTION: '/startAuction'
 };
 
 export const THEME_COLORS = {
