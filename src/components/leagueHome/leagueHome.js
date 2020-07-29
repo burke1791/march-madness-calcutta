@@ -3,9 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { Layout, Table, Row, Typography, Col, Tooltip } from 'antd';
 import LeagueHomeCards from './leagueHomeCards';
 import 'antd/dist/antd.css';
-import { Data, getLeagueUserSummaries, getUpcomingGames, getRemainingGamesCount, userId } from '../../utilities/leagueService';
+import LeagueService from '../../services/league/league.service';
+import { Data, userId } from '../../services/league/endpoints';
 import Pubsub from '../../utilities/pubsub';
-import { NOTIF } from '../../utilities/constants';
+import { NOTIF, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import AuctionChart from '../auctionChart/auctionChart';
 import { navigate } from '@reach/router';
 import { useLeagueState } from '../../context/leagueContext';
@@ -53,25 +54,25 @@ function LeagueHome(props) {
 
   useEffect(() => {
     if (leagueId) {
-      getLeagueUserSummaries(leagueId);
-      getUpcomingGames(leagueId);
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES, { leagueId });
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.UPCOMING_GAMES, { leagueId });
     }
   }, [leagueId]);
 
   useEffect(() => {
     if (tournamentId) {
-      getRemainingGamesCount(tournamentId);
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.REMAINING_GAMES_COUNT, { tournamentId });
     }
   }, [tournamentId]);
 
   const fetchDataOnSignIn = () => {
     if (leagueId) {
-      getLeagueUserSummaries(leagueId);
-      getUpcomingGames(leagueId);
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES, { leagueId });
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.UPCOMING_GAMES, { leagueId });
     }
     
     if (tournamentId) {
-      getRemainingGamesCount(tournamentId);
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.REMAINING_GAMES_COUNT, { tournamentId });
     }
   }
 

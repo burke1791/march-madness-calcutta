@@ -7,16 +7,12 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   LEAGUE_SUMMARIES: '/getLeagueSummaries',
   NEW_LEAGUE: '/createLeague',
   JOIN_LEAGUE: '/joinLeague',
-}
-
-export const ENDPOINTS = {
-  TOURNAMENT_OPTIONS: '/getTournamentOptions',
-  NEW_LEAGUE: '/createLeague',
-  JOIN_LEAGUE: '/joinLeague',
-  LEAGUE_SUMMARIES: '/getLeagueSummaries',
   LEAGUE_USER_SUMMARIES: '/getLeagueUserSummaries',
   UPCOMING_GAMES: '/getUpcomingGames',
   REMAINING_GAMES_COUNT: '/getRemainingGamesCount',
+}
+
+export const ENDPOINTS = {
   LEAGUE_USER_TEAMS: '/getLeagueUserTeams',
   SERVER_TIMESTAMP: '/getServerTime',
   FETCH_CHAT: '/getAllChatMessages',

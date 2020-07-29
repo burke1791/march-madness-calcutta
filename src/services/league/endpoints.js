@@ -78,6 +78,42 @@ export const leagueEndpoints = {
     }).catch(error => {
       console.log(error);
     });
+  },
+
+  getLeagueUserSummaries: function(apiService, params) {
+    apiService({
+      method: 'GET',
+      url: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES + `/${params.leagueId}`
+    }).then(response => {
+      Data.leagueInfo = leagueServiceHelper.packageLeagueInfo(response.data);
+      Pubsub.publish(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED);
+    }).catch(error => {
+      console.log(error);
+    });
+  },
+
+  getUpcomingGames: function(apiService, params) {
+    apiService({
+      method: 'GET',
+      url: LEAGUE_SERVICE_ENDPOINTS.UPCOMING_GAMES + `/${params.leagueId}`
+    }).then(response => {
+      Data.upcomingGames = leagueServiceHelper.packageUpcomingGames(response.data);
+      Pubsub.publish(NOTIF.UPCOMING_GAMES_DOWNLOADED);
+    }).catch(error => {
+      console.log(error);
+    });
+  },
+
+  getRemainingGamesCount: function(apiService, params) {
+    apiService({
+      method: 'GET',
+      url: LEAGUE_SERVICE_ENDPOINTS.REMAINING_GAMES_COUNT + `/${params.tournamentId}`
+    }).then(response => {
+      Data.remainingGames = response.data[0].numGamesRemaining;
+      Pubsub.publish(NOTIF.REMAINING_GAMES_COUNT_DOWNLOADED, null);
+    }).catch(error => {
+      console.log(error);
+    });
   }
 }
 

@@ -17,42 +17,6 @@ const leagueServiceApi = Axios.create({
 
 leagueServiceApi.interceptors.request.use(authInterceptor);
 
-export function getLeagueUserSummaries(leagueId) {
-  leagueServiceApi({
-    method: 'GET',
-    url: ENDPOINTS.LEAGUE_USER_SUMMARIES + `/${leagueId}`
-  }).then(response => {
-    Data.leagueInfo = packageLeagueInfo(response.data);
-    Pubsub.publish(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED);
-  }).catch(error => {
-    console.log(error);
-  });
-}
-
-export function getUpcomingGames(leagueId) {
-  leagueServiceApi({
-    method: 'GET',
-    url: ENDPOINTS.UPCOMING_GAMES + `/${leagueId}`
-  }).then(response => {
-    Data.upcomingGames = packageUpcomingGames(response.data);
-    Pubsub.publish(NOTIF.UPCOMING_GAMES_DOWNLOADED);
-  }).catch(error => {
-    console.log(error);
-  });
-}
-
-export function getRemainingGamesCount(tournamentId) {
-  leagueServiceApi({
-    method: 'GET',
-    url: ENDPOINTS.REMAINING_GAMES_COUNT + `/${tournamentId}`
-  }).then(response => {
-    Data.remainingGames = response.data[0].numGamesRemaining;
-    Pubsub.publish(NOTIF.REMAINING_GAMES_COUNT_DOWNLOADED, null);
-  }).catch(error => {
-    console.log(error);
-  });
-}
-
 export function getTournamentGamesForBracket(leagueId) {
   if (leagueId != undefined && leagueId != null) {
     leagueServiceApi({
