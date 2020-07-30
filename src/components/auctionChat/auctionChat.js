@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './auctionChat.css';
 
 import { formatTimestamp } from '../../utilities/helper';
@@ -6,9 +6,11 @@ import { formatTimestamp } from '../../utilities/helper';
 import { Row, Col, List, Card, Input, Button } from 'antd'
 import 'antd/dist/antd.css';
 import Pubsub from '../../utilities/pubsub';
-import { NOTIF } from '../../utilities/constants';
-import { sendSocketMessage, fetchChatMessages, clearChatMessages, chatMessages } from '../../utilities/auctionService';
+import { NOTIF, AUCTION_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { sendSocketMessage } from '../../utilities/auctionService';
+import AuctionService from '../../services/autction/auction.service';
 import { useLeagueState } from '../../context/leagueContext';
+import { useAuthState } from '../../context/authContext';
 
 const { Search } = Input;
 
@@ -18,25 +20,40 @@ function AuctionChat() {
   const [messages, setMessages] = useState([]);
 
   const { leagueId } = useLeagueState();
+  const { authenticated } = useAuthState();
+
+  const handleNewMessage = useCallback(newMessage => {
+    const newList = [...messages, ...newMessage];
+    console.log(newList);
+
+    setMessages(newList);
+  }, [messages]);
 
   useEffect(() => {
-    Pubsub.subscribe(NOTIF.NEW_CHAT_MESSAGE, AuctionChat, newMessage);
+    Pubsub.subscribe(NOTIF.NEW_CHAT_MESSAGE, AuctionChat, handleNewMessage);
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.NEW_CHAT_MESSAGE, AuctionChat);
     });
-  }, []);
+  }, [handleNewMessage]);
 
   useEffect(() => {
-    fetchChatMessages(leagueId);
+    clearMessages();
+    getAllMessages();
 
     return (() => {
-      clearChatMessages();
-    })
-  }, [leagueId]);
+      clearMessages();
+    });
+  }, [leagueId, authenticated]);
 
-  const newMessage = () => {
-    setMessages([...chatMessages]);
+  const getAllMessages = () => {
+    if (leagueId && authenticated) {
+      AuctionService.callApi(AUCTION_SERVICE_ENDPOINTS.FETCH_CHAT, { leagueId });
+    }
+  }
+
+  const clearMessages = () => {
+    setMessages([]);
   }
 
   const sendMessage = (value) => {

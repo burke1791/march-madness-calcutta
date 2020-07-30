@@ -7,7 +7,8 @@ import { Button, Card, Statistic, Row, Col, InputNumber } from 'antd';
 import 'antd/dist/antd.css';
 
 import { formatMoney } from '../../utilities/helper';
-import { userBuyIns, Auction, setItemComplete, placeAuctionBid } from '../../utilities/auctionService';
+import { setItemComplete, placeAuctionBid } from '../../utilities/auctionService';
+import { userBuyIns, Auction } from '../../services/autction/endpoints';
 import AuctionService from '../../services/autction/auction.service';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF, AUCTION_STATUS, AUCTION_SERVICE_ENDPOINTS } from '../../utilities/constants';

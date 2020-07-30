@@ -25,6 +25,9 @@ var AuctionService = (function() {
  * Adding each auction service endpoint to the AuctionService instance
  */
 AuctionService.newEndpoint(AUCTION_SERVICE_ENDPOINTS.SERVER_TIMESTAMP, auctionEndpoints.getServerTimestamp);
-
+AuctionService.newEndpoint(AUCTION_SERVICE_ENDPOINTS.FETCH_CHAT, auctionEndpoints.fetchChatMessages);
+AuctionService.newEndpoint(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_STATUS, auctionEndpoints.fetchAuctionStatus);
+AuctionService.newEndpoint(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_TEAMS, auctionEndpoints.fetchAuctionTeams);
+AuctionService.newEndpoint(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_BUYINS, auctionEndpoints.fetchUserBuyIns);
 
  export default AuctionService;

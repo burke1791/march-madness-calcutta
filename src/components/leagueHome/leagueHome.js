@@ -18,7 +18,7 @@ import { useAuthState } from '../../context/authContext';
 const { Header, Content } = Layout;
 const { Text } = Typography;
 
-function LeagueHome(props) {
+function LeagueHome() {
   
   const [leagueName, setLeagueName] = useState('');
   const [tournamentName, setTournamentName] = useState('');
@@ -34,7 +34,7 @@ function LeagueHome(props) {
   const [upcomingLoading, setUpcomingLoading] = useState(true);
 
   const { tournamentId, leagueId } = useLeagueState();
-  const { userId } = useAuthState();
+  const { userId, authenticated } = useAuthState();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHome, getLeagueInfo);
@@ -49,11 +49,10 @@ function LeagueHome(props) {
   }, []);
 
   useEffect(() => {
-    console.log('props.authenticated: ' + props.authenticated);
-    if (props.authenticated) {
+    if (authenticated) {
       fetchDataOnSignIn();
     }
-  }, [props.authenticated]);
+  }, [authenticated]);
 
   useEffect(() => {
     if (leagueId) {
@@ -324,4 +323,4 @@ function LeagueHome(props) {
   );
 }
 
-export default withAuth(LeagueHome);
+export default LeagueHome;

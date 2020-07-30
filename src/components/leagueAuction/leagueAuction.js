@@ -8,13 +8,14 @@ import 'antd/dist/antd.css';
 import MyTeams from '../myTeams/myTeams';
 import MemberList from '../memberList/memberList';
 import Pubsub from '../../utilities/pubsub';
-import { NOTIF } from '../../utilities/constants';
-import { connectAuction, disconnect, fetchAuctionTeams, clearAuctionTeams, auctionTeams, fetchUserBuyIns, userBuyIns, fetchAuctionStatus } from '../../utilities/auctionService';
+import { NOTIF, AUCTION_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { connectAuction, disconnect } from '../../utilities/auctionService';
 import { useLeagueState } from '../../context/leagueContext';
-import withAuth from '../../HOC/withAuth';
 import { useAuthState } from '../../context/authContext';
+import AuctionService from '../../services/autction/auction.service';
+import { userBuyIns, auctionTeams, clearAuctionTeams } from '../../services/autction/endpoints';
 
-function LeagueAuction(props) {
+function LeagueAuction() {
 
   const [teams, setTeams] = useState([]);
   const [prizepool, setPrizepool] = useState(0);
@@ -24,7 +25,7 @@ function LeagueAuction(props) {
   const [sidebarInUse, setSidebarInUse] = useState(true);
 
   const { leagueId } = useLeagueState();
-  const { userId } = useAuthState();
+  const { userId, authenticated } = useAuthState();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.AUCTION_TEAMS_DOWNLOADED, LeagueAuction, auctionTeamsDownloaded);
@@ -39,9 +40,9 @@ function LeagueAuction(props) {
   }, []);
 
   useEffect(() => {
-    console.log(leagueId, props.authenticated);
-    if (leagueId && props.authenticated) {
-      fetchData(leagueId);
+    console.log(leagueId, authenticated);
+    if (leagueId && authenticated) {
+      fetchData();
       connectWebsocket(leagueId);
     } else {
       console.log('leagueId is falsy');
@@ -54,10 +55,10 @@ function LeagueAuction(props) {
   }, [leagueId]);
 
   useEffect(() => {
-    if (props.authenticated) {
+    if (authenticated) {
       handleSignIn();
     }
-  }, [props.authenticated]);
+  }, [authenticated]);
 
   const handleSignIn = () => {
     if (leagueId) {
@@ -70,13 +71,14 @@ function LeagueAuction(props) {
     connectAuction(leagueId);
   }
 
-  const fetchData = (leagueId) => {
-    fetchAuctionTeams(leagueId);
-    fetchUserBuyIns(leagueId);
-    fetchAuctionStatus(leagueId);
+  const fetchData = () => {
+    AuctionService.callApi(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_TEAMS, { leagueId });
+    AuctionService.callApi(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_BUYINS, { leagueId });
+    AuctionService.callApi(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_STATUS, { leagueId });
   }
 
   const auctionTeamsDownloaded = () => {
+    console.log(auctionTeams);
     setTeams(auctionTeams);
     
     const myTeamsArr = auctionTeams.filter(team => {
@@ -89,8 +91,8 @@ function LeagueAuction(props) {
 
   const handleNewAuctionData = (newItem) => {
     if (newItem) {
-      fetchAuctionTeams(leagueId);
-      fetchUserBuyIns(leagueId);
+      AuctionService.callApi(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_TEAMS, { leagueId });
+      AuctionService.callApi(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_BUYINS, { leagueId });
     }
   }
 
@@ -127,4 +129,4 @@ function LeagueAuction(props) {
   );
 }
 
-export default withAuth(LeagueAuction);
+export default LeagueAuction;

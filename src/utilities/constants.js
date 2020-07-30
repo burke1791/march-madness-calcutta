@@ -21,15 +21,12 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
 
 export const AUCTION_SERVICE_ENDPOINTS = {
   SERVER_TIMESTAMP: '/getServerTime',
-}
-
-export const ENDPOINTS = {
   FETCH_CHAT: '/getAllChatMessages',
   FETCH_AUCTION_STATUS: '/getAuctionStatus',
   FETCH_AUCTION_TEAMS: '/getAuctionTeams',
   FETCH_AUCTION_BUYINS: '/getAuctionMemberBuyIns',
   START_AUCTION: '/startAuction'
-};
+}
 
 export const THEME_COLORS = {
   RED: '#ff5356',
@@ -91,6 +88,7 @@ export const NOTIF = {
   SIGN_IN: 'sign_in',
   SIGN_OUT: 'sign_out',
   NEW_CHAT_MESSAGE: 'new_chat_message',
+  CHAT_MESSAGES: 'chat_messages',
   NEW_AUCTION_DATA: 'new_auction_data',
   NEW_AUCTION_DATA_AVAILABLE: 'new_auction_data_available',
   TIMER_EXPIRED: 'timer_expired',
