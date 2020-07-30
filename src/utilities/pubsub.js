@@ -24,7 +24,6 @@ var Pubsub = {};
       observer: sub,
       callback: cb
     });
-    console.log(obs[notif]);
   };
 
   obj.unsubscribe = (notif, sub) => {

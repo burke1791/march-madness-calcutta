@@ -5,7 +5,6 @@ const AuthStateContext = createContext()
 const AuthDispatchContext = createContext()
 
 function authReducer(state, action) {
-  console.log(action);
   switch (action.type) {
     case 'update': {
       setAuthStorage(state, action);
@@ -56,8 +55,6 @@ function clearAuthStorage() {
 }
 
 function AuthProvider({children}) {
-  console.log(getAuthStorage());
-
   // initialize state from localstorage
   const [state, dispatch] = useReducer(authReducer, getAuthStorage());
 

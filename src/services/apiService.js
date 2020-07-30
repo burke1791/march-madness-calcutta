@@ -12,7 +12,7 @@ function ApiService(baseUrl) {
   this.newEndpoint = function(name, ref) {
     for (var endpoint of this.endpoints) {
       if (endpoint.name === name) {
-        console.log('endpoint already exists');
+        // console.log('endpoint already exists');
         return;
       }
     }
@@ -34,12 +34,12 @@ function ApiService(baseUrl) {
   this.callApi = function(name, params) {
     if (User.authenticated) {
       // send on api call
-      console.log('send on api call: ' + name);
+      // console.log('send on api call: ' + name);
       let func = this.endpoints.find(endpoint => endpoint.name === name).func
 
       func(this.service, params);
     } else {
-      console.log('not authenticated, do not send on: ' + name);
+      // console.log('not authenticated, do not send on: ' + name);
       return false;
     }
   }
@@ -47,14 +47,14 @@ function ApiService(baseUrl) {
 
 function authInterceptor(config) {
   if (User.session == undefined || !User.session) {
-    console.log('user not signed in, cancel request: ' + config.url);
+    // console.log('user not signed in, cancel request: ' + config.url);
 
     return {
       ...config,
       cancelToken: new CancelToken((cancel) => cancel(`Cancel request to: ${config.url} - user not authenticated`))
     };
   } else {
-    console.log('user signed in, send on api request: ' + config.url);
+    // console.log('user signed in, send on api request: ' + config.url);
 
     return {
       ...config,

@@ -5,7 +5,6 @@ const LeagueStateContext = createContext()
 const LeagueDispatchContext = createContext()
 
 function leagueReducer(state, action) {
-  console.log(action);
   switch (action.type) {
     case 'update': {
       setLeagueStorage(state, action);
@@ -54,8 +53,6 @@ function clearLeagueStorage() {
 }
 
 function LeagueProvider({children}) {
-  console.log(getLeagueStorage());
-
   // initialize state from localstorage
   const [state, dispatch] = useReducer(leagueReducer, getLeagueStorage());
 

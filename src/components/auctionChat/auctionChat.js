@@ -24,7 +24,6 @@ function AuctionChat() {
 
   const handleNewMessage = useCallback(newMessage => {
     const newList = [...messages, ...newMessage];
-    console.log(newList);
 
     setMessages(newList);
   }, [messages]);
