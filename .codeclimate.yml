@@ -1,0 +1,4 @@
+version: '2'
+similar-code:
+    config:
+      threshold: 60
