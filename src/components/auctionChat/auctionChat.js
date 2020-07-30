@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './auctionChat.css';
 
 import { formatTimestamp } from '../../utilities/helper';
@@ -19,14 +19,10 @@ function AuctionChat() {
   const [chatMessage, setChatMessage] = useState('');
   const [messages, setMessages] = useState([]);
 
+  const messagesRef = useRef(messages);
+
   const { leagueId } = useLeagueState();
   const { authenticated } = useAuthState();
-
-  const handleNewMessage = useCallback(newMessage => {
-    const newList = [...messages, ...newMessage];
-
-    setMessages(newList);
-  }, [messages]);
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.NEW_CHAT_MESSAGE, AuctionChat, handleNewMessage);
@@ -34,7 +30,7 @@ function AuctionChat() {
     return (() => {
       Pubsub.unsubscribe(NOTIF.NEW_CHAT_MESSAGE, AuctionChat);
     });
-  }, [handleNewMessage]);
+  }, []);
 
   useEffect(() => {
     clearMessages();
@@ -50,6 +46,13 @@ function AuctionChat() {
       AuctionService.callApi(AUCTION_SERVICE_ENDPOINTS.FETCH_CHAT, { leagueId });
     }
   }
+
+  const handleNewMessage = (newMessage) => {
+    const newList = [...messagesRef.current, ...newMessage];
+
+    messagesRef.current = newList;
+    setMessages(newList);
+  };
 
   const clearMessages = () => {
     setMessages([]);
