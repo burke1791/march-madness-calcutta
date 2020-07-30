@@ -21,17 +21,38 @@ function League(props) {
 
   const dispatch = useLeagueDispatch();
 
+  console.log(props);
+
   useEffect(() => {
-    dispatch({ type: 'setTournamentId', tournamentId: props.location.state.tournamentId });
-    dispatch({ type: 'setLeagueId', leagueId: props.leagueId });
-    dispatch({ type: 'setRoleId', roleId: props.location.state.roleId });
+    
+    setLeagueContext();
 
     return (() => {
       dispatch({ type: 'clear' });
     });
   }, []);
 
-  if (User.authenticated) {
+  /**
+   * Dispatches context updates only if the data is known
+   * @function setLeagueContext
+   */
+  const setLeagueContext = () => {
+    console.log('league component dispatching context updates');
+
+    if (props.location.state.tournamentId) {
+      dispatch({ type: 'update', key: 'tournamentId', value: props.location.state.tournamentId });
+    }
+
+    if (props.leagueId) {
+      dispatch({ type: 'update', key: 'leagueId', value: props.leagueId });
+    }
+
+    if (props.location.state.roleId) {
+      dispatch({ type: 'update', key: 'roleId', value: props.location.state.roleId });
+    }
+  }
+
+  if (User.authenticated == undefined || User.authenticated) {
     return (
       <Layout style={{ height: 'calc(100vh - 64px)' }}>
         <LeagueNav />

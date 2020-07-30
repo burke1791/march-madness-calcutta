@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { LEAGUE_FORM_TYPE, NOTIF } from '../../utilities/constants';
+import { LEAGUE_FORM_TYPE, NOTIF, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 
 import { Form, Input, Button, Select } from 'antd';
 import 'antd/dist/antd.css';
 
-import { createLeague, joinLeague, Data } from '../../utilities/leagueService';
+import LeagueService from '../../services/league/league.service';
+import { Data } from '../../services/league/endpoints';
 import { User } from '../../utilities/authService';
 import Pubsub from '../../utilities/pubsub';
 
@@ -35,9 +36,9 @@ function NewLeagueForm(props) {
     let tourneyId = tournamentId;
 
     if (props.leagueType === LEAGUE_FORM_TYPE.CREATE) {
-      createLeague(name, password, tourneyId);
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.NEW_LEAGUE, { name: name, password: password, tournamentId: tourneyId });
     } else {
-      joinLeague(name, password);
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.JOIN_LEAGUE, { name: name, password: password });
     }
   }
 

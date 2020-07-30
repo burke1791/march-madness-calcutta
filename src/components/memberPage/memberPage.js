@@ -3,8 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Layout, Table, Row, Typography } from 'antd';
 import 'antd/dist/antd.css';
 import Pubsub from '../../utilities/pubsub';
-import { NOTIF } from '../../utilities/constants';
-import { Data, fetchUserTeams, clearUserTeams } from '../../utilities/leagueService';
+import { NOTIF, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import LeagueService from '../../services/league/league.service';
+import { Data, clearUserTeams } from '../../services/league/endpoints'; 
 import { formatMoney } from '../../utilities/helper';
 import { useLeagueState } from '../../context/leagueContext';
 
@@ -64,7 +65,10 @@ function MemberPage(props) {
   useEffect(() => {
     Pubsub.subscribe(NOTIF.LEAGUE_USER_TEAMS_FETCHED, MemberPage, handleTeams);
 
-    fetchUserTeams(leagueId, props.location.state.userId);
+    LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS, {
+      leagueId: leagueId,
+      userId: props.location.state.userId
+    });
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.LEAGUE_USER_TEAMS_FETCHED, MemberPage);

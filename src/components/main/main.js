@@ -4,53 +4,13 @@ import 'antd/dist/antd.css';
 
 import LeagueModal from '../leagueModal/leagueModal';
 
-import { NOTIF, LEAGUE_FORM_TYPE } from '../../utilities/constants';
+import { NOTIF, LEAGUE_FORM_TYPE, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';
 import { User } from '../../utilities/authService';
-import { formatMoney } from '../../utilities/helper';
 import { Redirect, navigate } from '@reach/router';
-import { Data, getLeagueSummaries, leaguesFetched } from '../../utilities/leagueService';
-
-const { Text } = Typography;
-
-let columns = [
-  {
-    title: 'League Name',
-    dataIndex: 'name',
-    align: 'left',
-    width: 250
-  },
-  {
-    title: 'Buy In',
-    dataIndex: 'buyIn',
-    align: 'center',
-    width: 150,
-    render: (text) => {
-      if (text === null) return '';
-      return formatMoney(+text);
-    }
-  },
-  {
-    title: 'Current Payout',
-    dataIndex: 'payout',
-    align: 'center',
-    width: 150,
-    render: (text) => {
-      if (text === null) return '';
-      return formatMoney(+text);
-    }
-  },
-  {
-    title: 'Net Return',
-    dataIndex: 'return',
-    align: 'center',
-    width: 150,
-    render: (text, record) => {
-      if (text === null) return '';
-      return <Text type={+text < 0 ? 'danger' : ''}>{formatMoney(+text)}</Text>;
-    }
-  }
-];
+import LeagueService from '../../services/league/league.service';
+import { Data, leaguesFetched } from '../../services/league/endpoints';
+import { leagueTableColumns } from './leagueTableColumns';
 
 function Main() {
 
@@ -84,7 +44,7 @@ function Main() {
   }, []);
 
   const fetchLeagueInfo = (override = false) => {
-    getLeagueSummaries(override);
+    LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_SUMMARIES, { override });
   }
 
   const handleLeagueJoin = () => {
@@ -160,7 +120,7 @@ function Main() {
         </Row>
         <Row type='flex' justify='center'>
           <Table 
-            columns={columns} 
+            columns={leagueTableColumns} 
             dataSource={leagueSummaries} 
             size='middle' 
             pagination={false}

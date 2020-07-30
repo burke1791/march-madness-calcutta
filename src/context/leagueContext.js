@@ -1,42 +1,61 @@
 import React, { createContext, useReducer, useContext } from 'react'
+import { calcuttaStore } from '../utilities/helper';
 
 const LeagueStateContext = createContext()
 const LeagueDispatchContext = createContext()
 
 function leagueReducer(state, action) {
   switch (action.type) {
-    case 'setTournamentId': {
-      return { 
-        ...state,
-        tournamentId: action.tournamentId
-      };
-    }
-    case 'setLeagueId': {
+    case 'update': {
+      setLeagueStorage(state, action);
       return {
         ...state,
-        leagueId: action.leagueId
-      }
-    }
-    case 'setRoleId': {
-      return {
-        ...state,
-        roleId: action.roleId
+        [action.key]: action.value
       }
     }
     case 'clear': {
-      return { 
-        leagueId: null,
-        tournamentId: null
-      };
+      clearLeagueStorage();
+      return {};
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);
-    } 
+    }
   }
 }
 
+/**
+ * Stores context state in localstorage so that important lookup keys can be persisted through refreshes
+ * @function setLeagueStorage
+ * @param {Object} state - leagueContext's current state object
+ * @param {Object} action - contains data for the next state update
+ */
+function setLeagueStorage(state, action) {
+  let contextState = {
+    ...state,
+    [action.key]: action.value
+  };
+
+  calcuttaStore('set', 'leagueContext', contextState);
+}
+
+/**
+ * Retrieves league context data from localstorage to initialize certain component state after a refresh
+ * @function getLeagueStorage
+ */
+function getLeagueStorage() {
+  let contextState = calcuttaStore('get', 'leagueContext');
+
+  return contextState === null ? {} : contextState;
+}
+
+function clearLeagueStorage() {
+  calcuttaStore('clear', 'leagueContext');
+}
+
 function LeagueProvider({children}) {
-  const [state, dispatch] = useReducer(leagueReducer, {});
+  // initialize state from localstorage
+  const [state, dispatch] = useReducer(leagueReducer, getLeagueStorage());
+
   return (
     <LeagueStateContext.Provider value={state}>
       <LeagueDispatchContext.Provider value={dispatch}>

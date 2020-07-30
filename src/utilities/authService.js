@@ -1,8 +1,14 @@
 import { Auth } from 'aws-amplify';
 import Pubsub from './pubsub';
 import { NOTIF, ERROR_MESSAGES } from './constants';
-import { clearDataOnSignout } from './leagueService';
+import { clearDataOnSignout } from '../services/league/endpoints';
 
+/**
+ * User object
+ * @namespace
+ * @property {boolean} authenticated
+ * @property {object} session - contains info about the current auth session from AWS Cognito
+ */
 var User = {};
 
 export function signUp(username, email, password) {
@@ -48,8 +54,10 @@ export function signOut() {
   Auth.signOut().then(response => {
     console.log(response);
     User.authenticated = false;
+    User.session = false;
     clearDataOnSignout();
     Pubsub.publish(NOTIF.SIGN_OUT, null);
+    Pubsub.publish(NOTIF.AUTH, false);
   }).catch(error => {
     console.log(error);
   })
@@ -70,7 +78,8 @@ export function getCurrentSession() {
     console.log(session);
     User.session = session;
     User.authenticated = true;
-    Pubsub.publish(NOTIF.SIGN_IN, null);
+    Pubsub.publish(NOTIF.SIGN_IN, session);
+    Pubsub.publish(NOTIF.AUTH, true);
   }).catch(error => {
     console.log(error);
   });

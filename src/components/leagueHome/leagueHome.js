@@ -2,176 +2,21 @@ import React, { useState, useEffect } from 'react';
 
 import { Layout, Table, Row, Typography, Col, Tooltip } from 'antd';
 import LeagueHomeCards from './leagueHomeCards';
-import 'antd/dist/antd.css';
-import { Data, getLeagueUserSummaries, getUpcomingGames, getRemainingGamesCount, userId } from '../../utilities/leagueService';
-import Pubsub from '../../utilities/pubsub';
-import { NOTIF } from '../../utilities/constants';
-import AuctionChart from '../auctionChart/auctionChart';
 import AlivePie from '../alivePie/alivePie';
+import 'antd/dist/antd.css';
+import LeagueService from '../../services/league/league.service';
+import { Data } from '../../services/league/endpoints';
+import Pubsub from '../../utilities/pubsub';
+import { NOTIF, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import AuctionChart from '../auctionChart/auctionChart';
 import { navigate } from '@reach/router';
 import { useLeagueState } from '../../context/leagueContext';
 import { formatMoney, formatDateTime } from '../../utilities/helper';
+import withAuth from '../../HOC/withAuth';
+import { useAuthState } from '../../context/authContext';
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
-
-const columns = [
-  {
-    title: 'Rank',
-    dataIndex: 'rank',
-    align: 'center',
-    width: 75,
-    render: (text, record) => {
-      if (record.id == userId) {
-        return {
-          props: {
-            style: {
-              backgroundColor: '#b7daff'
-            }
-          },
-          children: <Text>{text}</Text>
-        }
-      }
-      return <Text>{text}</Text>;
-    }
-  },
-  {
-    title: 'Name',
-    dataIndex: 'name',
-    align: 'center',
-    width: 250,
-    render: (text, record) => {
-      if (record.id == userId) {
-        return {
-          props: {
-            style: {
-              backgroundColor: '#b7daff'
-            }
-          },
-          children: <Text>{text}</Text>
-        }
-      }
-      return <Text>{text}</Text>;
-    }
-  },
-  {
-    title: 'Buy In',
-    dataIndex: 'buyIn',
-    align: 'center',
-    width: 150,
-    render: (text, record) => {
-      if (record.id == userId) {
-        return {
-          props: {
-            style: {
-              backgroundColor: '#b7daff'
-            }
-          },
-          children: <Text>{formatMoney(record.buyIn)}</Text>
-        }
-      }
-      return <Text>{formatMoney(record.buyIn)}</Text>;
-    }
-  },
-  {
-    title: 'Current Payout',
-    dataIndex: 'payout',
-    align: 'center',
-    width: 150,
-    render: (text, record) => {
-      if (record.id == userId) {
-        return {
-          props: {
-            style: {
-              backgroundColor: '#b7daff'
-            }
-          },
-          children: <Text>{formatMoney(record.payout)}</Text>
-        }
-      }
-      return <Text>{formatMoney(record.payout)}</Text>;
-    }
-  },
-  {
-    title: 'Net Return',
-    dataIndex: 'return',
-    align: 'center',
-    width: 150,
-    render: (text, record) => {
-      if (record.id == userId) {
-        return {
-          props: {
-            style: {
-              backgroundColor: '#b7daff'
-            }
-          },
-          children: <Text type={record.return < 0 ? 'danger' : ''}>{formatMoney(record.return)}</Text>
-        }
-      }
-      return <Text type={record.return < 0 ? 'danger' : ''}>{formatMoney(record.return)}</Text>
-    }
-  },
-  {
-    dataIndex: 'teamsAlive',
-    align: 'center',
-    width: 75,
-    render: (text, record) => {
-      if (record.id == userId) {
-        return {
-          props: {
-            style: {
-              backgroundColor: '#b7daff'
-            }
-          },
-          children: <AlivePie numTeamsAlive={record.numTeamsAlive} numTeams={record.numTeams} />
-        }
-      }
-      return <AlivePie numTeamsAlive={record.numTeamsAlive} numTeams={record.numTeams} />;
-    }
-  }
-];
-
-const upcomingColumns = [
-  {
-    title: 'Upcoming Games',
-    dataIndex: 'homeTeamName',
-    colSpan: 2,
-    align: 'center',
-    width: 200,
-    render: (text, record) => {
-      let teamName = record.homeTeamName == null ? 'TBD' : `(${record.homeTeamSeed}) ${record.homeTeamName}`;
-
-      if (record.homeTeamOwnerId == userId) {
-        return <Text strong>{teamName}</Text>;
-      }
-      return <Text>{teamName}</Text>;
-    }
-  },
-  {
-    title: 'Away',
-    dataIndex: 'awayTeamName',
-    colSpan: 0,
-    align: 'center',
-    width: 200,
-    render: (text, record) => {
-      let teamName = record.awayTeamName == null ? 'TBD' : `(${record.awayTeamSeed}) ${record.awayTeamName}`;
-
-      if (record.awayTeamOwnerId == userId) {
-        return <Text strong>{teamName}</Text>;
-      }
-      return <Text>{teamName}</Text>;
-    }
-  },
-  {
-    title: 'Date',
-    dataIndex: 'eventDate',
-    align: 'center',
-    width: 250,
-    render: (text, record) => {
-      return <Text>{formatDateTime(record.eventDate)}</Text>
-    }
-  }
-]
 
 function LeagueHome() {
   
@@ -189,6 +34,7 @@ function LeagueHome() {
   const [upcomingLoading, setUpcomingLoading] = useState(true);
 
   const { tournamentId, leagueId } = useLeagueState();
+  const { userId, authenticated } = useAuthState();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHome, getLeagueInfo);
@@ -203,17 +49,34 @@ function LeagueHome() {
   }, []);
 
   useEffect(() => {
+    if (authenticated) {
+      fetchDataOnSignIn();
+    }
+  }, [authenticated]);
+
+  useEffect(() => {
     if (leagueId) {
-      getLeagueUserSummaries(leagueId);
-      getUpcomingGames(leagueId);
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES, { leagueId });
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.UPCOMING_GAMES, { leagueId });
     }
   }, [leagueId]);
 
   useEffect(() => {
     if (tournamentId) {
-      getRemainingGamesCount(tournamentId);
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.REMAINING_GAMES_COUNT, { tournamentId });
     }
   }, [tournamentId]);
+
+  const fetchDataOnSignIn = () => {
+    if (leagueId) {
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES, { leagueId });
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.UPCOMING_GAMES, { leagueId });
+    }
+    
+    if (tournamentId) {
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.REMAINING_GAMES_COUNT, { tournamentId });
+    }
+  }
 
   const getLeagueInfo = () => {
     setLeagueName(Data.leagueInfo.name);
@@ -246,6 +109,164 @@ function LeagueHome() {
     setRemainingGameCount(Data.remainingGames);
   }
 
+  const userColumns = [
+    {
+      title: 'Rank',
+      dataIndex: 'rank',
+      align: 'center',
+      width: 75,
+      render: (text, record) => {
+        if (record.id == userId) {
+          return {
+            props: {
+              style: {
+                backgroundColor: '#b7daff'
+              }
+            },
+            children: <Text>{text}</Text>
+          }
+        }
+        return <Text>{text}</Text>;
+      }
+    },
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      align: 'center',
+      width: 250,
+      render: (text, record) => {
+        if (record.id == userId) {
+          return {
+            props: {
+              style: {
+                backgroundColor: '#b7daff'
+              }
+            },
+            children: <Text>{text}</Text>
+          }
+        }
+        return <Text>{text}</Text>;
+      }
+    },
+    {
+      title: 'Buy In',
+      dataIndex: 'buyIn',
+      align: 'center',
+      width: 150,
+      render: (text, record) => {
+        if (record.id == userId) {
+          return {
+            props: {
+              style: {
+                backgroundColor: '#b7daff'
+              }
+            },
+            children: <Text>{formatMoney(record.buyIn)}</Text>
+          }
+        }
+        return <Text>{formatMoney(record.buyIn)}</Text>;
+      }
+    },
+    {
+      title: 'Current Payout',
+      dataIndex: 'payout',
+      align: 'center',
+      width: 150,
+      render: (text, record) => {
+        if (record.id == userId) {
+          return {
+            props: {
+              style: {
+                backgroundColor: '#b7daff'
+              }
+            },
+            children: <Text>{formatMoney(record.payout)}</Text>
+          }
+        }
+        return <Text>{formatMoney(record.payout)}</Text>;
+      }
+    },
+    {
+      title: 'Net Return',
+      dataIndex: 'return',
+      align: 'center',
+      width: 150,
+      render: (text, record) => {
+        if (record.id == userId) {
+          return {
+            props: {
+              style: {
+                backgroundColor: '#b7daff'
+              }
+            },
+            children: <Text type={record.return < 0 ? 'danger' : ''}>{formatMoney(record.return)}</Text>
+          }
+        }
+        return <Text type={record.return < 0 ? 'danger' : ''}>{formatMoney(record.return)}</Text>
+      }
+    },
+    {
+      dataIndex: 'teamsAlive',
+      align: 'center',
+      width: 75,
+      render: (text, record) => {
+        if (record.id == userId) {
+          return {
+            props: {
+              style: {
+                backgroundColor: '#b7daff'
+              }
+            },
+            children: <AlivePie numTeamsAlive={record.numTeamsAlive} numTeams={record.numTeams} />
+          }
+        }
+        return <AlivePie numTeamsAlive={record.numTeamsAlive} numTeams={record.numTeams} />;
+      }
+    }
+  ];
+
+  const upcomingColumns = [
+    {
+      title: 'Upcoming Games',
+      dataIndex: 'homeTeamName',
+      colSpan: 2,
+      align: 'center',
+      width: 200,
+      render: (text, record) => {
+        let teamName = record.homeTeamName == null ? 'TBD' : `(${record.homeTeamSeed}) ${record.homeTeamName}`;
+  
+        if (record.homeTeamOwnerId == userId) {
+          return <Text strong>{teamName}</Text>;
+        }
+        return <Text>{teamName}</Text>;
+      }
+    },
+    {
+      title: 'Away',
+      dataIndex: 'awayTeamName',
+      colSpan: 0,
+      align: 'center',
+      width: 200,
+      render: (text, record) => {
+        let teamName = record.awayTeamName == null ? 'TBD' : `(${record.awayTeamSeed}) ${record.awayTeamName}`;
+  
+        if (record.awayTeamOwnerId == userId) {
+          return <Text strong>{teamName}</Text>;
+        }
+        return <Text>{teamName}</Text>;
+      }
+    },
+    {
+      title: 'Date',
+      dataIndex: 'eventDate',
+      align: 'center',
+      width: 250,
+      render: (text, record) => {
+        return <Text>{formatDateTime(record.eventDate)}</Text>
+      }
+    }
+  ]
+
   return (
     <Layout>
       <Header style={{ background: 'none', textAlign: 'center' }}>
@@ -259,7 +280,7 @@ function LeagueHome() {
         <Row type='flex' justify='center' gutter={[12, 8]}>
           <Col md={20} xxl={12}>
             <Table
-              columns={columns}
+              columns={userColumns}
               dataSource={userList}
               rowClassName='pointer'
               size='middle'

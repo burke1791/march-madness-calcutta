@@ -7,12 +7,13 @@ import { Button, Card, Statistic, Row, Col, InputNumber } from 'antd';
 import 'antd/dist/antd.css';
 
 import { formatMoney } from '../../utilities/helper';
-import { userBuyIns, Auction, getServerTimestamp, setItemComplete, placeAuctionBid } from '../../utilities/auctionService';
-import { userId } from '../../utilities/leagueService';
+import { setItemComplete, placeAuctionBid } from '../../utilities/auctionService';
+import { userBuyIns, Auction } from '../../services/autction/endpoints';
+import AuctionService from '../../services/autction/auction.service';
 import Pubsub from '../../utilities/pubsub';
-import { NOTIF, AUCTION_STATUS } from '../../utilities/constants';
-import { User } from '../../utilities/authService';
+import { NOTIF, AUCTION_STATUS, AUCTION_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
+import { useAuthState } from '../../context/authContext';
 
 const { Countdown } = Statistic;
 
@@ -30,14 +31,13 @@ function AuctionActions() {
   const [offset, setOffset] = useState(0);
 
   const { roleId, leagueId } = useLeagueState();
+  const { userId, authenticated } = useAuthState();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.NEW_AUCTION_DATA, AuctionActions, handleAuctionUpdate);
     Pubsub.subscribe(NOTIF.AUCTION_BUYINS_DOWNLOADED, AuctionActions, updateTotalSpent);
     Pubsub.subscribe(NOTIF.SERVER_SYNCED, AuctionActions, updateOffset);
     Pubsub.subscribe(NOTIF.AUCTION_ERROR, AuctionActions, handleAuctionError);
-
-    getServerTimestamp();
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.NEW_AUCTION_DATA, AuctionActions);
@@ -47,7 +47,14 @@ function AuctionActions() {
     });
   }, []);
 
+  useEffect(() => {
+    if (authenticated) {
+      AuctionService.callApi(AUCTION_SERVICE_ENDPOINTS.SERVER_TIMESTAMP);
+    }
+  }, [authenticated]);
+
   const updateOffset = (offset) => {
+    console.log(offset);
     setOffset(offset);
   }
 
