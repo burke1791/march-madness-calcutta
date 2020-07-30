@@ -10,6 +10,7 @@ import League from './components/league/league';
 import LandingPage from './landingPage/landingPage';
 import Admin from './components/adminPage/admin';
 import { LeagueProvider } from './context/leagueContext';
+import { AuthProvider } from './context/authContext';
 
 const { Header } = Layout;
 
@@ -18,10 +19,11 @@ function App() {
   return (
     <div className="App">
       <Layout style={{ height: '100vh' }}>
-        <Header style={{ padding: '0 25px' }}>
-          <Topnav />
-        </Header>
-        
+        <AuthProvider>
+          <Header style={{ padding: '0 25px' }}>
+            <Topnav />
+          </Header>
+      
           <Router>
             <LandingPage path='/' />
             <Admin path='/admin' />
@@ -30,6 +32,7 @@ function App() {
               <League path=':leagueId/*' />
             </LeagueProvider>
           </Router>
+        </AuthProvider>
       </Layout>
     </div>
   );

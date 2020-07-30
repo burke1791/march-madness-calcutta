@@ -78,7 +78,7 @@ export function getCurrentSession() {
     console.log(session);
     User.session = session;
     User.authenticated = true;
-    Pubsub.publish(NOTIF.SIGN_IN, null);
+    Pubsub.publish(NOTIF.SIGN_IN, session);
     Pubsub.publish(NOTIF.AUTH, true);
   }).catch(error => {
     console.log(error);

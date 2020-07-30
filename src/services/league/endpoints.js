@@ -8,11 +8,6 @@ import { leagueServiceHelper } from './helper';
 let Data = {};
 let leaguesFetched = false;
 
-/**
- * @todo refactor this into a user meta data query upon sign in
- */
-var userId = null;
-
 export const leagueEndpoints = {
   fetchTournamentOptions: function(apiService) {
     apiService({
@@ -35,9 +30,10 @@ export const leagueEndpoints = {
       }).then(response => {
         console.log(response);
         Data.leagues = leagueServiceHelper.packageLeagueSummaries(response.data);
-        userId = leagueServiceHelper.extractUserId(response.data);
+        let userId = leagueServiceHelper.extractUserId(response.data);
         leaguesFetched = true;
         Pubsub.publish(NOTIF.LEAGUE_SUMMARIES_FETCHED, null);
+        Pubsub.publish(NOTIF.USER_ID, userId);
       }).catch(error => {
         leaguesFetched = false;
         console.log(error);
@@ -160,6 +156,5 @@ export function clearDataOnSignout() {
 
 export {
   Data,
-  userId,
   leaguesFetched
 };

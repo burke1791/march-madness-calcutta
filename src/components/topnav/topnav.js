@@ -10,32 +10,44 @@ import 'antd/dist/antd.css';
 import { AUTH_FORM_TYPE, NOTIF } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';
 import { User, signOut, getCurrentSession } from '../../utilities/authService';
+import { useAuthDispatch, useAuthState } from '../../context/authContext';
 
 
 const { SubMenu } = Menu;
 
 function Topnav() {
 
-  const [authenticated, setAuthenticated] = useState(false);
+  const authDispatch = useAuthDispatch();
+
+  const { authenticated } = useAuthState();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.SIGN_IN, Topnav, handleSignin);
     Pubsub.subscribe(NOTIF.SIGN_OUT, Topnav, handleSignout);
+    Pubsub.subscribe(NOTIF.USER_ID, Topnav, handleUserId);
 
     getCurrentSession();
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.SIGN_IN, Topnav);
       Pubsub.unsubscribe(NOTIF.SIGN_OUT, Topnav);
+      Pubsub.unsubscribe(NOTIF.USER_ID, Topnav);
     });
   }, []);
 
-  const handleSignin = () => {
-    setAuthenticated(true);
+  const handleSignin = (session) => {
+    if (!!session) {
+      authDispatch({ type: 'update', key: 'authenticated', value: true });
+      authDispatch({ type: 'update', key: 'token', value: session.idToken.jwtToken });
+    }
   }
 
   const handleSignout = () => {
-    setAuthenticated(false);
+    authDispatch({ type: 'clear' });
+  }
+
+  const handleUserId = (userId) => {
+    authDispatch({ type: 'update', key: 'userId', value: userId });
   }
 
   const generateAuthenticatedDropdown = () => {

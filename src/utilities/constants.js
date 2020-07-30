@@ -2,6 +2,11 @@ export const API_CONFIG = {
   BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_API_URL : process.env.REACT_APP_API_URL
 }
 
+export const SERVICES = {
+  LEAGUE_SERVICE: 'league_service',
+  AUCTION_SERVICE: 'auction_service'
+}
+
 export const LEAGUE_SERVICE_ENDPOINTS = {
   TOURNAMENT_OPTIONS: '/getTournamentOptions',
   LEAGUE_SUMMARIES: '/getLeagueSummaries',
@@ -14,8 +19,11 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   LEAGUE_USER_TEAMS: '/getLeagueUserTeams',
 }
 
-export const ENDPOINTS = {
+export const AUCTION_SERVICE_ENDPOINTS = {
   SERVER_TIMESTAMP: '/getServerTime',
+}
+
+export const ENDPOINTS = {
   FETCH_CHAT: '/getAllChatMessages',
   FETCH_AUCTION_STATUS: '/getAuctionStatus',
   FETCH_AUCTION_TEAMS: '/getAuctionTeams',
@@ -89,7 +97,8 @@ export const NOTIF = {
   TOURNAMENT_BRACKET_GAMES: 'tournament_bracket_games',
   MM_RESULTS_DOWNLOADED: 'mm_results_downloaded',
   MM_SCORE_SET: 'mm_score_set',
-  MM_SCORE_SET_ERR: 'mm_score_set_err'
+  MM_SCORE_SET_ERR: 'mm_score_set_err',
+  USER_ID: 'user_id'
 };
 
 export const ERROR_MESSAGES = {

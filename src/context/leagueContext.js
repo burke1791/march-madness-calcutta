@@ -4,15 +4,6 @@ import { calcuttaStore } from '../utilities/helper';
 const LeagueStateContext = createContext()
 const LeagueDispatchContext = createContext()
 
-/**
- * @todo refactor action.type to dynamically handle new data keys, e.g.
- * case 'update': {
- *  return {
- *    ...state,
- *    [action.key]: action.value
- *  }
- * }
- */
 function leagueReducer(state, action) {
   console.log(action);
   switch (action.type) {

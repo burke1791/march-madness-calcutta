@@ -10,9 +10,9 @@ import MemberList from '../memberList/memberList';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
 import { connectAuction, disconnect, fetchAuctionTeams, clearAuctionTeams, auctionTeams, fetchUserBuyIns, userBuyIns, fetchAuctionStatus } from '../../utilities/auctionService';
-import { userId } from '../../services/league/endpoints';
 import { useLeagueState } from '../../context/leagueContext';
-import withSubscription from '../../HOC/withSubscription';
+import withAuth from '../../HOC/withAuth';
+import { useAuthState } from '../../context/authContext';
 
 function LeagueAuction(props) {
 
@@ -24,6 +24,7 @@ function LeagueAuction(props) {
   const [sidebarInUse, setSidebarInUse] = useState(true);
 
   const { leagueId } = useLeagueState();
+  const { userId } = useAuthState();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.AUCTION_TEAMS_DOWNLOADED, LeagueAuction, auctionTeamsDownloaded);
@@ -126,4 +127,4 @@ function LeagueAuction(props) {
   );
 }
 
-export default withSubscription(LeagueAuction);
+export default withAuth(LeagueAuction);
