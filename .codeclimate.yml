@@ -1,4 +1,5 @@
 version: '2'
-similar-code:
+checks:
+  similar-code:
     config:
       threshold: 75
