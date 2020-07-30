@@ -5,9 +5,9 @@ import 'antd/dist/antd.css';
 
 import Bracket from '../bracket/bracket';
 import Pubsub from '../../utilities/pubsub';
-import { NOTIF } from '../../utilities/constants';
+import { NOTIF, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
-import { getTournamentGamesForBracket } from '../../utilities/leagueService';
+import LeagueService from '../../services/league/league.service';
 
 function Tournament(props) {
 
@@ -18,7 +18,7 @@ function Tournament(props) {
   useEffect(() => {
     Pubsub.subscribe(NOTIF.TOURNAMENT_BRACKET_GAMES, Tournament, handleGames);
 
-    getTournamentGamesForBracket(leagueId);
+    LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.TOURNAMENT_BRACKET_GAMES, { leagueId });
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.TOURNAMENT_BRACKET_GAMES, Tournament);

@@ -2,23 +2,31 @@ export const API_CONFIG = {
   BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_API_URL : process.env.REACT_APP_API_URL
 }
 
-export const ENDPOINTS = {
+export const SERVICES = {
+  LEAGUE_SERVICE: 'league_service',
+  AUCTION_SERVICE: 'auction_service'
+}
+
+export const LEAGUE_SERVICE_ENDPOINTS = {
   TOURNAMENT_OPTIONS: '/getTournamentOptions',
+  LEAGUE_SUMMARIES: '/getLeagueSummaries',
   NEW_LEAGUE: '/createLeague',
   JOIN_LEAGUE: '/joinLeague',
-  LEAGUE_SUMMARIES: '/getLeagueSummaries',
   LEAGUE_USER_SUMMARIES: '/getLeagueUserSummaries',
   UPCOMING_GAMES: '/getUpcomingGames',
   REMAINING_GAMES_COUNT: '/getRemainingGamesCount',
+  TOURNAMENT_BRACKET_GAMES: '/getTournamentGamesForBracket',
   LEAGUE_USER_TEAMS: '/getLeagueUserTeams',
+}
+
+export const AUCTION_SERVICE_ENDPOINTS = {
   SERVER_TIMESTAMP: '/getServerTime',
   FETCH_CHAT: '/getAllChatMessages',
   FETCH_AUCTION_STATUS: '/getAuctionStatus',
   FETCH_AUCTION_TEAMS: '/getAuctionTeams',
   FETCH_AUCTION_BUYINS: '/getAuctionMemberBuyIns',
-  START_AUCTION: '/startAuction',
-  TOURNAMENT_BRACKET_GAMES: '/getTournamentGamesForBracket'
-};
+  START_AUCTION: '/startAuction'
+}
 
 export const THEME_COLORS = {
   RED: '#ff5356',
@@ -53,6 +61,8 @@ export const AUCTION_STATUS = {
 }
 
 export const NOTIF = {
+  AUTH: 'auth',
+  LEAGUE_SERVICE: 'league_service',
   AUTH_MODAL_SHOW: 'auth_modal_show',
   AUTH_FORM_TOGGLE: 'auth_form_toggle',
   AUTH_ERROR: 'auth_error',
@@ -78,13 +88,15 @@ export const NOTIF = {
   SIGN_IN: 'sign_in',
   SIGN_OUT: 'sign_out',
   NEW_CHAT_MESSAGE: 'new_chat_message',
+  CHAT_MESSAGES: 'chat_messages',
   NEW_AUCTION_DATA: 'new_auction_data',
   NEW_AUCTION_DATA_AVAILABLE: 'new_auction_data_available',
   TIMER_EXPIRED: 'timer_expired',
   TOURNAMENT_BRACKET_GAMES: 'tournament_bracket_games',
   MM_RESULTS_DOWNLOADED: 'mm_results_downloaded',
   MM_SCORE_SET: 'mm_score_set',
-  MM_SCORE_SET_ERR: 'mm_score_set_err'
+  MM_SCORE_SET_ERR: 'mm_score_set_err',
+  USER_ID: 'user_id'
 };
 
 export const ERROR_MESSAGES = {
