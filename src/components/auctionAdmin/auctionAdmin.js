@@ -62,7 +62,9 @@ function AuctionAdmin(props) {
         style={btnStyle} 
         loading={startLoading} 
         onClick={startStopClick} 
-        name={name}>{btnText}
+        name={name}
+      >
+        {btnText}
       </Button>
     );
   }
