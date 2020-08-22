@@ -134,18 +134,5 @@ function updateAuctionStatus(status) {
     lastBid: new Date(status.lastBidTimestamp)
   }
 
-  // Auction = {
-  //   status: status.status,
-  //   current: {
-  //     itemId: status.currentItemId,
-  //     itemName: status.name,
-  //     itemSeed: status.seed,
-  //     price: status.currentItemPrice,
-  //     winnerId: status.currentItemWinner,
-  //     winnerAlias: status.alias,
-  //     lastBid: new Date(status.lastBidTimestamp)
-  //   }
-  // };
-
   Pubsub.publish(NOTIF.NEW_AUCTION_DATA, updatedTeams);
 }

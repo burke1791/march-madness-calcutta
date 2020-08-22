@@ -16,7 +16,7 @@ import withAuth from '../../HOC/withAuth';
 import { useAuthState } from '../../context/authContext';
 
 const { Header, Content } = Layout;
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 function LeagueHome() {
   
@@ -191,6 +191,7 @@ function LeagueHome() {
       dataIndex: 'return',
       align: 'center',
       width: 150,
+      responsive: ['md'],
       render: (text, record) => {
         if (record.id == userId) {
           return {
@@ -209,6 +210,7 @@ function LeagueHome() {
       dataIndex: 'teamsAlive',
       align: 'center',
       width: 75,
+      responsive: ['lg'],
       render: (text, record) => {
         if (record.id == userId) {
           return {
@@ -269,11 +271,26 @@ function LeagueHome() {
 
   return (
     <Layout>
-      <Header style={{ background: 'none', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '32px', margin: '0' }}>{leagueName}</h1>
+      <Header style={{ background: 'none', textAlign: 'center', height: '48px' }}>
+        <Title
+          ellipsis={{ rows: 1 }}
+          level={1}
+          style={{ margin: 0, fontSize: '32px', fontWeight: 500 }}
+        >
+          {leagueName}
+        </Title>
+        {/* <h1 style={{ fontSize: '32px', margin: '0' }}>{leagueName}</h1> */}
       </Header>
       <Header style={{ background: 'none', textAlign: 'center', height: '48px' }}>
-        <h2 style={{ lineHeight: '32px', fontWeight: '400', margin: '0'}}>{tournamentName}</h2>
+        {/* <h2 style={{ lineHeight: '32px', fontWeight: '400', margin: '0'}}>{tournamentName}</h2> */}
+        <Title
+          ellipsis={{ rows: 1 }}
+          level={3}
+          style={{ lineHeight: '32px', fontWeight: 400, margin: 0 }}
+          type='secondary'
+        >
+          {tournamentName}
+        </Title>
       </Header>
       <Content>
         <LeagueHomeCards userCount={userCount} prizepool={prizepool} remainingGames={remainingGameCount} buyIn={myBuyIn} payout={myPayout} />
@@ -283,7 +300,7 @@ function LeagueHome() {
               columns={userColumns}
               dataSource={userList}
               rowClassName='pointer'
-              size='middle'
+              size='small'
               pagination={false}
               loading={loading}
               onRow={
@@ -307,7 +324,7 @@ function LeagueHome() {
             <Table
               columns={upcomingColumns}
               dataSource={upcomingGames}
-              size='middle'
+              size='small'
               pagination={false}
               loading={upcomingLoading}
               rowKey='gameId'

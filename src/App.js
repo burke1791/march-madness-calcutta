@@ -20,7 +20,7 @@ function App() {
     <div className="App">
       <Layout style={{ height: '100vh' }}>
         <AuthProvider>
-          <Header style={{ padding: '0 25px' }}>
+          <Header style={{ padding: 0 }}>
             <Topnav />
           </Header>
       

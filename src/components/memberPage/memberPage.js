@@ -47,6 +47,7 @@ const columns = [
     title: 'Net Return',
     dataIndex: 'netReturn',
     align: 'center',
+    responsive: ['md'],
     width: 150,
     render: (text, record) => {
       return <Text type={record.netReturn < 0 ? 'danger' : ''}>{formatMoney(text)}</Text>;
@@ -92,7 +93,7 @@ function MemberPage(props) {
           <Table
             columns={columns}
             dataSource={teams}
-            size='middle'
+            size='small'
             pagination={false}
             loading={loading}
             rowKey='teamId'
