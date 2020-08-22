@@ -35,6 +35,7 @@ export const leagueTableColumns = [
     title: 'Net Return',
     dataIndex: 'return',
     align: 'center',
+    responsive: ['md'],
     width: 150,
     render: (text, record) => {
       if (text === null) return '';
