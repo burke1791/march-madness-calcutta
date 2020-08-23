@@ -122,7 +122,7 @@ function Main() {
           <Table 
             columns={leagueTableColumns} 
             dataSource={leagueSummaries} 
-            size='middle' 
+            size='small'
             pagination={false}
             loading={loading}
             onRow={

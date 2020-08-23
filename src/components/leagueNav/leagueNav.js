@@ -11,6 +11,7 @@ const { Sider } = Layout;
 function LeagueNav() {
 
   const [displaySider, setDisplaySider] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
 
   const { leagueId } = useLeagueState();
 
@@ -22,11 +23,22 @@ function LeagueNav() {
     });
   }, []);
 
+  const handleCollapse = (flag, type) => {
+    if (window.innerWidth >= 992) {
+      // never collapse if the viewport is wide enough
+      setCollapsed(false);
+    } else {
+      setCollapsed(flag);
+    }
+  }
+
   const handleMenuToggle = () => {
     setDisplaySider(!displaySider);
   }
 
   const handleLeagueNavClick = (event) => {
+    handleCollapse(true, 'menuClick');
+
     if (leagueId) {
       if (event.key == 'leagueHome') {
         navigate(`/leagues/${leagueId}`);
@@ -44,7 +56,14 @@ function LeagueNav() {
 
   if (displaySider) {
     return (
-      <Sider width={200}>
+      <Sider 
+        width={200}
+        breakpoint='lg'
+        collapsedWidth={0}
+        zeroWidthTriggerStyle={{ top: '0px' }}
+        collapsed={collapsed}
+        onCollapse={handleCollapse}
+      >
         <Menu
           mode='inline'
           onClick={handleLeagueNavClick}

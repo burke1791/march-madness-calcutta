@@ -100,13 +100,13 @@ export const leagueEndpoints = {
     });
   },
 
-  getRemainingGamesCount: function(apiService, params) {
+  getRemainingTeamsCount: function(apiService, params) {
     apiService({
       method: 'GET',
-      url: LEAGUE_SERVICE_ENDPOINTS.REMAINING_GAMES_COUNT + `/${params.tournamentId}`
+      url: LEAGUE_SERVICE_ENDPOINTS.REMAINING_TEAMS_COUNT + `/${params.tournamentId}`
     }).then(response => {
-      Data.remainingGames = response.data[0].numGamesRemaining;
-      Pubsub.publish(NOTIF.REMAINING_GAMES_COUNT_DOWNLOADED, null);
+      Data.remainingTeams = response.data[0].numTeamsRemaining;
+      Pubsub.publish(NOTIF.REMAINING_TEAMS_COUNT_DOWNLOADED, null);
     }).catch(error => {
       console.log(error);
     });

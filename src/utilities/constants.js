@@ -14,7 +14,7 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   JOIN_LEAGUE: '/joinLeague',
   LEAGUE_USER_SUMMARIES: '/getLeagueUserSummaries',
   UPCOMING_GAMES: '/getUpcomingGames',
-  REMAINING_GAMES_COUNT: '/getRemainingGamesCount',
+  REMAINING_TEAMS_COUNT: '/getRemainingTeamsCount',
   TOURNAMENT_BRACKET_GAMES: '/getTournamentGamesForBracket',
   LEAGUE_USER_TEAMS: '/getLeagueUserTeams',
 }
@@ -76,6 +76,7 @@ export const NOTIF = {
   LEAGUE_USER_SUMMARIES_FETCHED: 'league_user_summaries_fetched',
   UPCOMING_GAMES_DOWNLOADED: 'upcoming_games_downloaded',
   REMAINING_GAMES_COUNT_DOWNLOADED: 'remaining_games_count_downloaded',
+  REMAINING_TEAMS_COUNT_DOWNLOADED: 'remaining_teams_count_downloaded',
   LEAGUE_USER_TEAMS_FETCHED: 'league_user_teams_fetched',
   MESSAGE_BOARD_TOPICS_DOWNLOADED: 'message_board_topics_downloaded',
   MESSAGE_BOARD_MODAL_SHOW: 'message_board_modal_show',

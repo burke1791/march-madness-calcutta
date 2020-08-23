@@ -30,7 +30,7 @@ LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.NEW_LEAGUE, leagueEndpoints.c
 LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.JOIN_LEAGUE, leagueEndpoints.joinLeague);
 LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES, leagueEndpoints.getLeagueUserSummaries);
 LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.UPCOMING_GAMES, leagueEndpoints.getUpcomingGames);
-LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.REMAINING_GAMES_COUNT, leagueEndpoints.getRemainingGamesCount);
+LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.REMAINING_TEAMS_COUNT, leagueEndpoints.getRemainingTeamsCount);
 LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.TOURNAMENT_BRACKET_GAMES, leagueEndpoints.getTournamentGamesForBracket);
 LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS, leagueEndpoints.fetchUserTeams);
 

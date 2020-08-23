@@ -13,23 +13,23 @@ function LeagueHomeCards(props) {
   
   return (
     <Row type='flex' justify='center' gutter={[12, 8]}>
-      <Col md={5} xxl={3}>
-        <Card style={{ textAlign: 'center' }}>
+      <Col xs={0} md={5} xxl={3}>
+        <Card style={{ textAlign: 'center' }} bodyStyle={{ padding: '24px 12px' }}>
           <Statistic title='Users' value={props.userCount} prefix={<UserOutlined />} />
         </Card>
       </Col>
-      <Col md={5} xxl={3}>
-        <Card style={{ textAlign: 'center' }}>
+      <Col xs={0} md={5} xxl={3}>
+        <Card style={{ textAlign: 'center' }} bodyStyle={{ padding: '24px 12px' }}>
           <Statistic title='Prizepool' value={props.prizepool} precision={2} prefix={<DollarTwoTone />} />
         </Card>
       </Col>
-      <Col md={5} xxl={3}>
-        <Card style={{ textAlign: 'center' }}>
-          <Statistic title='Remaining Games' value={props.remainingGames} prefix={<ClockCircleOutlined />} />
+      <Col xs={0} md={5} xxl={3}>
+        <Card style={{ textAlign: 'center' }} bodyStyle={{ padding: '24px 12px' }}>
+          <Statistic title='Remaining Teams' value={props.remainingTeams} prefix={<ClockCircleOutlined />} />
         </Card>
       </Col>
-      <Col md={5} xxl={3}>
-        <Card style={{ textAlign: 'center' }}>
+      <Col xs={0} md={5} xxl={3}>
+        <Card style={{ textAlign: 'center' }} bodyStyle={{ padding: '24px 12px' }}>
           <Statistic
             title='ROI'
             value={roi}

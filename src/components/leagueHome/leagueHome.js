@@ -16,7 +16,7 @@ import withAuth from '../../HOC/withAuth';
 import { useAuthState } from '../../context/authContext';
 
 const { Header, Content } = Layout;
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 function LeagueHome() {
   
@@ -24,7 +24,7 @@ function LeagueHome() {
   const [tournamentName, setTournamentName] = useState('');
   const [userList, setUserList] = useState([]);
   const [upcomingGames, setUpcomingGames] = useState([]);
-  const [remainingGameCount, setRemainingGameCount] = useState(0)
+  const [remainingTeamsCount, setRemainingTeamsCount] = useState(0)
   const [userCount, setUserCount] = useState(0);
   const [myBuyIn, setMyBuyIn] = useState(0);
   const [myPayout, setMyPayout] = useState(0);
@@ -39,12 +39,12 @@ function LeagueHome() {
   useEffect(() => {
     Pubsub.subscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHome, getLeagueInfo);
     Pubsub.subscribe(NOTIF.UPCOMING_GAMES_DOWNLOADED, LeagueHome, handleUpcomingGames);
-    Pubsub.subscribe(NOTIF.REMAINING_GAMES_COUNT_DOWNLOADED, LeagueHome, handleRemainingGameCount);
+    Pubsub.subscribe(NOTIF.REMAINING_TEAMS_COUNT_DOWNLOADED, LeagueHome, handleRemainingGameCount);
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHome);
       Pubsub.unsubscribe(NOTIF.UPCOMING_GAMES_DOWNLOADED, LeagueHome);
-      Pubsub.unsubscribe(NOTIF.REMAINING_GAMES_COUNT_DOWNLOADED, LeagueHome);
+      Pubsub.unsubscribe(NOTIF.REMAINING_TEAMS_COUNT_DOWNLOADED, LeagueHome);
     });
   }, []);
 
@@ -63,7 +63,7 @@ function LeagueHome() {
 
   useEffect(() => {
     if (tournamentId) {
-      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.REMAINING_GAMES_COUNT, { tournamentId });
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.REMAINING_TEAMS_COUNT, { tournamentId });
     }
   }, [tournamentId]);
 
@@ -74,7 +74,7 @@ function LeagueHome() {
     }
     
     if (tournamentId) {
-      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.REMAINING_GAMES_COUNT, { tournamentId });
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.REMAINING_TEAMS_COUNT, { tournamentId });
     }
   }
 
@@ -106,7 +106,7 @@ function LeagueHome() {
   }
 
   const handleRemainingGameCount = () => {
-    setRemainingGameCount(Data.remainingGames);
+    setRemainingTeamsCount(Data.remainingTeams);
   }
 
   const userColumns = [
@@ -191,6 +191,7 @@ function LeagueHome() {
       dataIndex: 'return',
       align: 'center',
       width: 150,
+      responsive: ['md'],
       render: (text, record) => {
         if (record.id == userId) {
           return {
@@ -209,6 +210,7 @@ function LeagueHome() {
       dataIndex: 'teamsAlive',
       align: 'center',
       width: 75,
+      responsive: ['lg'],
       render: (text, record) => {
         if (record.id == userId) {
           return {
@@ -269,21 +271,36 @@ function LeagueHome() {
 
   return (
     <Layout>
-      <Header style={{ background: 'none', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '32px', margin: '0' }}>{leagueName}</h1>
+      <Header style={{ background: 'none', textAlign: 'center', height: '48px' }}>
+        <Title
+          ellipsis={{ rows: 1 }}
+          level={1}
+          style={{ margin: 0, fontSize: '32px', fontWeight: 500 }}
+        >
+          {leagueName}
+        </Title>
+        {/* <h1 style={{ fontSize: '32px', margin: '0' }}>{leagueName}</h1> */}
       </Header>
       <Header style={{ background: 'none', textAlign: 'center', height: '48px' }}>
-        <h2 style={{ lineHeight: '32px', fontWeight: '400', margin: '0'}}>{tournamentName}</h2>
+        {/* <h2 style={{ lineHeight: '32px', fontWeight: '400', margin: '0'}}>{tournamentName}</h2> */}
+        <Title
+          ellipsis={{ rows: 1 }}
+          level={3}
+          style={{ lineHeight: '32px', fontWeight: 400, margin: 0 }}
+          type='secondary'
+        >
+          {tournamentName}
+        </Title>
       </Header>
       <Content>
-        <LeagueHomeCards userCount={userCount} prizepool={prizepool} remainingGames={remainingGameCount} buyIn={myBuyIn} payout={myPayout} />
+        <LeagueHomeCards userCount={userCount} prizepool={prizepool} remainingTeams={remainingTeamsCount} buyIn={myBuyIn} payout={myPayout} />
         <Row type='flex' justify='center' gutter={[12, 8]}>
           <Col md={20} xxl={12}>
             <Table
               columns={userColumns}
               dataSource={userList}
               rowClassName='pointer'
-              size='middle'
+              size='small'
               pagination={false}
               loading={loading}
               onRow={
@@ -307,7 +324,7 @@ function LeagueHome() {
             <Table
               columns={upcomingColumns}
               dataSource={upcomingGames}
-              size='middle'
+              size='small'
               pagination={false}
               loading={upcomingLoading}
               rowKey='gameId'
