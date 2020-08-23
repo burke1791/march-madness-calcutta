@@ -28,10 +28,10 @@ const formatDateTime = (value) => {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+    // hour: '2-digit',
+    // minute: '2-digit'
   };
-  return date.toLocaleString(undefined, options);
+  return date.toLocaleDateString(undefined, options);
 }
 
 /**
