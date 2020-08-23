@@ -24,7 +24,7 @@ function LeagueHome() {
   const [tournamentName, setTournamentName] = useState('');
   const [userList, setUserList] = useState([]);
   const [upcomingGames, setUpcomingGames] = useState([]);
-  const [remainingGameCount, setRemainingGameCount] = useState(0)
+  const [remainingTeamsCount, setRemainingTeamsCount] = useState(0)
   const [userCount, setUserCount] = useState(0);
   const [myBuyIn, setMyBuyIn] = useState(0);
   const [myPayout, setMyPayout] = useState(0);
@@ -39,12 +39,12 @@ function LeagueHome() {
   useEffect(() => {
     Pubsub.subscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHome, getLeagueInfo);
     Pubsub.subscribe(NOTIF.UPCOMING_GAMES_DOWNLOADED, LeagueHome, handleUpcomingGames);
-    Pubsub.subscribe(NOTIF.REMAINING_GAMES_COUNT_DOWNLOADED, LeagueHome, handleRemainingGameCount);
+    Pubsub.subscribe(NOTIF.REMAINING_TEAMS_COUNT_DOWNLOADED, LeagueHome, handleRemainingGameCount);
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHome);
       Pubsub.unsubscribe(NOTIF.UPCOMING_GAMES_DOWNLOADED, LeagueHome);
-      Pubsub.unsubscribe(NOTIF.REMAINING_GAMES_COUNT_DOWNLOADED, LeagueHome);
+      Pubsub.unsubscribe(NOTIF.REMAINING_TEAMS_COUNT_DOWNLOADED, LeagueHome);
     });
   }, []);
 
@@ -63,7 +63,7 @@ function LeagueHome() {
 
   useEffect(() => {
     if (tournamentId) {
-      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.REMAINING_GAMES_COUNT, { tournamentId });
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.REMAINING_TEAMS_COUNT, { tournamentId });
     }
   }, [tournamentId]);
 
@@ -74,7 +74,7 @@ function LeagueHome() {
     }
     
     if (tournamentId) {
-      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.REMAINING_GAMES_COUNT, { tournamentId });
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.REMAINING_TEAMS_COUNT, { tournamentId });
     }
   }
 
@@ -106,7 +106,7 @@ function LeagueHome() {
   }
 
   const handleRemainingGameCount = () => {
-    setRemainingGameCount(Data.remainingGames);
+    setRemainingTeamsCount(Data.remainingTeams);
   }
 
   const userColumns = [
@@ -293,7 +293,7 @@ function LeagueHome() {
         </Title>
       </Header>
       <Content>
-        <LeagueHomeCards userCount={userCount} prizepool={prizepool} remainingGames={remainingGameCount} buyIn={myBuyIn} payout={myPayout} />
+        <LeagueHomeCards userCount={userCount} prizepool={prizepool} remainingTeams={remainingTeamsCount} buyIn={myBuyIn} payout={myPayout} />
         <Row type='flex' justify='center' gutter={[12, 8]}>
           <Col md={20} xxl={12}>
             <Table
