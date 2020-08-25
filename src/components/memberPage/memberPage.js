@@ -6,7 +6,7 @@ import Pubsub from '../../utilities/pubsub';
 import { NOTIF, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import LeagueService from '../../services/league/league.service';
 import { Data, clearUserTeams } from '../../services/league/endpoints'; 
-import { formatMoney } from '../../utilities/helper';
+import { formatMoney, teamDisplayName } from '../../utilities/helper';
 import { useLeagueState } from '../../context/leagueContext';
 
 const { Header, Content } = Layout;
@@ -20,7 +20,7 @@ const columns = [
     width: 250,
     render: (text, record) => {
       if (record.seed != null) {
-        return <Text delete={record.eliminated}>{`(${record.seed}) ${text}`}</Text>;
+        return <Text delete={record.eliminated}>{teamDisplayName(text, record.seed)}</Text>;
       }
       return <Text delete={record.eliminated}>{text}</Text>;
     }
