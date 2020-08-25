@@ -11,7 +11,7 @@ import { NOTIF, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import AuctionChart from '../auctionChart/auctionChart';
 import { navigate } from '@reach/router';
 import { useLeagueState } from '../../context/leagueContext';
-import { formatMoney, formatDateTime } from '../../utilities/helper';
+import { formatMoney, formatDateTime, teamDisplayName } from '../../utilities/helper';
 import withAuth from '../../HOC/withAuth';
 import { useAuthState } from '../../context/authContext';
 
@@ -235,7 +235,7 @@ function LeagueHome() {
       align: 'center',
       width: 200,
       render: (text, record) => {
-        let teamName = record.homeTeamName == null ? 'TBD' : `(${record.homeTeamSeed}) ${record.homeTeamName}`;
+        let teamName = teamDisplayName(record.homeTeamName, record.homeTeamSeed);
   
         if (record.homeTeamOwnerId == userId) {
           return <Text strong>{teamName}</Text>;
@@ -250,7 +250,7 @@ function LeagueHome() {
       align: 'center',
       width: 200,
       render: (text, record) => {
-        let teamName = record.awayTeamName == null ? 'TBD' : `(${record.awayTeamSeed}) ${record.awayTeamName}`;
+        let teamName = teamDisplayName(record.awayTeamName, record.awayTeamSeed);
   
         if (record.awayTeamOwnerId == userId) {
           return <Text strong>{teamName}</Text>;
