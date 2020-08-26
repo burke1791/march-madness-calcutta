@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@ant-design/icons": "4.0.3",
+    "@ant-design/icons": "^4.0.3",
     "@aws-amplify/auth": "^3.3.1",
     "@reach/router": "^1.2.1",
     "antd": "^4.0.3",
@@ -12,7 +12,7 @@
     "react": "^16.12.0",
     "react-canvas-js": "^1.0.1",
     "react-dom": "^16.12.0",
-    "react-scripts": "3.0.1"
+    "react-scripts": "^3.4.3"
   },
   "scripts": {
     "start": "react-scripts start",
