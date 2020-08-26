@@ -57,10 +57,33 @@ const calcuttaStore = (action, key, data) => {
   }
 }
 
+/**
+ * @function teamDisplayName - returns a string in the proper team name format
+ * @param {String} name 
+ * @param {Number} seed 
+ * @param {Object} params 
+ */
+const teamDisplayName = (name, seed, params) => {
+  let displayName = '';
+
+  if (name == undefined || name == null) {
+    return 'TBD';
+  }
+
+  if (seed !== undefined && seed !== null) {
+    displayName = '(' + +seed + ') ';
+  }
+
+  displayName += name;
+
+  return displayName;
+}
+
 export {
   formatMoney,
   formatTimestamp,
   formatDatestamp,
   formatDateTime,
-  calcuttaStore
+  calcuttaStore,
+  teamDisplayName
 };
