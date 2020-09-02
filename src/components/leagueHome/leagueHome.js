@@ -264,7 +264,8 @@ function LeagueHome() {
       align: 'center',
       width: 250,
       render: (text, record) => {
-        return <Text>{formatDateTime(record.eventDate)}</Text>
+        // return <Text>{formatDateTime(record.eventDate)}</Text>
+        return <Text>{text}</Text>
       }
     }
   ]
