@@ -41,7 +41,8 @@ export const SOCKETS = {
 export const AUTH_FORM_TYPE = {
   SIGN_IN: 'Sign In',
   SIGN_UP: 'Create an Account',
-  CONFIRM: 'confirm'
+  CONFIRM: 'confirm',
+  PASSWORD_RESET: 'Password Reset'
 };
 
 export const LEAGUE_FORM_TYPE = {

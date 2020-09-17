@@ -85,6 +85,20 @@ export function getCurrentSession() {
   });
 }
 
+export function resetPassword(oldPw, newPw) {
+  return new Promise((resolve, reject) => {
+    Auth.currentAuthenticatedUser().then(user => {
+      return Auth.changePassword(user, oldPw, newPw);
+    }).then(data => {
+      console.log(data);
+      resolve(data);
+    }).catch(error => {
+      console.log(error);
+      reject(error);
+    });
+  });
+}
+
 export {
   User
 }
