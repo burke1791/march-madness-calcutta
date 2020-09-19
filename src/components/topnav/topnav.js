@@ -52,33 +52,15 @@ function Topnav() {
 
   const generateAuthenticatedDropdown = () => {
     let menu = [
+      <Menu.Item key='passwordReset' style={{textAlign: 'center'}}  >
+        Reset Password
+      </Menu.Item>,
       <Menu.Item key='signout' style={{textAlign: 'center'}}  >
-        <Button 
-          type='danger' 
-          onClick={() => signOut()}
-        >
-          Sign Out
-        </Button>
+        Sign Out
       </Menu.Item>
     ];
 
-    if (User.permissions === 'herald') {
-      menu.unshift(
-        <Menu.Item key='admin' style={{textAlign: 'center'}}  >
-          <Link to='/admin'>
-            <Button 
-              type='primary'
-            >
-              Admin
-            </Button>
-          </Link>
-        </Menu.Item>
-      );
-
-      return menu;
-    } else {
-      return menu;
-    }
+    return menu;
   }
 
   const generateAuthMenu = () => {
@@ -109,6 +91,10 @@ function Topnav() {
     console.log(event);
     if (event.key === 'signin') {
       Pubsub.publish(NOTIF.AUTH_MODAL_SHOW, AUTH_FORM_TYPE.SIGN_IN);
+    } else if (event.key === 'signout') {
+      signOut();
+    } else if (event.key === 'passwordReset') {
+      Pubsub.publish(NOTIF.AUTH_MODAL_SHOW, AUTH_FORM_TYPE.PASSWORD_RESET);
     }
   }
 
