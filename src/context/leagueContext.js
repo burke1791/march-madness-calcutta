@@ -54,7 +54,7 @@ function clearLeagueStorage() {
 
 function LeagueProvider({children}) {
   // initialize state from localstorage
-  const [state, dispatch] = useReducer(leagueReducer, getLeagueStorage());
+  const [state, dispatch] = useReducer(leagueReducer, {});
 
   return (
     <LeagueStateContext.Provider value={state}>

@@ -21,8 +21,6 @@ function League(props) {
 
   const dispatch = useLeagueDispatch();
 
-  console.log(props);
-
   useEffect(() => {
     
     setLeagueContext();
@@ -37,7 +35,6 @@ function League(props) {
    * @function setLeagueContext
    */
   const setLeagueContext = () => {
-    console.log('league component dispatching context updates');
 
     if (props.location.state.tournamentId) {
       dispatch({ type: 'update', key: 'tournamentId', value: props.location.state.tournamentId });
