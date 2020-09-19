@@ -85,6 +85,54 @@ export function getCurrentSession() {
   });
 }
 
+export function resetPassword(oldPw, newPw) {
+  return new Promise((resolve, reject) => {
+    Auth.currentAuthenticatedUser().then(user => {
+      return Auth.changePassword(user, oldPw, newPw);
+    }).then(data => {
+      console.log(data);
+      resolve(data);
+    }).catch(error => {
+      console.log(error);
+      reject(error);
+    });
+  });
+}
+
+export function initiateForgotPassword({ email, code, newPassword, confirmNewPassword }) {
+  console.log('code: ' + code);
+  if (code !== undefined) {
+    return submitForgotPassword(email, code, newPassword);
+  } else {
+    return sendForgotPasswordEmail(email);
+  }
+}
+
+function sendForgotPasswordEmail(email) {
+  return new Promise((resolve, reject) => {
+    Auth.forgotPassword(email).then(data => {
+      console.log(data);
+      data.newFormType = 'forgotPassword-code';
+      resolve(data);
+    }).catch(error => {
+      console.log(error);
+      reject(error);
+    });
+  });
+}
+
+function submitForgotPassword(email, code, newPassword) {
+  return new Promise((resolve, reject) => {
+    Auth.forgotPasswordSubmit(email, code, newPassword).then(() => {
+      // this promise resolves without any data
+      resolve({ dismiss: true });
+    }).catch(error => {
+      console.log(error);
+      reject(error);
+    });
+  });
+}
+
 export {
   User
 }

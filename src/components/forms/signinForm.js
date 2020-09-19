@@ -92,9 +92,13 @@ function SigninForm(props) {
         <Checkbox checked={rememberMe} onChange={onRememberChange} style={lineHeightStyle}>
           Remember me
         </Checkbox>
-        <a href='#' className='login-form-forgot' style={{...lineHeightStyle, float: 'right'}}>
+        <Button
+          type='link'
+          onClick={() => props.toggleAuthForm(AUTH_FORM_TYPE.FORGOT_PASSWORD)}
+          style={{float: 'right'}}
+        >
           Forgot password
-        </a>
+        </Button>
         <Button 
           type='primary'
           loading={props.loading}

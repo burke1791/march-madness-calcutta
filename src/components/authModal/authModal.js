@@ -5,9 +5,11 @@ import 'antd/dist/antd.css';
 
 import { AUTH_FORM_TYPE, NOTIF } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';
-import WrappedSigninForm from '../signinForm/signinForm';
-import WrappedSignupForm from '../signupForm/signupForm';
+import WrappedSigninForm from '../forms/signinForm';
+import WrappedSignupForm from '../forms/signupForm';
 import ConfirmAccount from './confirmAccount';
+import PasswordReset from '../forms/passwordReset';
+import WrappedForgotPassword from '../forms/forgotPassword';
 
 function AuthModal() {
 
@@ -70,6 +72,14 @@ function AuthModal() {
     } else if (formType === AUTH_FORM_TYPE.CONFIRM) {
       return (
         <ConfirmAccount loading={loading} toggleLoading={toggleLoading} toggleAuthForm={handleFormToggle} />
+      )
+    } else if (formType === AUTH_FORM_TYPE.PASSWORD_RESET) {
+      return (
+        <PasswordReset loading={loading} toggleLoading={toggleLoading} dismiss={handleCancel} />
+      )
+    } else if (formType === AUTH_FORM_TYPE.FORGOT_PASSWORD) {
+      return (
+        <WrappedForgotPassword loading={loading} toggleLoading={toggleLoading} dismiss={handleCancel} formType='email' />
       )
     }
   }
