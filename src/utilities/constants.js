@@ -42,7 +42,8 @@ export const AUTH_FORM_TYPE = {
   SIGN_IN: 'Sign In',
   SIGN_UP: 'Create an Account',
   CONFIRM: 'confirm',
-  PASSWORD_RESET: 'Password Reset'
+  PASSWORD_RESET: 'Password Reset',
+  FORGOT_PASSWORD: 'Forgot Password'
 };
 
 export const LEAGUE_FORM_TYPE = {

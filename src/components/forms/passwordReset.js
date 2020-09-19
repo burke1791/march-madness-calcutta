@@ -26,7 +26,6 @@ function PasswordReset(props) {
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = (values) => {
-    console.log(values);
     props.toggleLoading();
 
     let oldPassword = values.oldPassword;
