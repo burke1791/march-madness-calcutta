@@ -73,6 +73,9 @@ function AuctionAdmin(props) {
     event.preventDefault();
     let name = event.target.name;
 
+    console.log(event.target);
+    console.log(name);
+
     if (name == 'start') {
       // Start auction
       console.log('auction start clicked');
