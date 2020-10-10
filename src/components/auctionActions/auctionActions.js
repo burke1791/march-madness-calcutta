@@ -54,7 +54,6 @@ function AuctionActions() {
   }, [authenticated]);
 
   const updateOffset = (offset) => {
-    console.log(offset);
     setOffset(offset);
   }
 
@@ -66,6 +65,11 @@ function AuctionActions() {
   const handleAuctionUpdate = () => {
     setTeamName(generateTeamName());
     setHighBid(Auction.current.price);
+
+    // this is a hacky way of executing this logic - redo when you break up this component
+    if (Auction.current.price === 0) {
+      resetBidVal();
+    }
     
     // sets highBidder to the user's alias if Auction.currentWinner is a userId, otherwise sets it to "n/a"
     setHighBidder(Auction.current == undefined || Auction.current.winnerAlias == null ? 'n/a' : Auction.current.winnerAlias);
@@ -97,12 +101,10 @@ function AuctionActions() {
 
     let itemEnd = new Date(lastBid + 15000 - offset);
 
-    console.log(itemEnd);
     setEndTime(itemEnd);
   }
 
   const updateTotalSpent = () => {
-    console.log(userId);
     for (var user of userBuyIns) {
       if (user.userId == userId) {
         setTotalSpent(user.totalBuyIn);
@@ -133,6 +135,11 @@ function AuctionActions() {
     setBiddingDisabled(true);
 
     placeAuctionBid(leagueId, value);
+  }
+
+  // when settings are implemented client-side, reset it to the league's minimum bid
+  const resetBidVal = () => {
+    setBidVal(1);
   }
 
   const generateAdminButtons = () => {
@@ -180,6 +187,7 @@ function AuctionActions() {
                   parser={value => value.replace(/\$\s?/g, '')}
                   onChange={bidChange}
                   precision={0}
+                  value={bidVal}
                   style={{ width: '50%' }}
                 />
                 <Button type='primary' style={{ width: '30%' }} disabled={biddingDisabled} onClick={placeCustomBid}>Bid</Button>
