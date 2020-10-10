@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { Button } from 'antd';
 import 'antd/dist/antd.css';
 import { AUCTION_STATUS, NOTIF } from '../../utilities/constants';
-import DataService from '../../utilities/data';
 import { startAuction, resetClock, nextItem, closeAuction } from '../../utilities/auctionService';
 import Pubsub from '../../utilities/pubsub';
 import { useLeagueState } from '../../context/leagueContext';
@@ -36,6 +35,7 @@ function AuctionAdmin(props) {
   const handleNewAuctionData = () => {
     setResetClockLoading(false);
     setNextLoading(false);
+    setStartLoading(false);
   }
   
   const generateStartStopButton = () => {
@@ -43,16 +43,19 @@ function AuctionAdmin(props) {
     let btnType = 'primary';
     let disabled = false;
     let name = 'start';
+    let action = openAuction;
 
     if (props.status === AUCTION_STATUS.BIDDING || props.status === AUCTION_STATUS.SOLD) {
       btnText = 'Close Auction';
       btnType = 'danger';
-      name = 'stop'
+      name = 'stop';
+      action = endAuction;
     } else if (props.status === AUCTION_STATUS.END) {
       btnText = 'Auction Closed';
       btnType = 'primary'
       disabled = true;
       name = 'n/a';
+      action = endAuction;
     }
 
     return (
@@ -61,7 +64,7 @@ function AuctionAdmin(props) {
         disabled={disabled} 
         style={btnStyle} 
         loading={startLoading} 
-        onClick={startStopClick} 
+        onClick={action} 
         name={name}
       >
         {btnText}
@@ -69,15 +72,18 @@ function AuctionAdmin(props) {
     );
   }
 
-  const startStopClick = (event) => {
-    event.preventDefault();
-    let name = event.target.name;
-
-    if (name == 'start') {
-      // Start auction
-      console.log('auction start clicked');
+  const openAuction = (event) => {
+    if (props.status === AUCTION_STATUS.INITIAL) {
+      setStartLoading(true);
+      
       startAuction(leagueId);
-    } else if (name == 'stop') {
+    }
+  }
+
+  const endAuction = (event) => {
+    if (props.status === AUCTION_STATUS.BIDDING || props.status === AUCTION_STATUS.SOLD) {
+      setStartLoading(true);
+
       closeAuction(leagueId);
     }
   }
