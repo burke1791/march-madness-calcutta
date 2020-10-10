@@ -35,6 +35,7 @@ function AuctionAdmin(props) {
   const handleNewAuctionData = () => {
     setResetClockLoading(false);
     setNextLoading(false);
+    setStartLoading(false);
   }
   
   const generateStartStopButton = () => {
@@ -73,12 +74,16 @@ function AuctionAdmin(props) {
 
   const openAuction = (event) => {
     if (props.status === AUCTION_STATUS.INITIAL) {
+      setStartLoading(true);
+      
       startAuction(leagueId);
     }
   }
 
   const endAuction = (event) => {
     if (props.status === AUCTION_STATUS.BIDDING || props.status === AUCTION_STATUS.SOLD) {
+      setStartLoading(true);
+
       closeAuction(leagueId);
     }
   }
