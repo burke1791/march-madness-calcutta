@@ -11,7 +11,7 @@ var LeagueService = (function() {
   var instance;
 
   function createInstance() {
-    var api = new ApiService(API_CONFIG.BASE_URL);
+    var api = new ApiService(API_CONFIG.LEAGUE_SERVICE_BASE_URL);
     return api;
   }
 

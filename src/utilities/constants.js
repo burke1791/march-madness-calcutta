@@ -1,5 +1,6 @@
 export const API_CONFIG = {
-  BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_API_URL : process.env.REACT_APP_API_URL
+  BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_API_URL : process.env.REACT_APP_API_URL,
+  LEAGUE_SERVICE_BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_LEAGUE_SERVICE_API_URL : process.env.REACT_APP_LEAGUE_SERVICE_API_URL
 }
 
 export const SERVICES = {
