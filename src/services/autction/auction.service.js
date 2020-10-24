@@ -11,7 +11,7 @@ var AuctionService = (function() {
   var instance;
 
   function createInstance() {
-    var api = new ApiService(API_CONFIG.BASE_URL);
+    var api = new ApiService(API_CONFIG.AUCTION_SERVICE_BASE_URL);
     return api;
   }
 
