@@ -1,5 +1,6 @@
 export const API_CONFIG = {
-  BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_API_URL : process.env.REACT_APP_API_URL
+  AUCTION_SERVICE_BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_AUCTION_SERVICE_API_URL : process.env.REACT_APP_AUCTION_SERVICE_API_URL,
+  LEAGUE_SERVICE_BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_LEAGUE_SERVICE_API_URL : process.env.REACT_APP_LEAGUE_SERVICE_API_URL
 }
 
 export const SERVICES = {
@@ -35,7 +36,7 @@ export const THEME_COLORS = {
 }
 
 export const SOCKETS = {
-  AUCTION: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_WEBSOCKET_ENDPOINT : process.env.REACT_APP_WEBSOCKET_ENDPOINT
+  AUCTION: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_AUCTION_SERVICE_WEBSOCKET_ENDPOINT : process.env.REACT_APP_AUCTION_SERVICE_WEBSOCKET_ENDPOINT
 }
 
 export const AUTH_FORM_TYPE = {
