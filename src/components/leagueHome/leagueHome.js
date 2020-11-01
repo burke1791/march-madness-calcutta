@@ -14,6 +14,7 @@ import { useLeagueState } from '../../context/leagueContext';
 import { formatMoney, formatDateTime, teamDisplayName } from '../../utilities/helper';
 import withAuth from '../../HOC/withAuth';
 import { useAuthState } from '../../context/authContext';
+import LeagueHeader from '../league/leagueHeader';
 
 const { Header, Content } = Layout;
 const { Text, Title } = Typography;
@@ -272,27 +273,8 @@ function LeagueHome() {
 
   return (
     <Layout>
-      <Header style={{ background: 'none', textAlign: 'center', height: '48px' }}>
-        <Title
-          ellipsis={{ rows: 1 }}
-          level={1}
-          style={{ margin: 0, fontSize: '32px', fontWeight: 500 }}
-        >
-          {leagueName}
-        </Title>
-        {/* <h1 style={{ fontSize: '32px', margin: '0' }}>{leagueName}</h1> */}
-      </Header>
-      <Header style={{ background: 'none', textAlign: 'center', height: '48px' }}>
-        {/* <h2 style={{ lineHeight: '32px', fontWeight: '400', margin: '0'}}>{tournamentName}</h2> */}
-        <Title
-          ellipsis={{ rows: 1 }}
-          level={3}
-          style={{ lineHeight: '32px', fontWeight: 400, margin: 0 }}
-          type='secondary'
-        >
-          {tournamentName}
-        </Title>
-      </Header>
+      <LeagueHeader class='primary' text={leagueName} />
+      <LeagueHeader class='secondary' text={tournamentName} />
       <Content>
         <LeagueHomeCards userCount={userCount} prizepool={prizepool} remainingTeams={remainingTeamsCount} buyIn={myBuyIn} payout={myPayout} />
         <Row type='flex' justify='center' gutter={[12, 8]}>
