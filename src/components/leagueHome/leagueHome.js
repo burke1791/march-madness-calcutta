@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Layout, Row, Typography, Col } from 'antd';
+import { Layout, Row, Col } from 'antd';
 import LeagueHomeCards from './leagueHomeCards';
 import 'antd/dist/antd.css';
 import LeagueService from '../../services/league/league.service';
@@ -13,35 +13,27 @@ import LeagueHeader from '../league/leagueHeader';
 import LeagueHomeStandings from './leagueHomeStandings';
 import LeagueHomeUpcomingGames from './leagueHomeUpcomingGames';
 
-const { Header, Content } = Layout;
-const { Text, Title } = Typography;
+const { Content } = Layout;
 
 function LeagueHome() {
   
   const [leagueName, setLeagueName] = useState('');
   const [tournamentName, setTournamentName] = useState('');
-  const [userList, setUserList] = useState([]);
-  const [upcomingGames, setUpcomingGames] = useState([]);
   const [remainingTeamsCount, setRemainingTeamsCount] = useState(0)
   const [userCount, setUserCount] = useState(0);
   const [myBuyIn, setMyBuyIn] = useState(0);
   const [myPayout, setMyPayout] = useState(0);
   const [prizepool, setPrizepool] = useState(0);
-  const [status, setStatus] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [upcomingLoading, setUpcomingLoading] = useState(true);
 
   const { tournamentId, leagueId } = useLeagueState();
   const { userId, authenticated } = useAuthState();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHome, getLeagueInfo);
-    Pubsub.subscribe(NOTIF.UPCOMING_GAMES_DOWNLOADED, LeagueHome, handleUpcomingGames);
     Pubsub.subscribe(NOTIF.REMAINING_TEAMS_COUNT_DOWNLOADED, LeagueHome, handleRemainingGameCount);
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHome);
-      Pubsub.unsubscribe(NOTIF.UPCOMING_GAMES_DOWNLOADED, LeagueHome);
       Pubsub.unsubscribe(NOTIF.REMAINING_TEAMS_COUNT_DOWNLOADED, LeagueHome);
 
       cleanupLeagueHomeData();
@@ -81,10 +73,7 @@ function LeagueHome() {
   const getLeagueInfo = () => {
     setLeagueName(Data.leagueInfo.name);
     setTournamentName(Data.leagueInfo.tournamentName);
-    setUserList(Data.leagueInfo.users);
     setUserCount(Data.leagueInfo.users.length);
-    setStatus(Data.leagueInfo.status);
-    setLoading(false);
 
     let prizepool = 0;
 
@@ -98,11 +87,6 @@ function LeagueHome() {
     });
 
     setPrizepool(prizepool);
-  }
-
-  const handleUpcomingGames = () => {
-    setUpcomingGames(Data.upcomingGames);
-    setUpcomingLoading(false);
   }
 
   const handleRemainingGameCount = () => {
@@ -122,14 +106,6 @@ function LeagueHome() {
         </Row>
         <Row type='flex' justify='center' gutter={[12, 8]}>
           <Col md={20} xxl={12}>
-            {/* <Table
-              columns={upcomingColumns}
-              dataSource={upcomingGames}
-              size='small'
-              pagination={false}
-              loading={upcomingLoading}
-              rowKey='gameId'
-            /> */}
             <LeagueHomeUpcomingGames />
           </Col>
         </Row>
