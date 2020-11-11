@@ -149,8 +149,21 @@ export function clearUserTeams() {
   Data.userAlias = '';
 }
 
+function clearLeagueInfo() {
+  Data.leagueInfo = null;
+}
+
+function clearUpcomingGames() {
+  Data.upcomingGames = null;
+}
+
 export function clearDataOnSignout() {
   Data = {};
+}
+
+export function cleanupLeagueHomeData() {
+  clearLeagueInfo();
+  clearUpcomingGames();
 }
 
 
