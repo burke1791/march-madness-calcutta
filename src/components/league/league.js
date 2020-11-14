@@ -34,7 +34,7 @@ function League(props) {
     setLeagueContext();
 
     return (() => {
-      dispatch({ type: 'clear' });
+      cleanupContext();
     });
   }, []);
 
@@ -46,6 +46,11 @@ function League(props) {
       fetchSettings(leagueId);
     }
   }, [leagueId, settingsRefreshTrigger]);
+
+  const cleanupContext = () => {
+    dispatch({ type: 'clear' });
+    settingsDispatch({ type: 'clear' });
+  }
 
   /**
    * Dispatches context updates only if the data is known
