@@ -14,6 +14,7 @@ import { useLeagueDispatch } from '../../context/leagueContext';
 import { Layout } from 'antd';
 import 'antd/dist/antd.css';
 import { User } from '../../utilities/authService';
+import LeagueSettings from '../leagueSettings/leagueSettings';
 
 const { Content } = Layout;
 
@@ -62,6 +63,7 @@ function League(props) {
               {/* <MessageBoard path='message_board' leagueId={props.leagueId} role={role} /> */}
               {/* <MessageThread path='message_board/:topicId' leagueId={props.leagueId} role={role} /> */}
               <MemberPage path='member' />
+              <LeagueSettings path='settings' />
             </Router>
           </Content>
         </Layout>

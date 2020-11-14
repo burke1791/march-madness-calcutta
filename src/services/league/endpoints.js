@@ -138,6 +138,20 @@ export const leagueEndpoints = {
     }).catch(error => {
       console.log(error);
     });
+  },
+
+  // called within a promise
+  getLeagueSettings: function(apiService, params) {
+    let options = {
+      method: 'GET',
+      url: LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SETTINGS + `/${params.leagueId}`
+    };
+    
+    return apiService(options);
+  },
+
+  updateLeagueSettings: function(apiService, params) {
+
   }
 };
 

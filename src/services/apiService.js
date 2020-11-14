@@ -43,6 +43,19 @@ function ApiService(baseUrl) {
       return false;
     }
   }
+
+  this.callApiWithPromise = function(name, params) {
+    if (User.authenticated) {
+      let func = this.endpoints.find(endpoint => endpoint.name === name).func
+
+      return new Promise((resolve, reject) => {
+        func(this.service, params).then(data => {
+          resolve(data);
+        });
+        /** @todo add error handling */
+      });
+    }
+  }
 }
 
 function authInterceptor(config) {
