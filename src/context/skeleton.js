@@ -6,9 +6,6 @@ import { calcuttaStore } from '../utilities/helper';
  */
 function ContextSkeleton({ name, storageEnabled }) {
 
-  // const StateContext = createContext();
-  // const DispatchContext = createContext();
-
   const contextName = name;
   const localstorageEnabled = !!storageEnabled;
 
@@ -56,38 +53,7 @@ function ContextSkeleton({ name, storageEnabled }) {
     calcuttaStore('clear', contextName);
   }
 
-  // function ContextProvider({ children }) {
-  //   const [state, dispatch] = useReducer(contextReducer, {});
-
-  //   return (
-  //     <StateContext.Provider value={state}>
-  //       <DispatchContext.Provider value={dispatch}>
-  //         {children}
-  //       </DispatchContext.Provider>
-  //     </StateContext.Provider>
-  //   );
-  // }
-  
-  // function useContextState() {
-  //   const context = useContext(StateContext);
-  //   if (context === undefined) {
-  //     throw new Error(`useContextState must be used within a Provider. Context name: ${contextName}`);
-  //   }
-  //   return context;
-  // }
-  
-  // function useContextDispatch() {
-  //   const context = useContext(DispatchContext);
-  //   if (context === undefined) {
-  //     throw new Error(`useContextDispatch must be used within a Provider. ${contextName}`);
-  //   }
-  //   return context;
-  // }
-
   return {
-    // ContextProvider,
-    // useContextState,
-    // useContextDispatch,
     contextReducer
   };
 }
