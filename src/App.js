@@ -25,14 +25,16 @@ function App() {
             <Topnav />
           </Header>
       
-          <Router>
-            <LandingPage path='/' />
-            <Admin path='/admin' />
-            <Main path='/home' />
-            <LeagueProvider path='leagues'>
-              <League path=':leagueId/*' />
-            </LeagueProvider>
-          </Router>
+          <LeagueProvider>
+            <SettingsProvider>
+              <Router>
+                <LandingPage path='/' />
+                <Admin path='/admin' />
+                <Main path='/home' />
+                <League path='/leagues/:leagueId/*' />
+              </Router>
+            </SettingsProvider>
+          </LeagueProvider>
         </AuthProvider>
       </Layout>
     </div>
