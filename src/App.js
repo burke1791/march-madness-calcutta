@@ -11,6 +11,7 @@ import LandingPage from './landingPage/landingPage';
 import Admin from './components/adminPage/admin';
 import { LeagueProvider } from './context/leagueContext';
 import { AuthProvider } from './context/authContext';
+import { SettingsProvider } from './context/leagueSettingsContext';
 
 const { Header } = Layout;
 
