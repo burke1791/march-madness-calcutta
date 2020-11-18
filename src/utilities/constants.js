@@ -108,3 +108,10 @@ export const ERROR_MESSAGES = {
   GENERAL: 'Error',
   INVALID_CREDENTIALS: 'Invalid Credentials'
 }
+
+export const SETTINGS = {
+  AUCTION_INTERVAL: {
+    text: 'Auction Timer',
+    name: 'auctionInterval'
+  }
+}

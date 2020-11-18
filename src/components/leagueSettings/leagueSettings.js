@@ -5,35 +5,44 @@ import 'antd/dist/antd.css';
 import LeagueHeader from '../league/leagueHeader';
 import { useLeagueState } from '../../context/leagueContext';
 import LeagueService from '../../services/league/league.service';
-import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { LEAGUE_SERVICE_ENDPOINTS, SETTINGS } from '../../utilities/constants';
+import { useSettingsState } from '../../context/leagueSettingsContext';
 
 const { Content } = Layout;
 
 function LeagueSettings(props) {
 
   const [leagueName, setLeagueName] = useState('');
-  const [auctionInterval, setAuctionInterval] = useState();
+  const [settings, setSettings] = useState({});
 
   const { leagueId } = useLeagueState();
 
-  useEffect(() => {
-    console.log(leagueId);
-    if (leagueId) {
-      fetchSettings();
-    }
-  }, [leagueId]);
+  const settingsObj = useSettingsState();
 
-  const fetchSettings = () => {
-    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SETTINGS, { leagueId }).then(response => {
-      console.log(response);
-      setSettingsInState(response.data[0]);
-    }).catch(error => {
-      console.log(error);
-    });
+  useEffect(() => {
+    if (!!leagueId) {
+      updateSettingsFromContext();
+    }
+  }, [leagueId, settingsObj.settingsRefreshTrigger]);
+
+  const updateSettingsFromContext = () => {
+    let newSettingsObj = {
+      auctionInterval: {
+        value: settingsObj.auctionInterval?.value,
+        changed: false
+      }
+    };
+
+    setSettings(newSettingsObj);
   }
 
-  const setSettingsInState = (settingsObj) => {
-    setAuctionInterval(settingsObj.auctionInterval);
+  const onSettingsChange = (name, value) => {
+    console.log(settingsObj);
+    console.log(name, value);
+  }
+
+  const generateSettings = () => {
+
   }
 
   return (
@@ -42,10 +51,19 @@ function LeagueSettings(props) {
       <LeagueHeader class='secondary' text='Settings' />
       <Content>
         <Row>
-          <Form>
-            <Form.Item label='Auction Timer'>
-              <Form.Item name='auctionInterval' noStyle>
-                <InputNumber min={5} max={30} defaultValue={15} />
+          <Form
+            initialValues={{
+              [SETTINGS.AUCTION_INTERVAL.name]: 15
+            }}
+          >
+            <Form.Item label={SETTINGS.AUCTION_INTERVAL.text}>
+              <Form.Item name={SETTINGS.AUCTION_INTERVAL.name} noStyle>
+                <InputNumber 
+                  min={5}
+                  max={30}
+                  size='small'
+                  onChange={(value) => { onSettingsChange(SETTINGS.AUCTION_INTERVAL.name, value)}}
+                />
               </Form.Item>
               <span className='ant-form-text'> seconds</span>
             </Form.Item>

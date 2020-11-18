@@ -91,7 +91,7 @@ function League(props) {
       if (name != 'leagueId') {
         let obj = {
           value: settings[name],
-          changed: false
+          serverValue: settings[name]
         };
         console.log(obj);
         settingsDispatch({ type: 'update', key: name, value: obj });
