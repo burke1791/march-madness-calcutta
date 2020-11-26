@@ -115,3 +115,8 @@ export const SETTINGS = {
     name: 'auctionInterval'
   }
 }
+
+export const SETTING_TYPES = {
+  INPUT_NUMBER: 'input_number',
+  BOOLEAN: 'boolean'
+};
