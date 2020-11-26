@@ -85,18 +85,24 @@ function League(props) {
       // something ain't right
       console.log('settings may not be correct');
     }
+
     let settingNames = Object.keys(settings);
+    let settingsList = [];
 
     for (var name of settingNames) {
       if (name != 'leagueId') {
         let obj = {
+          name: name,
           value: settings[name],
-          serverValue: settings[name]
+          serverValue: settings[name],
+          displayOrder: 0 // will be filled in when the database catches up
         };
-        console.log(obj);
-        settingsDispatch({ type: 'update', key: name, value: obj });
+
+        settingsList.push(obj);
       }
     }
+    console.log(settingsList);
+    settingsDispatch({ type: 'update', key: 'settingsList', value: settingsList});
   }
 
   if (User.authenticated == undefined || User.authenticated) {
