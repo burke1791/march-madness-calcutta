@@ -13,9 +13,7 @@ const { Content } = Layout;
 
 function LeagueSettings(props) {
 
-  const [leagueName, setLeagueName] = useState('');
-
-  const { leagueId } = useLeagueState();
+  const { leagueId, leagueName } = useLeagueState();
 
   const { settingsList, settingsRefreshTrigger } = useSettingsState();
 
@@ -45,7 +43,7 @@ function LeagueSettings(props) {
 
   return (
     <Layout>
-      <LeagueHeader class='primary' text='placeholder for league name' />
+      <LeagueHeader class='primary' text={leagueName} />
       <LeagueHeader class='secondary' text='Settings' />
       <Content>
         {generateSettings()}
