@@ -11,6 +11,7 @@ import LandingPage from './landingPage/landingPage';
 import Admin from './components/adminPage/admin';
 import { LeagueProvider } from './context/leagueContext';
 import { AuthProvider } from './context/authContext';
+import { SettingsProvider } from './context/leagueSettingsContext';
 
 const { Header } = Layout;
 
@@ -24,14 +25,16 @@ function App() {
             <Topnav />
           </Header>
       
-          <Router>
-            <LandingPage path='/' />
-            <Admin path='/admin' />
-            <Main path='/home' />
-            <LeagueProvider path='leagues'>
-              <League path=':leagueId/*' />
-            </LeagueProvider>
-          </Router>
+          <LeagueProvider>
+            <SettingsProvider>
+              <Router>
+                <LandingPage path='/' />
+                <Admin path='/admin' />
+                <Main path='/home' />
+                <League path='/leagues/:leagueId/*' />
+              </Router>
+            </SettingsProvider>
+          </LeagueProvider>
         </AuthProvider>
       </Layout>
     </div>

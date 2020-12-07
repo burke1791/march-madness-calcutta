@@ -48,6 +48,8 @@ function LeagueNav() {
         navigate(`/leagues/${leagueId}/tournament`);
       } else if (event.key == 'messageBoard') {
         // navigate(`/leagues/${leagueId}/message_board`)
+      } else if (event.key == 'settings') {
+        navigate(`/leagues/${leagueId}/settings`);
       }
     } else {
       console.log('leagueId is falsy');
@@ -85,7 +87,7 @@ function LeagueNav() {
           <Menu.Item key='messageBoard' disabled>
             Message Board
           </Menu.Item>
-          <Menu.Item key='settings' disabled>
+          <Menu.Item key='settings'>
             Settings
           </Menu.Item>
         </Menu>
