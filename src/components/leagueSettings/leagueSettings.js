@@ -25,16 +25,21 @@ function LeagueSettings(props) {
 
     if (settingsList?.length > 0) {
       let settingsView = settingsList.map(setting => {
-        if (setting.name !== 'unclaimedAllowed') {
-          return (
-            <Setting
-              key={setting.name}
-              labelText={setting.name}
-              type={SETTING_TYPES.INPUT_NUMBER}
-              trailingText='seconds'
-            />
-          );
-        }
+        return (
+          <Setting
+            key={setting.settingId}
+            labelText={setting.name}
+            type={setting.type}
+            serverValue={setting.serverValue}
+            precision={setting.DecimalPrecision}
+            tooltip={setting.description}
+            prefix={setting.prefix}
+            suffix={setting.suffix}
+            trailingText={setting.trailingText}
+            minVal={setting.minVal}
+            maxVal={setting.maxVal}
+          />
+        );
       });
       return (settingsView);
     }

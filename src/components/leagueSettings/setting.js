@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-import { InputNumber, Row, Col } from 'antd';
+import { InputNumber, Switch, Row, Col } from 'antd';
 import 'antd/dist/antd.css';
 import { SETTING_TYPES } from '../../utilities/constants';
 
 function Setting(props) {
+
+  const [newValue, setNewValue] = useState();
 
   const onChange = (value) => {
     console.log(value);
@@ -23,11 +25,25 @@ function Setting(props) {
       return (
         <div className='settingInput' style={{ textAlign: 'center' }}>
           <InputNumber
-            min={props.minVal}
-            max={props.maxVal}
+            defaultValue={props.serverValue == '' ? undefined : +props.serverValue}
+            precision={props.precision}
+            formatter={value => `${props.prefix == '' ? props.prefix : props.prefix + ' '}${value}${props.suffix == '' ? props.suffix : ' ' + props.suffix}`}
+            parser={value => value.replace(/\$\s?|\s?\%/g, '')}
+            min={props.minVal == null ? undefined : props.minVal}
+            max={props.maxVal == null ? undefined : props.maxVal}
             size='small'
             onChange={onChange}
             style={{ width: '90%' }}
+          />
+        </div>
+      );
+    } else if (props.type === SETTING_TYPES.BOOLEAN) {
+      return (
+        <div className='settingInput' style={{ textAlign: 'center' }}>
+          <Switch 
+            defaultChecked={props.settingValue}
+            size='small'
+            onChange={onChange}
           />
         </div>
       );
