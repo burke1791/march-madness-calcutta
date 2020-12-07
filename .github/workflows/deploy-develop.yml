@@ -20,8 +20,8 @@ jobs:
       - run: CI=false npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          firebaseServiceAccount: $FIREBASE_SERVICE_ACCOUNT
-          projectId: $FIREBASE_PROJECT_ID
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}"
+          projectId: "${{ secrets.FIREBASE_PROJECT_ID_DEV }}"
 
   
 env:
