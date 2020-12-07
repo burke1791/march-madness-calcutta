@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Layout, Row, List } from 'antd';
+import { Layout, Row, Col, Button } from 'antd';
 import 'antd/dist/antd.css';
 import LeagueHeader from '../league/leagueHeader';
 import { useLeagueState } from '../../context/leagueContext';
@@ -13,6 +13,8 @@ const { Content } = Layout;
 
 function LeagueSettings(props) {
 
+  const [loading, setLoading] = useState(false);
+
   const { leagueId, leagueName } = useLeagueState();
 
   const { settingsList, settingsRefreshTrigger } = useSettingsState();
@@ -20,6 +22,25 @@ function LeagueSettings(props) {
   useEffect(() => {
     // not sure what to do here
   }, [leagueId, settingsRefreshTrigger]);
+
+  const updateSettings = () => {
+    setLoading(true);
+
+    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_SETTINGS, { 
+      leagueId: leagueId,
+      settings: [
+        {
+          settingParameterId: 1,
+          settingValue: 20
+        }
+      ]
+    }).then(response => {
+      console.log(response);
+      setLoading(false);
+    }).catch(error => {
+      console.log(error);
+    });
+  }
 
   const generateSettings = () => {
 
@@ -52,6 +73,18 @@ function LeagueSettings(props) {
       <LeagueHeader class='secondary' text='Settings' />
       <Content>
         {generateSettings()}
+        <Row justify='center'>
+          <Col span={12} style={{ textAlign: 'center' }}>
+            <hr></hr>
+            <Button
+              type='primary'
+              loading={loading}
+              onClick={updateSettings}
+            >
+              Update Settings
+            </Button>
+          </Col>
+        </Row>
       </Content>
     </Layout>
   );

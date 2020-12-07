@@ -28,7 +28,7 @@ function Setting(props) {
             defaultValue={props.serverValue == '' ? undefined : +props.serverValue}
             precision={props.precision}
             formatter={value => `${props.prefix == '' ? props.prefix : props.prefix + ' '}${value}${props.suffix == '' ? props.suffix : ' ' + props.suffix}`}
-            parser={value => value.replace(/\$\s?|\s?\%/g, '')}
+            parser={value => value.replace(/\$\s?|\s?\%/g, '')} // hard-coding the $ and % in the parser for now
             min={props.minVal == null ? undefined : props.minVal}
             max={props.maxVal == null ? undefined : props.maxVal}
             size='small'

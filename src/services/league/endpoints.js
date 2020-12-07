@@ -151,7 +151,16 @@ export const leagueEndpoints = {
   },
 
   updateLeagueSettings: function(apiService, params) {
+    let options = {
+      method: 'POST',
+      url: LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_SETTINGS,
+      data: {
+        leagueId: params.leagueId,
+        settings: params.settings
+      }
+    };
 
+    return apiService(options);
   }
 };
 
