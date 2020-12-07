@@ -18,8 +18,6 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   REMAINING_TEAMS_COUNT: '/getRemainingTeamsCount',
   TOURNAMENT_BRACKET_GAMES: '/getTournamentGamesForBracket',
   LEAGUE_USER_TEAMS: '/getLeagueUserTeams',
-  GET_LEAGUE_SETTINGS: '/getLeagueSettings',
-  UPDATE_LEAGUE_SETTINGS: '/updateLeagueSettings'
 }
 
 export const AUCTION_SERVICE_ENDPOINTS = {
@@ -109,16 +107,3 @@ export const ERROR_MESSAGES = {
   GENERAL: 'Error',
   INVALID_CREDENTIALS: 'Invalid Credentials'
 }
-
-export const SETTINGS = {
-  AUCTION_INTERVAL: {
-    text: 'Auction Timer',
-    name: 'auctionInterval'
-  }
-}
-
-export const SETTING_TYPES = {
-  INPUT_NUMBER: 'Number',
-  BOOLEAN: 'Boolean',
-  TEXT: 'Text'
-};

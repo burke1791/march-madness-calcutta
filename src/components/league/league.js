@@ -9,48 +9,26 @@ import MessageBoard from '../messageBoard/messageBoard';
 import MessageThread from '../messageThread/messageThread';
 import MemberPage from '../memberPage/memberPage';
 
-import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
+import { useLeagueDispatch } from '../../context/leagueContext';
 
 import { Layout } from 'antd';
 import 'antd/dist/antd.css';
 import { User } from '../../utilities/authService';
-import LeagueSettings from '../leagueSettings/leagueSettings';
-import { useSettingsDispatch, useSettingsState } from '../../context/leagueSettingsContext';
-import LeagueService from '../../services/league/league.service';
-import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 
 const { Content } = Layout;
 
 function League(props) {
 
   const dispatch = useLeagueDispatch();
-  const settingsDispatch = useSettingsDispatch();
-
-  const { leagueId } = useLeagueState();
-  const { settingsRefreshTrigger } = useSettingsState();
 
   useEffect(() => {
     
     setLeagueContext();
 
     return (() => {
-      cleanupContext();
+      dispatch({ type: 'clear' });
     });
   }, []);
-
-  useEffect(() => {
-    // using leagueId from context to ensure the settings download stays in sync with the correct league
-    console.log(leagueId);
-    console.log(settingsRefreshTrigger);
-    if (!!leagueId) {
-      fetchSettings(leagueId);
-    }
-  }, [leagueId, settingsRefreshTrigger]);
-
-  const cleanupContext = () => {
-    dispatch({ type: 'clear' });
-    settingsDispatch({ type: 'clear' });
-  }
 
   /**
    * Dispatches context updates only if the data is known
@@ -71,58 +49,6 @@ function League(props) {
     }
   }
 
-  const fetchSettings = (leagueId) => {
-    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SETTINGS, { leagueId }).then(response => {
-      console.log(response);
-      setSettingsInContext(response.data);
-    }).catch(error => {
-      console.log(error);
-    });
-  }
-
-  const setSettingsInContext = (settings) => {
-    if (settings[0].LeagueId !== props.leagueId) {
-      // something ain't right
-      console.log('settings may not be correct');
-    }
-
-    let settingsList = [];
-
-    settings.forEach(setting => {
-      if (setting.DisplaySuffix == '%') {
-        setting.MinValue = +setting.MinValue * 100;
-        setting.MaxValue = +setting.MaxValue * 100;
-        setting.SettingValue = +setting.SettingValue * 100;
-      }
-
-      if (setting.SettingValue == null) {
-        setting.SettingValue = '';
-      }
-
-      let obj = {
-        settingId: setting.SettingParameterId,
-        name: setting.Name,
-        value: setting.SettingValue,
-        serverValue: setting.SettingValue,
-        displayOrder: setting.DisplayOrder,
-        type: setting.DataType,
-        precision: setting.DecimalPrecision,
-        description: setting.Description,
-        prefix: setting.DisplayPrefix == null ? '' : setting.DisplayPrefix,
-        suffix: setting.DisplaySuffix == null ? '' : setting.DisplaySuffix,
-        trailingText: setting.TrailingText,
-        minVal: setting.MinValue,
-        maxVal: setting.MaxValue,
-        group: setting.SettingClass
-      };
-
-      settingsList.push(obj);
-    });
-
-    console.log(settingsList);
-    settingsDispatch({ type: 'update', key: 'settingsList', value: settingsList});
-  }
-
   if (User.authenticated == undefined || User.authenticated) {
     return (
       <Layout style={{ height: 'calc(100vh - 64px)' }}>
@@ -136,7 +62,6 @@ function League(props) {
               {/* <MessageBoard path='message_board' leagueId={props.leagueId} role={role} /> */}
               {/* <MessageThread path='message_board/:topicId' leagueId={props.leagueId} role={role} /> */}
               <MemberPage path='member' />
-              <LeagueSettings path='settings' />
             </Router>
           </Content>
         </Layout>
