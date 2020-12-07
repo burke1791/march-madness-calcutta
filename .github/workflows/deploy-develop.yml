@@ -20,7 +20,7 @@ jobs:
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           firebaseServiceAccount: $FIREBASE_SERVICE_ACCOUNT
-          projectId: $FIREBASE_PROJECT_ID_DEV
+          projectId: $FIREBASE_PROJECT_ID
 
   
 env:
