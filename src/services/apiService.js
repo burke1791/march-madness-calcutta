@@ -45,16 +45,18 @@ function ApiService(baseUrl) {
   }
 
   this.callApiWithPromise = function(name, params) {
-    if (User.authenticated) {
-      let func = this.endpoints.find(endpoint => endpoint.name === name).func
-
-      return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
+      if (User.authenticated) {
+        let func = this.endpoints.find(endpoint => endpoint.name === name).func
+  
         func(this.service, params).then(data => {
           resolve(data);
         });
         /** @todo add error handling */
-      });
-    }
+      } else {
+        reject(new Error('User not authenticated'));
+      }
+    });
   }
 }
 

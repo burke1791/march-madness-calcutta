@@ -117,6 +117,7 @@ export const SETTINGS = {
 }
 
 export const SETTING_TYPES = {
-  INPUT_NUMBER: 'input_number',
-  BOOLEAN: 'boolean'
+  INPUT_NUMBER: 'Number',
+  BOOLEAN: 'Boolean',
+  TEXT: 'Text'
 };

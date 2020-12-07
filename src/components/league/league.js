@@ -74,33 +74,51 @@ function League(props) {
   const fetchSettings = (leagueId) => {
     LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SETTINGS, { leagueId }).then(response => {
       console.log(response);
-      setSettingsInContext(response.data[0]);
+      setSettingsInContext(response.data);
     }).catch(error => {
       console.log(error);
     });
   }
 
   const setSettingsInContext = (settings) => {
-    if (settings.leagueId !== props.leagueId) {
+    if (settings[0].LeagueId !== props.leagueId) {
       // something ain't right
       console.log('settings may not be correct');
     }
 
-    let settingNames = Object.keys(settings);
     let settingsList = [];
 
-    for (var name of settingNames) {
-      if (name != 'leagueId') {
-        let obj = {
-          name: name,
-          value: settings[name],
-          serverValue: settings[name],
-          displayOrder: 0 // will be filled in when the database catches up
-        };
-
-        settingsList.push(obj);
+    settings.forEach(setting => {
+      if (setting.DisplaySuffix == '%') {
+        setting.MinValue = +setting.MinValue * 100;
+        setting.MaxValue = +setting.MaxValue * 100;
+        setting.SettingValue = +setting.SettingValue * 100;
       }
-    }
+
+      if (setting.SettingValue == null) {
+        setting.SettingValue = '';
+      }
+
+      let obj = {
+        settingId: setting.SettingParameterId,
+        name: setting.Name,
+        value: setting.SettingValue,
+        serverValue: setting.SettingValue,
+        displayOrder: setting.DisplayOrder,
+        type: setting.DataType,
+        precision: setting.DecimalPrecision,
+        description: setting.Description,
+        prefix: setting.DisplayPrefix == null ? '' : setting.DisplayPrefix,
+        suffix: setting.DisplaySuffix == null ? '' : setting.DisplaySuffix,
+        trailingText: setting.TrailingText,
+        minVal: setting.MinValue,
+        maxVal: setting.MaxValue,
+        group: setting.SettingClass
+      };
+
+      settingsList.push(obj);
+    });
+
     console.log(settingsList);
     settingsDispatch({ type: 'update', key: 'settingsList', value: settingsList});
   }
