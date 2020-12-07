@@ -18,7 +18,8 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   REMAINING_TEAMS_COUNT: '/getRemainingTeamsCount',
   TOURNAMENT_BRACKET_GAMES: '/getTournamentGamesForBracket',
   LEAGUE_USER_TEAMS: '/getLeagueUserTeams',
-  GET_LEAGUE_SETTINGS: '/getLeagueSettings'
+  GET_LEAGUE_SETTINGS: '/getLeagueSettings',
+  UPDATE_LEAGUE_SETTINGS: '/updateLeagueSettings'
 }
 
 export const AUCTION_SERVICE_ENDPOINTS = {
