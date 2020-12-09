@@ -1,15 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { InputNumber, Switch, Row, Col } from 'antd';
 import 'antd/dist/antd.css';
 import { SETTING_TYPES } from '../../utilities/constants';
+import { useSettingsDispatch, useSettingsState } from '../../context/leagueSettingsContext';
 
 function Setting(props) {
 
-  const [newValue, setNewValue] = useState();
+  const [value, setValue] = useState(props.serverValue);
+
+  const { newSettings } = useSettingsState();
+  const settingsDispatch = useSettingsDispatch();
+
+  useEffect(() => {
+    // updates the setting values to match the server
+    setValue(props.serverValue);
+  }, [props.serverValue]);
 
   const onChange = (value) => {
-    console.log(value);
+
+    setValue(value);
+
+    let newSetting = {
+      settingParameterId: props.settingId,
+      settingValue: props.suffix == '%' ? +value / 100 : value
+    };
+
+    let updatedSettings = newSettings?.length ? [...newSettings] : [];
+    
+    let currentIndex = updatedSettings.findIndex(obj => obj?.settingParameterId == props.settingId);
+
+    if (currentIndex === -1) {
+      updatedSettings.push(newSetting);
+    } else {
+      updatedSettings[currentIndex] = newSetting;
+    }
+
+    settingsDispatch({ type: 'update', key: 'newSettings', value: updatedSettings });
   }
 
   const generateLabelText = () => {
@@ -25,7 +52,8 @@ function Setting(props) {
       return (
         <div className='settingInput' style={{ textAlign: 'center' }}>
           <InputNumber
-            defaultValue={props.serverValue == '' ? undefined : +props.serverValue}
+            // defaultValue={props.serverValue == '' ? undefined : +props.serverValue}
+            value={value == '' ? undefined : +value}
             precision={props.precision}
             formatter={value => `${props.prefix == '' ? props.prefix : props.prefix + ' '}${value}${props.suffix == '' ? props.suffix : ' ' + props.suffix}`}
             parser={value => value.replace(/\$\s?|\s?\%/g, '')} // hard-coding the $ and % in the parser for now
@@ -41,7 +69,7 @@ function Setting(props) {
       return (
         <div className='settingInput' style={{ textAlign: 'center' }}>
           <Switch 
-            defaultChecked={props.settingValue}
+            checked={String(value).toLowerCase() == 'true' ? true : false} // hack-job
             size='small'
             onChange={onChange}
           />

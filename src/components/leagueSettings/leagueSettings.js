@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
-import { Layout, Row, Col, Button } from 'antd';
+import { Layout, Row, Col, Button, message } from 'antd';
 import 'antd/dist/antd.css';
 import LeagueHeader from '../league/leagueHeader';
 import { useLeagueState } from '../../context/leagueContext';
 import LeagueService from '../../services/league/league.service';
 import { LEAGUE_SERVICE_ENDPOINTS, SETTINGS, SETTING_TYPES } from '../../utilities/constants';
-import { useSettingsState } from '../../context/leagueSettingsContext';
+import { useSettingsDispatch, useSettingsState } from '../../context/leagueSettingsContext';
 import Setting from './setting';
 
 const { Content } = Layout;
@@ -17,29 +17,42 @@ function LeagueSettings(props) {
 
   const { leagueId, leagueName } = useLeagueState();
 
-  const { settingsList, settingsRefreshTrigger } = useSettingsState();
+  const { settingsList, newSettings } = useSettingsState();
+  const settingsDispatch = useSettingsDispatch();
 
   useEffect(() => {
-    // not sure what to do here
-  }, [leagueId, settingsRefreshTrigger]);
+    // just forcing a rerender
+  }, [leagueId, JSON.stringify(settingsList)]);
 
   const updateSettings = () => {
     setLoading(true);
 
-    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_SETTINGS, { 
-      leagueId: leagueId,
-      settings: [
-        {
-          settingParameterId: 1,
-          settingValue: 20
+    if (newSettings?.length) {
+      LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_SETTINGS, { 
+        leagueId: leagueId,
+        settings: newSettings
+      }).then(response => {
+        setLoading(false);
+        console.log(response);
+        
+        if (response.data[0]?.Error) {
+          displayError(response.data[0].Error);
+        } else if (response.data[0]?.ValidationError) {
+          // generate validation error messages
+        } else {
+          settingsDispatch({ type: 'update', key: 'settingsRefreshTrigger', value: new Date().valueOf() });
         }
-      ]
-    }).then(response => {
-      console.log(response);
+      }).catch(error => {
+        console.log(error);
+      });
+    } else {
       setLoading(false);
-    }).catch(error => {
-      console.log(error);
-    });
+      // TODO: provide feedback
+    }
+  }
+
+  const displayError = (text) => {
+    message.error(text);
   }
 
   const generateSettings = () => {
@@ -49,6 +62,7 @@ function LeagueSettings(props) {
         return (
           <Setting
             key={setting.settingId}
+            settingId={setting.settingId}
             labelText={setting.name}
             type={setting.type}
             serverValue={setting.serverValue}
