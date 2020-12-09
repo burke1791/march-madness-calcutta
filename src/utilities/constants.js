@@ -11,6 +11,7 @@ export const SERVICES = {
 export const LEAGUE_SERVICE_ENDPOINTS = {
   TOURNAMENT_OPTIONS: '/getTournamentOptions',
   LEAGUE_SUMMARIES: '/getLeagueSummaries',
+  LEAGUE_METADATA: '/getLeagueMetadata',
   NEW_LEAGUE: '/createLeague',
   JOIN_LEAGUE: '/joinLeague',
   LEAGUE_USER_SUMMARIES: '/getLeagueUserSummaries',
