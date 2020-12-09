@@ -76,6 +76,16 @@ export const leagueEndpoints = {
     });
   },
 
+  // called within a promise
+  getLeagueMetadata: function(apiService, params) {
+    let options = {
+      method: 'GET',
+      url: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_METADATA + `/${params.leagueId}`
+    };
+
+    return apiService(options);
+  },
+
   getLeagueUserSummaries: function(apiService, params) {
     apiService({
       method: 'GET',
