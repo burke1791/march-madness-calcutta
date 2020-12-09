@@ -33,7 +33,9 @@ function League(props) {
 
   useEffect(() => {
     
-    setLeagueContext();
+    setLeagueContext([
+      { key: 'leagueId', value: props.leagueId }
+    ]);
 
     return (() => {
       cleanupContext();
@@ -49,6 +51,12 @@ function League(props) {
     }
   }, [leagueId, authenticated, settingsRefreshTrigger]);
 
+  useEffect(() => {
+    if (!!leagueId && authenticated) {
+      fetchMetadata(leagueId);
+    }
+  }, [leagueId, authenticated]);
+
   const cleanupContext = () => {
     dispatch({ type: 'clear' });
     settingsDispatch({ type: 'clear' });
@@ -58,18 +66,24 @@ function League(props) {
    * Dispatches context updates only if the data is known
    * @function setLeagueContext
    */
-  const setLeagueContext = () => {
+  const setLeagueContext = (data) => {
 
-    if (props.location.state.tournamentId) {
-      dispatch({ type: 'update', key: 'tournamentId', value: props.location.state.tournamentId });
-    }
+    // if (props.location.state.tournamentId) {
+    //   dispatch({ type: 'update', key: 'tournamentId', value: props.location.state.tournamentId });
+    // }
 
-    if (props.leagueId) {
-      dispatch({ type: 'update', key: 'leagueId', value: props.leagueId });
-    }
+    // if (props.leagueId) {
+    //   dispatch({ type: 'update', key: 'leagueId', value: props.leagueId });
+    // }
 
-    if (props.location.state.roleId) {
-      dispatch({ type: 'update', key: 'roleId', value: props.location.state.roleId });
+    // if (props.location.state.roleId) {
+    //   dispatch({ type: 'update', key: 'roleId', value: props.location.state.roleId });
+    // }
+
+    if (data.length > 0) {
+      data.forEach(obj => {
+        dispatch({ type: 'update', key: obj.key, value: obj.value });
+      });
     }
   }
 
@@ -80,6 +94,28 @@ function League(props) {
     }).catch(error => {
       console.log(error);
     });
+  }
+
+  const fetchMetadata = (leagueId) => {
+    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_METADATA, { leagueId }).then(response => {
+      console.log(response);
+      let leagueMetadata = packageLeagueMetadata(response.data[0]);
+      setLeagueContext(leagueMetadata);
+    }).catch(error => {
+      console.log(error);
+    });
+  }
+
+  const packageLeagueMetadata = (data) => {
+    let arr = [
+      { key: 'leagueName', value: data.LeagueName },
+      { key: 'tournamentId', value: data.TournamentId },
+      { key: 'tournamentName', value: data.TournamentName },
+      { key: 'roleId', value: data.RoleId },
+      { key: 'roleName', value: data.RoleName }
+    ];
+
+    return arr;
   }
 
   const setSettingsInContext = (settings) => {
