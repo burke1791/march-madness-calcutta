@@ -18,6 +18,7 @@ import LeagueSettings from '../leagueSettings/leagueSettings';
 import { useSettingsDispatch, useSettingsState } from '../../context/leagueSettingsContext';
 import LeagueService from '../../services/league/league.service';
 import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { useAuthState } from '../../context/authContext';
 
 const { Content } = Layout;
 
@@ -28,6 +29,7 @@ function League(props) {
 
   const { leagueId } = useLeagueState();
   const { settingsRefreshTrigger } = useSettingsState();
+  const { authenticated } = useAuthState();
 
   useEffect(() => {
     
@@ -42,10 +44,10 @@ function League(props) {
     // using leagueId from context to ensure the settings download stays in sync with the correct league
     console.log(leagueId);
     console.log(settingsRefreshTrigger);
-    if (!!leagueId) {
+    if (!!leagueId && authenticated) {
       fetchSettings(leagueId);
     }
-  }, [leagueId, settingsRefreshTrigger]);
+  }, [leagueId, authenticated, settingsRefreshTrigger]);
 
   const cleanupContext = () => {
     dispatch({ type: 'clear' });
