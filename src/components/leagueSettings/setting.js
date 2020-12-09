@@ -69,7 +69,7 @@ function Setting(props) {
       return (
         <div className='settingInput' style={{ textAlign: 'center' }}>
           <Switch 
-            checked={props.settingValue}
+            checked={String(value).toLowerCase() == 'true' ? true : false} // hack-job
             size='small'
             onChange={onChange}
           />
