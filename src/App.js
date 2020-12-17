@@ -12,6 +12,7 @@ import Admin from './components/adminPage/admin';
 import { LeagueProvider } from './context/leagueContext';
 import { AuthProvider } from './context/authContext';
 import { SettingsProvider } from './context/leagueSettingsContext';
+import { TournamentProvider } from './context/tournamentContext';
 
 const { Header } = Layout;
 
@@ -27,12 +28,14 @@ function App() {
       
           <LeagueProvider>
             <SettingsProvider>
-              <Router>
-                <LandingPage path='/' />
-                <Admin path='/admin' />
-                <Main path='/home' />
-                <League path='/leagues/:leagueId/*' />
-              </Router>
+              <TournamentProvider>
+                <Router>
+                  <LandingPage path='/' />
+                  <Admin path='/admin' />
+                  <Main path='/home' />
+                  <League path='/leagues/:leagueId/*' />
+                </Router>
+              </TournamentProvider>
             </SettingsProvider>
           </LeagueProvider>
         </AuthProvider>
