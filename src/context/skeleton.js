@@ -3,6 +3,10 @@ import { calcuttaStore } from '../utilities/helper';
 
 /**
  * Extensible skeleton function for use by multiple different contexts
+ * @constructor ContextSkeleton
+ * @param {Object} config - config object
+ * @param {String} config.name - human-readable name for the context class
+ * @param {Boolean} config.storageEnabled - whether or not you want the context data replicated to localstorage
  */
 function ContextSkeleton({ name, storageEnabled }) {
 
