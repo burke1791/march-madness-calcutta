@@ -10,17 +10,6 @@ let leaguesFetched = false;
 
 export const leagueEndpoints = {
   fetchTournamentOptions: function(apiService) {
-    // apiService({
-    //   method: 'GET',
-    //   url: LEAGUE_SERVICE_ENDPOINTS.TOURNAMENT_OPTIONS
-    // }).then(response => {
-    //   console.log(response);
-    //   Data.tournaments = response.data;
-    //   Pubsub.publish(NOTIF.TOURNAMENT_OPTIONS_DOWNLOADED, null);
-    // }).catch(error => {
-    //   console.log(error);
-    // });
-
     let options = {
       method: 'GET',
       url: LEAGUE_SERVICE_ENDPOINTS.TOURNAMENT_OPTIONS
@@ -52,7 +41,8 @@ export const leagueEndpoints = {
     let league = {
       name: params.name,
       password: params.password,
-      tournamentId: params.tournamentId
+      tournamentId: params.tournamentId,
+      tournamentScopeId: params.tournamentScopeId
     };
   
     apiService({
