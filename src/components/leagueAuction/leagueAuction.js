@@ -28,24 +28,23 @@ function LeagueAuction() {
   const { userId, authenticated } = useAuthState();
 
   useEffect(() => {
-    Pubsub.subscribe(NOTIF.AUCTION_TEAMS_DOWNLOADED, LeagueAuction, auctionTeamsDownloaded);
-    Pubsub.subscribe(NOTIF.NEW_AUCTION_DATA, LeagueAuction, handleNewAuctionData);
-    Pubsub.subscribe(NOTIF.AUCTION_BUYINS_DOWNLOADED, LeagueAuction, updateUserSummaries);
+    if (leagueId) {
+      Pubsub.subscribe(NOTIF.AUCTION_TEAMS_DOWNLOADED, LeagueAuction, auctionTeamsDownloaded);
+      Pubsub.subscribe(NOTIF.NEW_AUCTION_DATA, LeagueAuction, handleNewAuctionData);
+      Pubsub.subscribe(NOTIF.AUCTION_BUYINS_DOWNLOADED, LeagueAuction, updateUserSummaries);
 
-    return (() => {
-      Pubsub.unsubscribe(NOTIF.AUCTION_TEAMS_DOWNLOADED, LeagueAuction);
-      Pubsub.unsubscribe(NOTIF.NEW_AUCTION_DATA, LeagueAuction);
-      Pubsub.unsubscribe(NOTIF.AUCTION_BUYINS_DOWNLOADED, LeagueAuction);
-    });
-  }, []);
+      return (() => {
+        Pubsub.unsubscribe(NOTIF.AUCTION_TEAMS_DOWNLOADED, LeagueAuction);
+        Pubsub.unsubscribe(NOTIF.NEW_AUCTION_DATA, LeagueAuction);
+        Pubsub.unsubscribe(NOTIF.AUCTION_BUYINS_DOWNLOADED, LeagueAuction);
+      });
+    }
+  }, [leagueId]);
 
   useEffect(() => {
-    console.log(leagueId, authenticated);
     if (leagueId && authenticated) {
       fetchData();
       connectWebsocket(leagueId);
-    } else {
-      console.log('leagueId is falsy');
     }
 
     return (() => {
@@ -90,7 +89,7 @@ function LeagueAuction() {
   }
 
   const handleNewAuctionData = (newItem) => {
-    if (newItem) {
+    if (newItem && leagueId) {
       AuctionService.callApi(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_TEAMS, { leagueId });
       AuctionService.callApi(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_BUYINS, { leagueId });
     }
@@ -107,7 +106,6 @@ function LeagueAuction() {
     });
     setMyTax(taxBurden);
     setLeagueUsers(userBuyIns);
-    console.log(prizepool);
     setPrizepool(prizepool);
   }
 

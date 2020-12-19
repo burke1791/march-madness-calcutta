@@ -10,7 +10,6 @@ var client = null;
  * @todo possibly make this into a HOC
  */
 export function connectAuction(leagueId) {
-  console.log(client);
   if (client === null || client.readyState == 3) {
     client = new WebSocket(`${SOCKETS.AUCTION}?Authorizer=${User.session.idToken.jwtToken}&leagueId=${leagueId}`);
 
