@@ -32,7 +32,8 @@ function League(props) {
   const { authenticated } = useAuthState();
 
   useEffect(() => {
-    
+    console.log('league component');
+    console.log(props);
     setLeagueContext([
       { key: 'leagueId', value: props.leagueId }
     ]);
