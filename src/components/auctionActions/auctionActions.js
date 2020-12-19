@@ -58,8 +58,8 @@ function AuctionActions() {
   }
 
   const handleAuctionError = (errorObj) => {
-    setBiddingDisabled(false);
-    message.error(errorObj.Error);
+    // setBiddingDisabled(true);
+    // message.error(errorObj.Error);
   }
 
   // updates local state with the new auction info from global state
