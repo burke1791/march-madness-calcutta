@@ -3,7 +3,7 @@ import './auctionActions.css';
 
 import AuctionAdmin from '../auctionAdmin/auctionAdmin';
 
-import { Button, Card, Statistic, Row, Col, InputNumber } from 'antd';
+import { Button, Card, Statistic, Row, Col, InputNumber, message } from 'antd';
 import 'antd/dist/antd.css';
 
 import { formatMoney } from '../../utilities/helper';
@@ -57,8 +57,9 @@ function AuctionActions() {
     setOffset(offset);
   }
 
-  const handleAuctionError = () => {
+  const handleAuctionError = (errorObj) => {
     setBiddingDisabled(false);
+    message.error(errorObj.Error);
   }
 
   // updates local state with the new auction info from global state
