@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { LEAGUE_FORM_TYPE, NOTIF, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { LEAGUE_FORM_TYPE, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 
 import { Form, Input, Button, Select } from 'antd';
 import 'antd/dist/antd.css';
 
 import LeagueService from '../../services/league/league.service';
-import { Data } from '../../services/league/endpoints';
-import { User } from '../../utilities/authService';
-import Pubsub from '../../utilities/pubsub';
+import { useTournamentState } from '../../context/tournamentContext';
 
 const { Option } = Select;
 
@@ -23,9 +21,16 @@ function NewLeagueForm(props) {
 
   const [errorMessage, setErrorMessage] = useState('');
   const [tournamentId, setTournamentId] = useState('');
+  const [tournamentScopeId, setTournamentScopeId] = useState('');
+
+  const { tournaments, tournamentScopes } = useTournamentState();
 
   const tournamentSelected = (id) => {
     setTournamentId(Number(id));
+  }
+
+  const tournamentScopeSelected = (id) => {
+    setTournamentScopeId(Number(id));
   }
 
   const handleSubmit = (values) => {
@@ -33,10 +38,14 @@ function NewLeagueForm(props) {
 
     let name = values.leagueName;
     let password = values.leaguePassword;
-    let tourneyId = tournamentId;
 
     if (props.leagueType === LEAGUE_FORM_TYPE.CREATE) {
-      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.NEW_LEAGUE, { name: name, password: password, tournamentId: tourneyId });
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.NEW_LEAGUE, { 
+        name: name,
+        password: password,
+        tournamentId: tournamentId,
+        tournamentScopeId: tournamentScopeId
+      });
     } else {
       LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.JOIN_LEAGUE, { name: name, password: password });
     }
@@ -55,19 +64,34 @@ function NewLeagueForm(props) {
   const generateTournamentType = () => {
     if (props.leagueType === LEAGUE_FORM_TYPE.CREATE) {
       return (
-        <Form.Item 
-          label='Tournament' 
-          rules={[
-            {
-              required: true,
-              message: 'Please select a tournament'
-            }
-          ]}
-        >
-          <Select onChange={tournamentSelected}>
-            {generateTournamentOptions()}
-          </Select>
-        </Form.Item>
+        <React.Fragment>
+          <Form.Item 
+            label='Sport' 
+            rules={[
+              {
+                required: true,
+                message: 'Please select a sport'
+              }
+            ]}
+          >
+            <Select onChange={tournamentSelected}>
+              {generateTournamentOptions()}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            label='Season Scope'
+            rules={[
+              {
+                required: true,
+                message: 'Please select the season\'s scope'
+              }
+            ]}
+          >
+            <Select onChange={tournamentScopeSelected}>
+              {generateTournamentScopeOptions()}
+            </Select>
+          </Form.Item>
+        </React.Fragment>
       );
     } else {
       return null;
@@ -75,11 +99,27 @@ function NewLeagueForm(props) {
   }
 
   const generateTournamentOptions = () => {
-    const options = Data.tournaments.map(tournament => {
-      return <Option value={tournament.id} key={tournament.id}>{tournament.name}</Option>;
+    const options = tournaments.map(tournament => {
+      return <Option value={tournament.TournamentId} key={tournament.TournamentId}>{tournament.TournamentName}</Option>;
     });
 
     return (options);
+  }
+
+  const generateTournamentScopeOptions = () => {
+    if (tournamentId !== '') {
+      // find the applicable tournament scopes and sort them according to their DisplayOrder
+      let scopes = tournamentScopes
+        .filter(tournamentScope => tournamentScope.TournamentId == tournamentId).sort((a, b) => a.DisplayOrder - b.DisplayOrder);
+
+      const options = scopes.map(scope => {
+        return <Option value={scope.TournamentRegimeId} key={scope.TournamentRegimeId}>{scope.Name}</Option>
+      });
+
+      return (options);
+    }
+    
+    return null;
   }
 
   return (

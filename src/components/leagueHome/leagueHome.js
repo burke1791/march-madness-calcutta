@@ -23,7 +23,7 @@ function LeagueHome() {
   const [myPayout, setMyPayout] = useState(0);
   const [prizepool, setPrizepool] = useState(0);
 
-  const { tournamentId, leagueId, leagueName, tournamentName } = useLeagueState();
+  const { tournamentId, leagueId, leagueName, tournamentName, tournamentRegimeName } = useLeagueState();
   const { userId, authenticated } = useAuthState();
 
   useEffect(() => {
@@ -89,10 +89,20 @@ function LeagueHome() {
     setRemainingTeamsCount(Data.remainingTeams);
   }
 
+  const secondaryHeaderText = () => {
+    let text = tournamentName;
+
+    if (tournamentRegimeName != null) {
+      text += ' - ' + tournamentRegimeName;
+    }
+
+    return text;
+  }
+
   return (
     <Layout>
       <LeagueHeader class='primary' text={leagueName} />
-      <LeagueHeader class='secondary' text={tournamentName} />
+      <LeagueHeader class='secondary' text={secondaryHeaderText()} />
       <Content>
         <LeagueHomeCards userCount={userCount} prizepool={prizepool} remainingTeams={remainingTeamsCount} buyIn={myBuyIn} payout={myPayout} />
         <Row type='flex' justify='center' gutter={[12, 8]}>
