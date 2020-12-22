@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from 'react';
 
-import { Layout, Row, Col, Button, message } from 'antd';
+import { Layout, Row, Col, Button, message, Tooltip } from 'antd';
 import 'antd/dist/antd.css';
 import LeagueHeader from '../league/leagueHeader';
 import { useLeagueState } from '../../context/leagueContext';
+import { constructUpdatedSettingsArray, getUpdateSettingsEndpoint } from './helper';
 import LeagueService from '../../services/league/league.service';
-import { LEAGUE_SERVICE_ENDPOINTS, SETTINGS, SETTING_TYPES } from '../../utilities/constants';
 import { useSettingsDispatch, useSettingsState } from '../../context/leagueSettingsContext';
 import Setting from './setting';
+import { QuestionCircleTwoTone } from '@ant-design/icons';
 
 const { Content } = Layout;
 
 function LeagueSettings(props) {
 
   const [loading, setLoading] = useState(false);
+  // const []
 
   const { leagueId, leagueName } = useLeagueState();
 
-  const { settingsList, newSettings } = useSettingsState();
+  const { settingsList, payoutSettings, newSettings } = useSettingsState();
   const settingsDispatch = useSettingsDispatch();
 
   useEffect(() => {
@@ -28,9 +30,12 @@ function LeagueSettings(props) {
     setLoading(true);
 
     if (newSettings?.length) {
-      LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_SETTINGS, { 
+      let settingsUpdate = constructUpdatedSettingsArray(props.settingsGroup, newSettings);
+      let endpoint = getUpdateSettingsEndpoint(props.settingsGroup);
+
+      LeagueService.callApiWithPromise(endpoint, { 
         leagueId: leagueId,
-        settings: newSettings
+        settings: settingsUpdate
       }).then(response => {
         setLoading(false);
         console.log(response);
@@ -56,35 +61,93 @@ function LeagueSettings(props) {
   }
 
   const generateSettings = () => {
+    if (props.settingsGroup == 'auction') {
+      return generateSettingsView(settingsList);
+    } else if (props.settingsGroup == 'payout') {
+      return generateSettingsView(payoutSettings);
+    }
+    return null;
+  }
 
-    if (settingsList?.length > 0) {
-      let settingsView = settingsList.map(setting => {
-        return (
-          <Setting
-            key={setting.settingId}
-            settingId={setting.settingId}
-            labelText={setting.name}
-            type={setting.type}
-            serverValue={setting.serverValue}
-            precision={setting.DecimalPrecision}
-            tooltip={setting.description}
-            prefix={setting.prefix}
-            suffix={setting.suffix}
-            trailingText={setting.trailingText}
-            minVal={setting.minVal}
-            maxVal={setting.maxVal}
-          />
+  const generateSettingsView = (list) => {
+    if (list?.length > 0) {
+      let group = null;
+      let prevGroup = null;
+      let settingsView = list.map((setting, index) => {
+        prevGroup = group;
+        group = setting.group;
+        let view = (
+          <Row justify='center' align='middle' gutter={[4, 16]} key={setting.settingId}>
+            <Col span={3}>
+              <div className='settingLabel' style={{ textAlign: 'right' }}>
+                <span>{setting.name} </span>
+              </div>
+            </Col>
+            <Col span={1}>
+              <Tooltip placement='top' title={setting.description}>
+                <QuestionCircleTwoTone />
+              </Tooltip>
+            </Col>
+            {setting.inputList.map((input, index) => {
+              return (
+                <Setting
+                  key={`${setting.settingId}_${index}`}
+                  settingId={setting.settingId}
+                  settingGroup={props.settingsGroup}
+                  settingIndex={index}
+                  type={input.type}
+                  precision={input.precision}
+                  minVal={input.minVal}
+                  maxVal={input.maxVal}
+                  leadingText={input.leadingText}
+                  prefix={input.prefix}
+                  serverValue={input.serverValue}
+                  suffix={input.suffix}
+                  trailingText={input.trailingText}
+                />
+              );
+            })}
+          </Row>
         );
+
+        if (group != prevGroup && index > 0) {
+          return (
+            <React.Fragment key={`${setting.settingId}_fragment`}>
+              <Row justify='center'>
+                <Col span={18}>
+                  <hr></hr>
+                </Col>
+              </Row>
+              {view}
+            </React.Fragment>
+          );
+        }
+
+        return view;
       });
       return (settingsView);
     }
     return null;
   }
 
+  const generateSettingsGroupText = () => {
+    let name = '';
+
+    if (props.settingsGroup == 'auction') {
+      name = 'Auction Settings';
+    } else if (props.settingsGroup == 'payout') {
+      name = 'Payout Settings'
+    } else {
+      name = 'Settings';
+    }
+
+    return name;
+  }
+
   return (
     <Layout>
       <LeagueHeader class='primary' text={leagueName} />
-      <LeagueHeader class='secondary' text='Settings' />
+      <LeagueHeader class='secondary' text={generateSettingsGroupText()} />
       <Content>
         {generateSettings()}
         <Row justify='center'>
@@ -95,7 +158,7 @@ function LeagueSettings(props) {
               loading={loading}
               onClick={updateSettings}
             >
-              Update Settings
+              {`Update ${generateSettingsGroupText()}`}
             </Button>
           </Col>
         </Row>
