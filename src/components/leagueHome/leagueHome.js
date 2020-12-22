@@ -16,16 +16,14 @@ import LeagueHomeUpcomingGames from './leagueHomeUpcomingGames';
 const { Content } = Layout;
 
 function LeagueHome() {
-  
-  const [leagueName, setLeagueName] = useState('');
-  const [tournamentName, setTournamentName] = useState('');
+
   const [remainingTeamsCount, setRemainingTeamsCount] = useState(0)
   const [userCount, setUserCount] = useState(0);
   const [myBuyIn, setMyBuyIn] = useState(0);
   const [myPayout, setMyPayout] = useState(0);
   const [prizepool, setPrizepool] = useState(0);
 
-  const { tournamentId, leagueId } = useLeagueState();
+  const { tournamentId, leagueId, leagueName, tournamentName, tournamentRegimeName } = useLeagueState();
   const { userId, authenticated } = useAuthState();
 
   useEffect(() => {
@@ -71,8 +69,6 @@ function LeagueHome() {
   }
 
   const getLeagueInfo = () => {
-    setLeagueName(Data.leagueInfo.name);
-    setTournamentName(Data.leagueInfo.tournamentName);
     setUserCount(Data.leagueInfo.users.length);
 
     let prizepool = 0;
@@ -93,10 +89,20 @@ function LeagueHome() {
     setRemainingTeamsCount(Data.remainingTeams);
   }
 
+  const secondaryHeaderText = () => {
+    let text = tournamentName;
+
+    if (tournamentRegimeName != null) {
+      text += ' - ' + tournamentRegimeName;
+    }
+
+    return text;
+  }
+
   return (
     <Layout>
       <LeagueHeader class='primary' text={leagueName} />
-      <LeagueHeader class='secondary' text={tournamentName} />
+      <LeagueHeader class='secondary' text={secondaryHeaderText()} />
       <Content>
         <LeagueHomeCards userCount={userCount} prizepool={prizepool} remainingTeams={remainingTeamsCount} buyIn={myBuyIn} payout={myPayout} />
         <Row type='flex' justify='center' gutter={[12, 8]}>

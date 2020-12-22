@@ -10,7 +10,6 @@ var client = null;
  * @todo possibly make this into a HOC
  */
 export function connectAuction(leagueId) {
-  console.log(client);
   if (client === null || client.readyState == 3) {
     client = new WebSocket(`${SOCKETS.AUCTION}?Authorizer=${User.session.idToken.jwtToken}&leagueId=${leagueId}`);
 
@@ -35,8 +34,8 @@ export function connectAuction(leagueId) {
         Pubsub.publish(NOTIF.NEW_CHAT_MESSAGE, handleNewMessage(data.msgObj));
       } else if (data.msgType === 'auction') {
         updateAuctionStatus(data.msgObj);
-      } else if (data.msgType === 'auction_error') {
-        Pubsub.publish(NOTIF.AUCTION_ERROR, null);
+      } else if (data.msgType === 'error') {
+        Pubsub.publish(NOTIF.AUCTION_ERROR, data.msgObj);
       }
     }
   }

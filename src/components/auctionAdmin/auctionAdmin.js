@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import 'antd/dist/antd.css';
 import { AUCTION_STATUS, NOTIF } from '../../utilities/constants';
 import { startAuction, resetClock, nextItem, closeAuction } from '../../utilities/auctionService';
@@ -26,9 +26,11 @@ function AuctionAdmin(props) {
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.NEW_AUCTION_DATA, AuctionAdmin, handleNewAuctionData);
+    Pubsub.subscribe(NOTIF.AUCTION_ERROR, AuctionAdmin, handleAuctionError);
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.NEW_AUCTION_DATA, AuctionAdmin);
+      Pubsub.unsubscribe(NOTIF.AUCTION_ERROR, AuctionAdmin);
     });
   }, []);
 
@@ -36,6 +38,13 @@ function AuctionAdmin(props) {
     setResetClockLoading(false);
     setNextLoading(false);
     setStartLoading(false);
+  }
+
+  const handleAuctionError = (errorObj) => {
+    setStartLoading(false);
+    setNextLoading(false);
+    setResetClockLoading(false);
+    message.error(errorObj.Error);
   }
   
   const generateStartStopButton = () => {

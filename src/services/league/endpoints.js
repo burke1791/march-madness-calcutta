@@ -10,16 +10,12 @@ let leaguesFetched = false;
 
 export const leagueEndpoints = {
   fetchTournamentOptions: function(apiService) {
-    apiService({
+    let options = {
       method: 'GET',
       url: LEAGUE_SERVICE_ENDPOINTS.TOURNAMENT_OPTIONS
-    }).then(response => {
-      console.log(response);
-      Data.tournaments = response.data;
-      Pubsub.publish(NOTIF.TOURNAMENT_OPTIONS_DOWNLOADED, null);
-    }).catch(error => {
-      console.log(error);
-    });
+    };
+
+    return apiService(options);
   },
 
   getLeagueSummaries: function(apiService, params) {
@@ -45,7 +41,8 @@ export const leagueEndpoints = {
     let league = {
       name: params.name,
       password: params.password,
-      tournamentId: params.tournamentId
+      tournamentId: params.tournamentId,
+      tournamentScopeId: params.tournamentScopeId
     };
   
     apiService({
@@ -74,6 +71,16 @@ export const leagueEndpoints = {
     }).catch(error => {
       console.log(error);
     });
+  },
+
+  // called within a promise
+  getLeagueMetadata: function(apiService, params) {
+    let options = {
+      method: 'GET',
+      url: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_METADATA + `/${params.leagueId}`
+    };
+
+    return apiService(options);
   },
 
   getLeagueUserSummaries: function(apiService, params) {
@@ -105,7 +112,7 @@ export const leagueEndpoints = {
       method: 'GET',
       url: LEAGUE_SERVICE_ENDPOINTS.REMAINING_TEAMS_COUNT + `/${params.tournamentId}`
     }).then(response => {
-      Data.remainingTeams = response.data[0].numTeamsRemaining;
+      Data.remainingTeams = response.data[0]?.numTeamsRemaining;
       Pubsub.publish(NOTIF.REMAINING_TEAMS_COUNT_DOWNLOADED, null);
     }).catch(error => {
       console.log(error);
@@ -154,6 +161,28 @@ export const leagueEndpoints = {
     let options = {
       method: 'POST',
       url: LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_SETTINGS,
+      data: {
+        leagueId: params.leagueId,
+        settings: params.settings
+      }
+    };
+
+    return apiService(options);
+  },
+
+  getLeaguePayoutSettings: function(apiService, params) {
+    let options = {
+      method: 'GET',
+      url: LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_PAYOUT_SETTINGS + `/${params.leagueId}`
+    };
+
+    return apiService(options);
+  },
+
+  updateLeaguePayoutSettings: function(apiService, params) {
+    let options = {
+      method: 'POST',
+      url: LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_PAYOUT_SETTINGS,
       data: {
         leagueId: params.leagueId,
         settings: params.settings
