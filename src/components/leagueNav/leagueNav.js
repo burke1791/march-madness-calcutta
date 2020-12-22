@@ -7,6 +7,7 @@ import { navigate } from '@reach/router';
 import { useLeagueState } from '../../context/leagueContext';
 
 const { Sider } = Layout;
+const { SubMenu } = Menu;
 
 function LeagueNav() {
 
@@ -38,6 +39,7 @@ function LeagueNav() {
 
   const handleLeagueNavClick = (event) => {
     handleCollapse(true, 'menuClick');
+    console.log(event);
 
     if (leagueId) {
       if (event.key == 'leagueHome') {
@@ -48,11 +50,11 @@ function LeagueNav() {
         navigate(`/leagues/${leagueId}/tournament`);
       } else if (event.key == 'messageBoard') {
         // navigate(`/leagues/${leagueId}/message_board`)
-      } else if (event.key == 'settings') {
-        navigate(`/leagues/${leagueId}/settings`);
+      } else if (event.keyPath[1] == 'settingSub') {
+        navigate(`/leagues/${leagueId}/${event.key}`);
       }
     } else {
-      console.log('leagueId is falsy');
+      console.debug('LeagueNav: leagueId is falsy');
     }
   }
 
@@ -87,9 +89,14 @@ function LeagueNav() {
           <Menu.Item key='messageBoard' disabled>
             Message Board
           </Menu.Item>
-          <Menu.Item key='settings'>
-            Settings
-          </Menu.Item>
+          <SubMenu key='settingSub' title='Settings'>
+            <Menu.Item key='settings/auction'>
+              Auction Settings
+            </Menu.Item>
+            <Menu.Item key='settings/payout'>
+              Payout Settings
+            </Menu.Item>
+          </SubMenu>
         </Menu>
       </Sider>
     );
@@ -107,18 +114,23 @@ function LeagueNav() {
         <Menu.Item key='auction'>
           Auction Room
         </Menu.Item>
-        <Menu.Item key='tournament'>
+        <Menu.Item key='tournament' disabled>
           Tournament
         </Menu.Item>
-        <Menu.Item key='myTeams'>
+        <Menu.Item key='myTeams' disabled>
           My Teams
         </Menu.Item>
-        <Menu.Item key='messageBoard'>
+        <Menu.Item key='messageBoard' disabled>
           Message Board
         </Menu.Item>
-        <Menu.Item key='settings'>
-          Settings
-        </Menu.Item>
+        <SubMenu key='settingSub' title='Settings'>
+          <Menu.Item key='settings/auction'>
+            Auction Settings
+          </Menu.Item>
+          <Menu.Item key='settings/payouts'>
+            Payout Settings
+          </Menu.Item>
+        </SubMenu>
       </Menu>
     );
   }

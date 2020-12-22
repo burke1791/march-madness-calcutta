@@ -17,7 +17,7 @@ import { User } from '../../utilities/authService';
 import LeagueSettings from '../leagueSettings/leagueSettings';
 import { useSettingsDispatch, useSettingsState } from '../../context/leagueSettingsContext';
 import LeagueService from '../../services/league/league.service';
-import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { LEAGUE_SERVICE_ENDPOINTS, SETTING_TYPES } from '../../utilities/constants';
 import { useAuthState } from '../../context/authContext';
 
 const { Content } = Layout;
@@ -32,8 +32,6 @@ function League(props) {
   const { authenticated } = useAuthState();
 
   useEffect(() => {
-    console.log('league component');
-    console.log(props);
     setLeagueContext([
       { key: 'leagueId', value: props.leagueId }
     ]);
@@ -47,6 +45,7 @@ function League(props) {
     // using leagueId from context to ensure the settings download stays in sync with the correct league
     if (!!leagueId && authenticated) {
       fetchSettings(leagueId);
+      fetchPayoutSettings(leagueId);
     }
   }, [leagueId, authenticated, settingsRefreshTrigger]);
 
@@ -75,8 +74,15 @@ function League(props) {
 
   const fetchSettings = (leagueId) => {
     LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SETTINGS, { leagueId }).then(response => {
-      console.log(response);
       setSettingsInContext(response.data);
+    }).catch(error => {
+      console.log(error);
+    });
+  }
+
+  const fetchPayoutSettings = (leagueId) => {
+    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_PAYOUT_SETTINGS, { leagueId }).then(response => {
+      setPayoutSettingsInContext(response.data);
     }).catch(error => {
       console.log(error);
     });
@@ -84,7 +90,6 @@ function League(props) {
 
   const fetchMetadata = (leagueId) => {
     LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_METADATA, { leagueId }).then(response => {
-      console.log(response);
       let leagueMetadata = packageLeagueMetadata(response.data[0]);
       setLeagueContext(leagueMetadata);
     }).catch(error => {
@@ -116,9 +121,9 @@ function League(props) {
 
     settings.forEach(setting => {
       if (setting.DisplaySuffix == '%') {
-        setting.MinValue = +setting.MinValue * 100;
-        setting.MaxValue = +setting.MaxValue * 100;
-        setting.SettingValue = +setting.SettingValue * 100;
+        setting.MinValue = setting.MinValue == null ? undefined : +setting.MinValue * 100;
+        setting.MaxValue = setting.MaxValue == null ? undefined : +setting.MaxValue * 100;
+        setting.SettingValue = setting.SettingValue == null ? '' : +setting.SettingValue * 100;
       }
 
       if (setting.SettingValue == null) {
@@ -128,25 +133,93 @@ function League(props) {
       let obj = {
         settingId: setting.SettingParameterId,
         name: setting.Name,
-        value: setting.SettingValue,
-        serverValue: setting.SettingValue,
         displayOrder: setting.DisplayOrder,
-        type: setting.DataType,
-        precision: setting.DecimalPrecision,
         description: setting.Description,
-        prefix: setting.DisplayPrefix == null ? '' : setting.DisplayPrefix,
-        suffix: setting.DisplaySuffix == null ? '' : setting.DisplaySuffix,
-        trailingText: setting.TrailingText,
-        minVal: setting.MinValue,
-        maxVal: setting.MaxValue,
-        group: setting.SettingClass
+        group: setting.SettingClass,
+        inputList: [
+          {
+            serverValue: setting.SettingValue,
+            type: setting.DataType,
+            precision: setting.DecimalPrecision,
+            prefix: setting.DisplayPrefix == null ? '' : setting.DisplayPrefix,
+            suffix: setting.DisplaySuffix == null ? '' : setting.DisplaySuffix,
+            trailingText: setting.TrailingText,
+            minVal: setting.MinValue,
+            maxVal: setting.MaxValue
+          }
+        ]
       };
 
       settingsList.push(obj);
     });
 
-    console.log(settingsList);
     settingsDispatch({ type: 'update', key: 'settingsList', value: settingsList});
+  }
+
+  const setPayoutSettingsInContext = (settings) => {
+    if (settings[0].LeagueId !== props.leagueId) {
+      // something ain't right
+      console.log('payout settings may not be correct');
+    }
+
+    let settingList = [];
+
+    settings.forEach(setting => {
+      if (setting.PayoutRateSuffix == '%') {
+        setting.PayoutRateMin = setting.PayoutRateMin == null ? undefined : +setting.PayoutRateMin * 100;
+        setting.PayoutRateMax = setting.PayoutRateMax == null ? undefined : +setting.PayoutRateMax * 100;
+        setting.PayoutRateValue = setting.PayoutRateValue == null ? '' : +setting.PayoutRateValue * 100;
+      }
+
+      if (setting.ThresholdSuffix == '%') {
+        setting.ThresholdMin = setting.ThresholdMin == null ? undefined : +setting.ThresholdMin * 100;
+        setting.ThresholdMax = setting.ThresholdMax == null ? undefined : +setting.ThresholdMax * 100;
+        setting.PayoutThresholdValue = setting.PayoutThresholdValue == null ? '' : +setting.PayoutThresholdValue * 100;
+      }
+
+      if (setting.PayoutRateValue == null) {
+        setting.PayoutRate = '';
+      }
+
+      let obj = {
+        settingId: setting.TournamentPayoutId,
+        name: setting.PayoutName,
+        displayOrder: setting.DisplayOrder,
+        description: setting.Tooltip,
+        group: setting.SettingGroup,
+        inputList: [
+          {
+            serverValue: setting.PayoutRateValue,
+            type: SETTING_TYPES.INPUT_NUMBER, // payouts will always be numbers
+            precision: setting.PayoutRatePrecision,
+            leadingText: setting.PayoutRateLeadingText,
+            prefix: setting.PayoutRatePrefix == null ? '' : setting.PayoutRatePrefix,
+            suffix: setting.PayoutRateSuffix == null ? '' : setting.PayoutRateSuffix,
+            trailingText: setting.PayoutRateTrailingText,
+            minVal: setting.PayoutRateMin,
+            maxVal: setting.PayoutRateMax
+          }
+        ]
+      };
+
+      if (setting.PayoutThresholdValue != null) {
+        obj.inputList.push({
+          serverValue: setting.PayoutThresholdValue,
+          type: SETTING_TYPES.INPUT_NUMBER,
+          precision: setting.ThresholdPrecision,
+          leadingText: setting.ThresholdLeadingText,
+          prefix: setting.ThresholdPrefix == null ? '' : setting.ThresholdPrefix,
+          suffix: setting.ThresholdSuffix == null ? '' : setting.ThresholdSuffix,
+          trailingText: setting.ThresholdTrailingText,
+          minVal: setting.ThresholdMin,
+          maxVal: setting.ThresholdMax
+        });
+      }
+
+      settingList.push(obj);
+    });
+
+    settingsDispatch({ type: 'update', key: 'payoutSettings', value: settingList});
   }
 
   if (User.authenticated == undefined || User.authenticated) {
@@ -162,7 +235,7 @@ function League(props) {
               {/* <MessageBoard path='message_board' leagueId={props.leagueId} role={role} /> */}
               {/* <MessageThread path='message_board/:topicId' leagueId={props.leagueId} role={role} /> */}
               <MemberPage path='member' />
-              <LeagueSettings path='settings' />
+              <LeagueSettings path='settings/:settingsGroup' />
             </Router>
           </Content>
         </Layout>

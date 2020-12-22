@@ -112,7 +112,7 @@ export const leagueEndpoints = {
       method: 'GET',
       url: LEAGUE_SERVICE_ENDPOINTS.REMAINING_TEAMS_COUNT + `/${params.tournamentId}`
     }).then(response => {
-      Data.remainingTeams = response.data[0].numTeamsRemaining;
+      Data.remainingTeams = response.data[0]?.numTeamsRemaining;
       Pubsub.publish(NOTIF.REMAINING_TEAMS_COUNT_DOWNLOADED, null);
     }).catch(error => {
       console.log(error);
@@ -161,6 +161,28 @@ export const leagueEndpoints = {
     let options = {
       method: 'POST',
       url: LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_SETTINGS,
+      data: {
+        leagueId: params.leagueId,
+        settings: params.settings
+      }
+    };
+
+    return apiService(options);
+  },
+
+  getLeaguePayoutSettings: function(apiService, params) {
+    let options = {
+      method: 'GET',
+      url: LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_PAYOUT_SETTINGS + `/${params.leagueId}`
+    };
+
+    return apiService(options);
+  },
+
+  updateLeaguePayoutSettings: function(apiService, params) {
+    let options = {
+      method: 'POST',
+      url: LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_PAYOUT_SETTINGS,
       data: {
         leagueId: params.leagueId,
         settings: params.settings
