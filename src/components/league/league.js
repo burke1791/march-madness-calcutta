@@ -222,58 +222,6 @@ function League(props) {
     settingsDispatch({ type: 'update', key: 'payoutSettings', value: settingList});
   }
 
-  const fetchSettings = (leagueId) => {
-    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SETTINGS, { leagueId }).then(response => {
-      console.log(response);
-      setSettingsInContext(response.data);
-    }).catch(error => {
-      console.log(error);
-    });
-  }
-
-  const setSettingsInContext = (settings) => {
-    if (settings[0].LeagueId !== props.leagueId) {
-      // something ain't right
-      console.log('settings may not be correct');
-    }
-
-    let settingsList = [];
-
-    settings.forEach(setting => {
-      if (setting.DisplaySuffix == '%') {
-        setting.MinValue = +setting.MinValue * 100;
-        setting.MaxValue = +setting.MaxValue * 100;
-        setting.SettingValue = +setting.SettingValue * 100;
-      }
-
-      if (setting.SettingValue == null) {
-        setting.SettingValue = '';
-      }
-
-      let obj = {
-        settingId: setting.SettingParameterId,
-        name: setting.Name,
-        value: setting.SettingValue,
-        serverValue: setting.SettingValue,
-        displayOrder: setting.DisplayOrder,
-        type: setting.DataType,
-        precision: setting.DecimalPrecision,
-        description: setting.Description,
-        prefix: setting.DisplayPrefix == null ? '' : setting.DisplayPrefix,
-        suffix: setting.DisplaySuffix == null ? '' : setting.DisplaySuffix,
-        trailingText: setting.TrailingText,
-        minVal: setting.MinValue,
-        maxVal: setting.MaxValue,
-        group: setting.SettingClass
-      };
-
-      settingsList.push(obj);
-    });
-
-    console.log(settingsList);
-    settingsDispatch({ type: 'update', key: 'settingsList', value: settingsList});
-  }
-
   if (User.authenticated == undefined || User.authenticated) {
     return (
       <Layout style={{ height: 'calc(100vh - 64px)' }}>
