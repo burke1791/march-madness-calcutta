@@ -23,16 +23,14 @@ function LeagueHome() {
   const [myPayout, setMyPayout] = useState(0);
   const [prizepool, setPrizepool] = useState(0);
 
-  const { tournamentId, leagueId, leagueName, tournamentName, tournamentRegimeName } = useLeagueState();
+  const { leagueId, leagueName, tournamentName, tournamentRegimeName } = useLeagueState();
   const { userId, authenticated } = useAuthState();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHome, getLeagueInfo);
-    Pubsub.subscribe(NOTIF.REMAINING_TEAMS_COUNT_DOWNLOADED, LeagueHome, handleRemainingGameCount);
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHome);
-      Pubsub.unsubscribe(NOTIF.REMAINING_TEAMS_COUNT_DOWNLOADED, LeagueHome);
 
       cleanupLeagueHomeData();
     });
@@ -48,24 +46,31 @@ function LeagueHome() {
     if (leagueId) {
       LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES, { leagueId });
       LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.UPCOMING_GAMES, { leagueId });
+
+      fetchRemainingTeamCount();
     }
   }, [leagueId]);
-
-  useEffect(() => {
-    if (tournamentId) {
-      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.REMAINING_TEAMS_COUNT, { tournamentId });
-    }
-  }, [tournamentId]);
 
   const fetchDataOnSignIn = () => {
     if (leagueId) {
       LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES, { leagueId });
       LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.UPCOMING_GAMES, { leagueId });
+
+      fetchRemainingTeamCount();
     }
-    
-    if (tournamentId) {
-      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.REMAINING_TEAMS_COUNT, { tournamentId });
-    }
+  }
+
+  const fetchRemainingTeamCount = () => {
+    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.REMAINING_TEAMS_COUNT, { leagueId }).then(response => {
+
+      if (Object.keys(response.data[0])[0] === 'Error') {
+        throw new Error(response.data[0].Error);
+      }
+
+      setRemainingTeamsCount(response.data[0].NumTeamsRemaining);
+    }).catch(error => {
+      console.log(error);
+    })
   }
 
   const getLeagueInfo = () => {
@@ -83,10 +88,6 @@ function LeagueHome() {
     });
 
     setPrizepool(prizepool);
-  }
-
-  const handleRemainingGameCount = () => {
-    setRemainingTeamsCount(Data.remainingTeams);
   }
 
   const secondaryHeaderText = () => {
