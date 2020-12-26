@@ -108,15 +108,12 @@ export const leagueEndpoints = {
   },
 
   getRemainingTeamsCount: function(apiService, params) {
-    apiService({
+    let options = {
       method: 'GET',
-      url: LEAGUE_SERVICE_ENDPOINTS.REMAINING_TEAMS_COUNT + `/${params.tournamentId}`
-    }).then(response => {
-      Data.remainingTeams = response.data[0]?.numTeamsRemaining;
-      Pubsub.publish(NOTIF.REMAINING_TEAMS_COUNT_DOWNLOADED, null);
-    }).catch(error => {
-      console.log(error);
-    });
+      url: LEAGUE_SERVICE_ENDPOINTS.REMAINING_TEAMS_COUNT + `/${params.leagueId}`
+    };
+
+    return apiService(options);
   },
 
   getTournamentGamesForBracket: function(apiService, params) {
