@@ -99,6 +99,9 @@ function LeagueAuction() {
     let taxBurden = userBuyIns.find(user => user.userId == userId).taxBuyIn;
     
     const prizepool = userBuyIns.reduce((prev, current, i) => {
+      console.log(prev);
+      console.log(current);
+      
       if (i == 1) {
         return prev.totalBuyIn + current.totalBuyIn;
       }

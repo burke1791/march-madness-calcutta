@@ -9,7 +9,7 @@ const formatMoney = (value) => {
     moneyString = '$';
   }
 
-  return moneyString + value.toFixed(2);
+  return `${moneyString}${value.toFixed(2)}`;
 }
 
 const formatTimestamp = (value) => {
