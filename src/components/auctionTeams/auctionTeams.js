@@ -7,6 +7,8 @@ import { formatMoney } from '../../utilities/helper';
 
 function AuctionTeams(props) {
   
+  console.log(props);
+
   return (
     <div style={{ padding: '0 6px' }}>
       <Row type='flex' justify='space-between' style={{ padding: '6px 10px' }}>
