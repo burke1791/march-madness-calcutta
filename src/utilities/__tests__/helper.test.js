@@ -17,4 +17,16 @@ describe('formatMoney', () => {
 
     expect(formatMoney(value)).toBe('$100.00');
   });
+
+  test('negative input', () => {
+    let value = -69;
+
+    expect(formatMoney(value)).toBe('-$69.00');
+  });
+
+  test('invalid input: object', () => {
+    let value = {};
+
+    expect(formatMoney(value)).toBe('$0.00');
+  });
 });

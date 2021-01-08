@@ -1,5 +1,6 @@
 const formatMoney = (value) => {
   let moneyString;
+  value = isNaN(value) ? 0 : value;
   value = parseFloat(+value);
 
   if (value < 0) {
