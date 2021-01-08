@@ -6,8 +6,6 @@ import 'antd/dist/antd.css';
 import { formatMoney } from '../../utilities/helper';
 
 function AuctionTeams(props) {
-  
-  console.log(props);
 
   return (
     <div style={{ padding: '0 6px' }}>

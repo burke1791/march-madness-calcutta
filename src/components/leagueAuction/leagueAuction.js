@@ -96,11 +96,8 @@ function LeagueAuction() {
 
   const updateUserSummaries = () => {
     let taxBurden = userBuyIns.find(user => user.userId == userId).taxBuyIn;
-    
-    console.log(userBuyIns);
 
     const prizepool = userBuyIns.reduce((prev, current, i) => {
-      console.log(prev);
       if (i == 1) {
         return prev + current.totalBuyIn;
       }
