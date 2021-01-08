@@ -38,7 +38,6 @@ function LeagueSettings(props) {
         settings: settingsUpdate
       }).then(response => {
         setLoading(false);
-        console.log(response);
         
         if (response.data[0]?.Error) {
           displayError(response.data[0].Error);
@@ -145,25 +144,27 @@ function LeagueSettings(props) {
   }
 
   return (
-    <Layout>
-      <LeagueHeader class='primary' text={leagueName} />
-      <LeagueHeader class='secondary' text={generateSettingsGroupText()} />
-      <Content>
-        {generateSettings()}
-        <Row justify='center'>
-          <Col span={12} style={{ textAlign: 'center' }}>
-            <hr></hr>
-            <Button
-              type='primary'
-              loading={loading}
-              onClick={updateSettings}
-            >
-              {`Update ${generateSettingsGroupText()}`}
-            </Button>
-          </Col>
-        </Row>
-      </Content>
-    </Layout>
+    <Content style={{ overflowX: 'hidden' }}>
+      <Row justify='center'>
+        <LeagueHeader class='primary' text={leagueName} />
+      </Row>
+      <Row justify='center'>
+        <LeagueHeader class='secondary' text={generateSettingsGroupText()} />
+      </Row>
+      {generateSettings()}
+      <Row justify='center'>
+        <Col span={12} style={{ textAlign: 'center' }}>
+          <hr></hr>
+          <Button
+            type='primary'
+            loading={loading}
+            onClick={updateSettings}
+          >
+            {`Update ${generateSettingsGroupText()}`}
+          </Button>
+        </Col>
+      </Row>
+    </Content>
   );
 }
 
