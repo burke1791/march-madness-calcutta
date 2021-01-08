@@ -39,7 +39,6 @@ function LeagueNav() {
 
   const handleLeagueNavClick = (event) => {
     handleCollapse(true, 'menuClick');
-    console.log(event);
 
     if (leagueId) {
       if (event.key == 'leagueHome') {
@@ -80,7 +79,7 @@ function LeagueNav() {
           <Menu.Item key='auction'>
             Auction Room
           </Menu.Item>
-          <Menu.Item key='tournament' disabled>
+          {/* <Menu.Item key='tournament' disabled>
             Tournament
           </Menu.Item>
           <Menu.Item key='myTeams' disabled>
@@ -88,7 +87,7 @@ function LeagueNav() {
           </Menu.Item>
           <Menu.Item key='messageBoard' disabled>
             Message Board
-          </Menu.Item>
+          </Menu.Item> */}
           <SubMenu key='settingSub' title='Settings'>
             <Menu.Item key='settings/auction'>
               Auction Settings
@@ -114,7 +113,7 @@ function LeagueNav() {
         <Menu.Item key='auction'>
           Auction Room
         </Menu.Item>
-        <Menu.Item key='tournament' disabled>
+        {/* <Menu.Item key='tournament' disabled>
           Tournament
         </Menu.Item>
         <Menu.Item key='myTeams' disabled>
@@ -122,7 +121,7 @@ function LeagueNav() {
         </Menu.Item>
         <Menu.Item key='messageBoard' disabled>
           Message Board
-        </Menu.Item>
+        </Menu.Item> */}
         <SubMenu key='settingSub' title='Settings'>
           <Menu.Item key='settings/auction'>
             Auction Settings

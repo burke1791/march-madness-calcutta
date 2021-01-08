@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { InputNumber, Switch, Row, Col } from 'antd';
+import { InputNumber, Switch, Col } from 'antd';
 import 'antd/dist/antd.css';
 import SettingText from './settingText';
 import { SETTING_TYPES } from '../../utilities/constants';
@@ -36,8 +36,6 @@ function Setting(props) {
       newSetting.type = 'payoutThreshold';
     }
 
-    console.log(newSetting);
-
     let updatedSettings = newSettings?.length ? [...newSettings] : [];
     
     let currentIndex = updatedSettings.findIndex(obj => {
@@ -57,6 +55,7 @@ function Setting(props) {
 
   const generateSettingInput = () => {
     if (props.type === SETTING_TYPES.INPUT_NUMBER) {
+
       return (
         <div className='settingInput' style={{ textAlign: 'center' }}>
           <InputNumber
