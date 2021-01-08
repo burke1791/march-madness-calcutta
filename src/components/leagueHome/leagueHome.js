@@ -104,7 +104,7 @@ function LeagueHome() {
     <Layout>
       <LeagueHeader class='primary' text={leagueName} />
       <LeagueHeader class='secondary' text={secondaryHeaderText()} />
-      <Content>
+      <Content style={{ overflowX: 'hidden' }}>
         <LeagueHomeCards userCount={userCount} prizepool={prizepool} remainingTeams={remainingTeamsCount} buyIn={myBuyIn} payout={myPayout} />
         <Row type='flex' justify='center' gutter={[12, 8]}>
           <Col md={20} xxl={12}>
