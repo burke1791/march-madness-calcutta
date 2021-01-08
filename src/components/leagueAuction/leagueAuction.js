@@ -77,7 +77,6 @@ function LeagueAuction() {
   }
 
   const auctionTeamsDownloaded = () => {
-    console.log(auctionTeams);
     setTeams(auctionTeams);
     
     const myTeamsArr = auctionTeams.filter(team => {
@@ -97,13 +96,13 @@ function LeagueAuction() {
 
   const updateUserSummaries = () => {
     let taxBurden = userBuyIns.find(user => user.userId == userId).taxBuyIn;
-    
+
     const prizepool = userBuyIns.reduce((prev, current, i) => {
       if (i == 1) {
-        return prev.totalBuyIn + current.totalBuyIn;
+        return prev + current.totalBuyIn;
       }
       return prev + current.totalBuyIn;
-    });
+    }, 0);
     setMyTax(taxBurden);
     setLeagueUsers(userBuyIns);
     setPrizepool(prizepool);
