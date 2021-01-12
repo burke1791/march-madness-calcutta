@@ -62,12 +62,13 @@ function LeagueHome() {
 
   const fetchRemainingTeamCount = () => {
     LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.REMAINING_TEAMS_COUNT, { leagueId }).then(response => {
+      if (response.data.length > 0) {
+        if (Object.keys(response.data[0])[0] === 'Error') {
+          throw new Error(response.data[0].Error);
+        }
 
-      if (Object.keys(response.data[0])[0] === 'Error') {
-        throw new Error(response.data[0].Error);
+        setRemainingTeamsCount(response.data[0].NumTeamsRemaining);
       }
-
-      setRemainingTeamsCount(response.data[0].NumTeamsRemaining);
     }).catch(error => {
       console.log(error);
     })
