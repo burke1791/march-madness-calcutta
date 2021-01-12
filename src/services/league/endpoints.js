@@ -136,6 +136,7 @@ export const leagueEndpoints = {
       method: 'GET',
       url: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS + `/${params.leagueId}/${params.userId}`
     }).then(response => {
+      console.log(response);
       Data.userTeams = leagueServiceHelper.packageUserTeams(response.data);
       Data.userAlias = leagueServiceHelper.parseUserAlias(response.data);
       Pubsub.publish(NOTIF.LEAGUE_USER_TEAMS_FETCHED, null);
