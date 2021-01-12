@@ -112,14 +112,14 @@ export const leagueServiceHelper = {
     userTeams.sort(function(a, b) { return b.netReturn - a.netReturn });
   
     // adding a tax object to the list of user teams
-    if (teams[0].taxBuyIn > 0) {
+    if (teams[0].TaxBuyIn > 0) {
       userTeams.push({
         teamId: 0,
         name: 'Tax',
         seed: null,
-        price: teams[0].taxBuyIn,
+        price: teams[0].TaxBuyIn,
         payout: 0,
-        netReturn: -teams[0].taxBuyIn
+        netReturn: -teams[0].TaxBuyIn
       });
     }
   
