@@ -24,7 +24,6 @@ export const leagueEndpoints = {
         method: 'GET',
         url: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_SUMMARIES
       }).then(response => {
-        console.log(response);
         Data.leagues = leagueServiceHelper.packageLeagueSummaries(response.data);
         let userId = leagueServiceHelper.extractUserId(response.data);
         leaguesFetched = true;
@@ -122,7 +121,6 @@ export const leagueEndpoints = {
         method: 'GET',
         url: LEAGUE_SERVICE_ENDPOINTS.TOURNAMENT_BRACKET_GAMES + `/${params.leagueId}`
       }).then(response => {
-        console.log(response);
         Data.tournamentBracketGames = leagueServiceHelper.packageBracketGames(response.data);
         Pubsub.publish(NOTIF.TOURNAMENT_BRACKET_GAMES, Data.tournamentBracketGames);
       }).catch(error => {

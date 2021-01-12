@@ -98,13 +98,13 @@ export const leagueServiceHelper = {
   packageUserTeams: function(teams) {
     const userTeams = teams.map(team => {
       return {
-        teamId: team.teamId,
-        name: team.name,
-        seed: team.seed,
-        price: team.price,
-        payout: team.payout,
-        netReturn: team.payout - team.price,
-        eliminated: !team.alive
+        teamId: team.TeamId,
+        name: team.Name,
+        seed: team.Seed,
+        price: team.Price,
+        payout: team.Payout,
+        netReturn: team.Payout - team.Price,
+        eliminated: team.Eliminated
       };
     });
   
@@ -127,6 +127,6 @@ export const leagueServiceHelper = {
   },
 
   parseUserAlias: function(teams) {
-    return teams[0].alias;
+    return teams[0].Alias;
   }
 }
