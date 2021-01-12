@@ -98,13 +98,13 @@ export const leagueServiceHelper = {
   packageUserTeams: function(teams) {
     const userTeams = teams.map(team => {
       return {
-        teamId: team.teamId,
-        name: team.name,
-        seed: team.seed,
-        price: team.price,
-        payout: team.payout,
-        netReturn: team.payout - team.price,
-        eliminated: !team.alive
+        teamId: team.TeamId,
+        name: team.Name,
+        seed: team.Seed,
+        price: team.Price,
+        payout: team.Payout,
+        netReturn: team.Payout - team.Price,
+        eliminated: team.Eliminated
       };
     });
   
@@ -112,14 +112,14 @@ export const leagueServiceHelper = {
     userTeams.sort(function(a, b) { return b.netReturn - a.netReturn });
   
     // adding a tax object to the list of user teams
-    if (teams[0].taxBuyIn > 0) {
+    if (teams[0].TaxBuyIn > 0) {
       userTeams.push({
         teamId: 0,
         name: 'Tax',
         seed: null,
-        price: teams[0].taxBuyIn,
+        price: teams[0].TaxBuyIn,
         payout: 0,
-        netReturn: -teams[0].taxBuyIn
+        netReturn: -teams[0].TaxBuyIn
       });
     }
   
@@ -127,6 +127,6 @@ export const leagueServiceHelper = {
   },
 
   parseUserAlias: function(teams) {
-    return teams[0].alias;
+    return teams[0].Alias;
   }
 }
