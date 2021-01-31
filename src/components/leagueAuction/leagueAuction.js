@@ -8,14 +8,15 @@ import 'antd/dist/antd.css';
 import MyTeams from '../myTeams/myTeams';
 import MemberList from '../memberList/memberList';
 import Pubsub from '../../utilities/pubsub';
-import { NOTIF, AUCTION_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { NOTIF, AUCTION_SERVICE_ENDPOINTS, SOCKETS } from '../../utilities/constants';
 import { connectAuction, disconnect } from '../../utilities/auctionService';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
 import AuctionService from '../../services/autction/auction.service';
 import { userBuyIns, auctionTeams, clearAuctionTeams } from '../../services/autction/endpoints';
+import withWebsocket from '../../HOC/withWebsocket';
 
-function LeagueAuction() {
+function LeagueAuction(props) {
 
   const [teams, setTeams] = useState([]);
   const [prizepool, setPrizepool] = useState(0);
@@ -44,11 +45,11 @@ function LeagueAuction() {
   useEffect(() => {
     if (leagueId && authenticated) {
       fetchData();
-      connectWebsocket(leagueId);
+      // connectWebsocket(leagueId);
     }
 
     return (() => {
-      disconnect();
+      // disconnect();
       clearAuctionTeams();
     });
   }, [leagueId]);
@@ -62,13 +63,13 @@ function LeagueAuction() {
   const handleSignIn = () => {
     if (leagueId) {
       fetchData(leagueId);
-      connectWebsocket(leagueId);
+      // connectWebsocket(leagueId);
     }
   }
 
-  const connectWebsocket = (leagueId) => {
-    connectAuction(leagueId);
-  }
+  // const connectWebsocket = (leagueId) => {
+  //   connectAuction(leagueId);
+  // }
 
   const fetchData = () => {
     AuctionService.callApi(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_TEAMS, { leagueId });
@@ -116,7 +117,7 @@ function LeagueAuction() {
       </Col>
       <Col span={10} className='flex-growVert-parent'>
         <AuctionActions />
-        <AuctionChat />
+        <AuctionChat sendSocketMessage={props.sendSocketMessage} />
       </Col>
       <Col span={6}>
         <MyTeams myTeams={myTeams} myTax={myTax} />
@@ -126,4 +127,4 @@ function LeagueAuction() {
   );
 }
 
-export default LeagueAuction;
+export default withWebsocket(LeagueAuction, { socketService: SOCKETS.AUCTION });

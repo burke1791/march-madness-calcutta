@@ -14,7 +14,7 @@ import { useAuthState } from '../../context/authContext';
 
 const { Search } = Input;
 
-function AuctionChat() {
+function AuctionChat(props) {
   
   const [chatMessage, setChatMessage] = useState('');
   const [messages, setMessages] = useState([]);
@@ -64,7 +64,8 @@ function AuctionChat() {
       content: value
     };
 
-    sendSocketMessage(messageObj);
+    // sendSocketMessage(messageObj);
+    props.sendSocketMessage('MESSAGE', messageObj);
 
     setChatMessage('');
   }
