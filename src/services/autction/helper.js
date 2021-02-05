@@ -1,14 +1,10 @@
-import Pubsub from '../../utilities/pubsub';
-import { NOTIF } from '../../utilities/constants';
 
 export const auctionServiceHelper = {
   updateServerPing: function(pingObj) {
     let serverTime = new Date(pingObj).valueOf();
     let local = Date.now();
 
-    let offset = serverTime - local;
-    
-    Pubsub.publish(NOTIF.SERVER_SYNCED, offset);
+    return serverTime - local;
   },
 
   packageChatMessages: function(messages) {
@@ -29,27 +25,29 @@ export const auctionServiceHelper = {
 
   updateAuctionStatus: function(status) {
     return {
-      status: status.status,
-      current: {
-        itemId: status.currentItemId,
-        itemName: status.name,
-        itemSeed: status.seed,
-        price: status.currentItemPrice,
-        winnerId: status.currentItemWinner,
-        winnerAlias: status.alias,
-        lastBid: new Date(status.lastBidTimestamp)
-      }
+      status: status.Status,
+      currentItemId: status.CurrentItemId,
+      itemTypeId: status.ItemTypeId,
+      itemName: status.ItemName,
+      itemSeed: status.Seed,
+      displayName: status.DisplayName,
+      price: +status.CurrentItemPrice,
+      winnerId: status.CurrentItemWinner,
+      winnerAlias: status.Alias,
+      lastBid: new Date(status.LastBidTimestamp),
+      errorMessage: null
     };
   },
 
   packageUserBuyIns: function(users) {
     const buyInArr = users.map(userObj => {
       let user = {
-        userId: +userObj.userId,
-        alias: userObj.alias,
-        naturalBuyIn: userObj.naturalBuyIn,
-        taxBuyIn: userObj.taxBuyIn,
-        totalBuyIn: userObj.naturalBuyIn + userObj.taxBuyIn
+        leagueId: +userObj.LeagueId,
+        userId: +userObj.UserId,
+        alias: userObj.Alias,
+        naturalBuyIn: userObj.NaturalBuyIn,
+        taxBuyIn: userObj.TaxBuyIn,
+        totalBuyIn: +(userObj.NaturalBuyIn + userObj.TaxBuyIn).toFixed(2)
       };
   
       return user;
@@ -61,12 +59,13 @@ export const auctionServiceHelper = {
   packageAuctionTeams: function(teams) {
     const teamArr = teams.map(teamObj => {
       let team = {
-        teamId: Number(teamObj.id),
-        price: teamObj.price,
-        displayName: teamObj.seed ? `(${teamObj.seed}) ${teamObj.name}` : teamObj.name,
-        name: teamObj.name,
-        seed: teamObj.seed,
-        owner: Number(teamObj.userId)
+        itemId: Number(teamObj.ItemId),
+        itemTypeId: Number(teamObj.ItemTypeId),
+        itemName: teamObj.ItemName,
+        displayName: teamObj.DisplayName,
+        seed: teamObj.Seed,
+        owner: Number(teamObj.UserId),
+        price: teamObj.Price
       };
   
       return team;

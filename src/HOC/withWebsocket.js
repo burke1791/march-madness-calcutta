@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { useAuctionDispatch } from '../context/auctionContext';
 import { useAuthState } from '../context/authContext';
 import { useLeagueState } from '../context/leagueContext';
-import { NOTIF } from '../utilities/constants';
+import { AUCTION_STATUS, NOTIF } from '../utilities/constants';
 import Pubsub from '../utilities/pubsub';
-import { parseChatMessage } from './websocketHelper';
+import { parseChatMessage, parseAuctionMessage } from './websocketHelper';
 
 
-function withWebsocket(WrappedComponent, config) {
+function withAuctionWebsocket(WrappedComponent, config) {
   return function(props) {
     const { authenticated, token, userId } = useAuthState();
     const { leagueId } = useLeagueState();
+
+    const auctionDispatch = useAuctionDispatch();
 
     const [socket, setSocket] = useState(null);
 
@@ -43,10 +46,11 @@ function withWebsocket(WrappedComponent, config) {
       }
 
       client.onmessage = function(event) {
-        let { msgType, msgObj } = JSON.parse(event.data);
+        let { msgType, msgObj, message } = JSON.parse(event.data);
+        console.log(msgType);
         console.log(msgObj);
 
-        emit(msgType, msgObj);
+        emit(msgType, msgObj, message);
       }
       
       setSocket(client);
@@ -67,14 +71,47 @@ function withWebsocket(WrappedComponent, config) {
       return JSON.stringify(obj);
     }
 
-    const emit = (msgType, msgObj) => {
+    const emit = (msgType, msgObj, errorMessage) => {
       if (msgType === 'chat') {
         Pubsub.publish(NOTIF.NEW_CHAT_MESSAGE, parseChatMessage(msgObj));
       } else if (msgType === 'auction') {
         // parse auction obj then publish
-      } else if (msgType === 'error') {
-        Pubsub.publish(NOTIF.AUCTION_ERROR, msgObj);
+        processAuctionStatus(msgObj);
+        Pubsub.publish(NOTIF.NEW_AUCTION_DATA, null);
+      } else if (msgType === 'auction_error') {
+        // Pubsub.publish(NOTIF.AUCTION_ERROR, errorMessage);
+        processAuctionError(errorMessage)
       }
+    }
+
+    const processAuctionStatus = (data) => {
+      let itemSoldFlag = data.Status === AUCTION_STATUS.SOLD;
+
+      // indicate to listeners that an item was sold
+      if (itemSoldFlag) {
+        auctionDispatch({ type: 'update', key: 'newItemTimestamp', value: new Date().valueOf() });
+      }
+
+      let statusObj = parseAuctionMessage(data);
+      updateAuctionStatusInContext(statusObj);
+    }
+
+    const processAuctionError = (error) => {
+      let obj = {
+        errorMessage: error
+      };
+
+      updateAuctionStatusInContext(obj);
+    }
+
+    const updateAuctionStatusInContext = (statusObj) => {
+      let keys = Object.keys(statusObj);
+
+      for (var key of keys) {
+        auctionDispatch({ type: 'update', key: key, value: statusObj[key] });
+      }
+
+      auctionDispatch({ type: 'update', key: 'prevUpdate', value: new Date().valueOf() });
     }
 
     return (
@@ -83,4 +120,4 @@ function withWebsocket(WrappedComponent, config) {
   }
 }
 
-export default withWebsocket
+export default withAuctionWebsocket

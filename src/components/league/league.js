@@ -19,6 +19,7 @@ import { useSettingsDispatch, useSettingsState } from '../../context/leagueSetti
 import LeagueService from '../../services/league/league.service';
 import { LEAGUE_SERVICE_ENDPOINTS, SETTING_TYPES } from '../../utilities/constants';
 import { useAuthState } from '../../context/authContext';
+import { AuctionProvider } from '../../context/auctionContext';
 
 const { Content } = Layout;
 
@@ -230,7 +231,9 @@ function League(props) {
           <Content>
             <Router>
               <LeagueHome path='/' />
-              <LeagueAuction path='auction' />
+              <AuctionProvider path='auction'>
+                <LeagueAuction path='/' />
+              </AuctionProvider>
               <Tournament path='tournament' />
               {/* <MessageBoard path='message_board' leagueId={props.leagueId} role={role} /> */}
               {/* <MessageThread path='message_board/:topicId' leagueId={props.leagueId} role={role} /> */}

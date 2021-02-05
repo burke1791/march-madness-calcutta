@@ -11,14 +11,12 @@ var Auction = {};
 
 export const auctionEndpoints = {
   getServerTimestamp: function(apiService) {
-    apiService({
+    let options = {
       method: 'GET',
       url: AUCTION_SERVICE_ENDPOINTS.SERVER_TIMESTAMP
-    }).then(response => {
-      auctionServiceHelper.updateServerPing(response.data[0].ServerTimestamp);
-    }).catch(error => {
-      console.log(error);
-    });
+    };
+
+    return apiService(options);
   },
 
   fetchChatMessages: function(apiService, params) {
@@ -34,41 +32,30 @@ export const auctionEndpoints = {
   },
 
   fetchAuctionStatus: function(apiService, params) {
-    apiService({
+    let options = {
       method: 'GET',
       url: AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_STATUS + `/${params.leagueId}`
-    }).then(response => {
-      let updatedTeams = response.data[0].status === AUCTION_STATUS.SOLD;
-      Auction = auctionServiceHelper.updateAuctionStatus(response.data[0]);
-      Pubsub.publish(NOTIF.NEW_AUCTION_DATA, updatedTeams);
-    }).catch(error => {
-      console.log(error);
-    });
+    };
+
+    return apiService(options);
   },
 
   fetchAuctionTeams: function(apiService, params) {
-    apiService({
+    let options = {
       method: 'GET',
       url: AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_TEAMS + `/${params.leagueId}`
-    }).then(response => {
-      auctionTeams = auctionServiceHelper.packageAuctionTeams(response.data);
-      Pubsub.publish(NOTIF.AUCTION_TEAMS_DOWNLOADED, null);
-    }).catch(error => {
-      console.log(error);
-    });
+    };
+
+    return apiService(options);
   },
 
   fetchUserBuyIns: function(apiService, params) {
-    apiService({
+    let options = {
       method: 'GET',
       url: AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_BUYINS + `/${params.leagueId}`
-    }).then(response => {
-      console.log(response);
-      userBuyIns = auctionServiceHelper.packageUserBuyIns(response.data);
-      Pubsub.publish(NOTIF.AUCTION_BUYINS_DOWNLOADED, null);
-    }).catch(error => {
-      console.log(error);
-    });
+    };
+
+    return apiService(options);
   }
 }
 
