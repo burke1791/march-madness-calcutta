@@ -9,7 +9,7 @@ import { parseChatMessage, parseAuctionMessage } from './websocketHelper';
 
 function withAuctionWebsocket(WrappedComponent, config) {
   return function(props) {
-    const { authenticated, token, userId } = useAuthState();
+    const { authenticated, token } = useAuthState();
     const { leagueId } = useLeagueState();
 
     const auctionDispatch = useAuctionDispatch();

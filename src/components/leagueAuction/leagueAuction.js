@@ -137,7 +137,7 @@ function LeagueAuction(props) {
   const updateUserSummaries = (userBuyIns) => {
     let myBuyIn = userBuyIns.find(user => user.userId == userId)
     let myTaxBurden = myBuyIn.taxBuyIn;
-    let myTotalBuyIn = myBuyIn.totalBuyIn;
+    let currentUserTotalBuyIn = myBuyIn.totalBuyIn;
 
     const prizepool = userBuyIns.reduce((prev, current, i) => {
       if (i == 1) {
@@ -146,7 +146,7 @@ function LeagueAuction(props) {
       return prev + current.totalBuyIn;
     }, 0);
 
-    setMyTotalBuyIn(myTotalBuyIn);
+    setMyTotalBuyIn(currentUserTotalBuyIn);
     setMyTax(myTaxBurden);
     setLeagueUsers(userBuyIns);
     setPrizepool(prizepool);
