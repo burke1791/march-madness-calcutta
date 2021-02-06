@@ -22,6 +22,8 @@ jobs:
         run: npm install
       - name: Run tests
         run: npm test
+      - name: echo dir
+        run: pwd
   sonarcloud:
     name: Sonarcloud Analysis
     needs: unit_tests
@@ -34,6 +36,8 @@ jobs:
         fetch-depth: 0
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
+      with:
+        projectBaseDir: src
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
