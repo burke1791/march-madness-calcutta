@@ -20,7 +20,7 @@ describe('parseChatMessage', () => {
       timestamp: '2021-01-31T16:25:10.000Z'
     };
 
-    expect(parseChatMessage(msgObj)).toEqual(expected);
+    expect(parseChatMessage(msgObj)).toEqual([expected]);
   });
 });
 

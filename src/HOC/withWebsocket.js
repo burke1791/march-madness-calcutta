@@ -73,6 +73,7 @@ function withAuctionWebsocket(WrappedComponent, config) {
 
     const emit = (msgType, msgObj, errorMessage) => {
       if (msgType === 'chat') {
+        console.log(msgObj);
         Pubsub.publish(NOTIF.NEW_CHAT_MESSAGE, parseChatMessage(msgObj));
       } else if (msgType === 'auction') {
         // parse auction obj then publish
