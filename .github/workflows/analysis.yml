@@ -24,14 +24,6 @@ jobs:
         run: npm test
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
-        with:
-          # projectBaseDir: /home/runner/work/march-madness-calcutta/march-madness-calcutta/src
-          args: >
-            -Dsonar.organization=burkcules
-            -Dsonar.projectKey=burke1791_march-madness-calcutta
-            -Dsonar.sources=.
-            -Dsonar.exclusions=./src/**/__tests__/*.test.js
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
