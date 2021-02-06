@@ -23,9 +23,10 @@ jobs:
       - name: Run tests
         run: npm test
       - name: fix code coverage paths
+        working-directory: ./coverage
         run: |
-          sed -i 's/\/home\/runner\/work\/march-madness-calcutta\/march-madness-calcutta\//\/github\/workspace\//g' /github/workspace/coverage/lcov.info
-          sed -i 's/\/home\/runner\/work\/march-madness-calcutta\/march-madness-calcutta\//\/github\/workspace\//g' /github/workspace/test-report.xml
+          sed -i 's/\/home\/runner\/work\/march-madness-calcutta\/march-madness-calcutta\//\/github\/workspace\/coverage\//g' lcov.info
+          sed -i 's/\/home\/runner\/work\/march-madness-calcutta\/march-madness-calcutta\//\/github\/workspace\//g' test-report.xml
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
