@@ -41,9 +41,9 @@ jobs:
         args: >
           -Dsonar.organization=burkcules
           -Dsonar.projectKey=burke1791_march-madness-calcutta
+          -Dsonar.sources=.
+          -Dsonar.exclusions=./src/**/__tests__/*.test.js
           -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-          -Dsonar.test.exclusions=./src/**/__tests__/*.test.js
-          -Dsonar.tests=./src/**/__tests__/*.test.js
           -Dsonar.verbose=true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
