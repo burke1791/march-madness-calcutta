@@ -146,6 +146,8 @@ function LeagueAuction(props) {
       return prev + current.totalBuyIn;
     }, 0);
 
+    console.log(userBuyIns);
+
     setMyTotalBuyIn(currentUserTotalBuyIn);
     setMyTax(myTaxBurden);
     setLeagueUsers(userBuyIns);
