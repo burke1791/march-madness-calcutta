@@ -38,6 +38,13 @@ jobs:
       uses: sonarsource/sonarcloud-github-action@master
       with:
         projectBaseDir: src
+        args: >
+          -Dsonar.organization=my-burkcules
+          -Dsonar.projectKey=burke1791_march-madness-calcutta
+          -Dsonar.javascript.lcov.reportPaths=../coverage/lcov.info
+          -Dsonar.test.exclusions=**/__tests__/*.test.js
+          -Dsonar.tests=**/__tests__/*.test.js
+          -Dsonar.verbose=true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
