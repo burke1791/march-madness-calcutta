@@ -37,7 +37,7 @@ jobs:
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
       with:
-        projectBaseDir: src
+        projectBaseDir: /home/runner/work/march-madness-calcutta/march-madness-calcutta/src
         args: >
           -Dsonar.organization=my-burkcules
           -Dsonar.projectKey=burke1791_march-madness-calcutta
