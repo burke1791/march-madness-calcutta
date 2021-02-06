@@ -64,7 +64,7 @@ function LeagueAuction(props) {
 
   const handleSignIn = () => {
     if (leagueId) {
-      fetchAllAuctionData(leagueId);
+      fetchAllAuctionData();
     }
   }
 
