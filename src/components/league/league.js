@@ -20,6 +20,8 @@ import LeagueService from '../../services/league/league.service';
 import { LEAGUE_SERVICE_ENDPOINTS, SETTING_TYPES } from '../../utilities/constants';
 import { useAuthState } from '../../context/authContext';
 import { AuctionProvider } from '../../context/auctionContext';
+import { leagueServiceHelper } from '../../services/league/helper';
+import { genericContextUpdate } from '../../context/helper';
 
 const { Content } = Layout;
 
@@ -33,9 +35,7 @@ function League(props) {
   const { authenticated } = useAuthState();
 
   useEffect(() => {
-    setLeagueContext([
-      { key: 'leagueId', value: props.leagueId }
-    ]);
+    genericContextUpdate({ leagueId: props.leagueId }, dispatch);
 
     return (() => {
       cleanupContext();
@@ -61,18 +61,6 @@ function League(props) {
     settingsDispatch({ type: 'clear' });
   }
 
-  /**
-   * Dispatches context updates only if the data is known
-   * @function setLeagueContext
-   */
-  const setLeagueContext = (data) => {
-    if (data.length > 0) {
-      data.forEach(obj => {
-        dispatch({ type: 'update', key: obj.key, value: obj.value });
-      });
-    }
-  }
-
   const fetchSettings = (leagueId) => {
     LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SETTINGS, { leagueId }).then(response => {
       setSettingsInContext(response.data);
@@ -91,25 +79,11 @@ function League(props) {
 
   const fetchMetadata = (leagueId) => {
     LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_METADATA, { leagueId }).then(response => {
-      let leagueMetadata = packageLeagueMetadata(response.data[0]);
-      setLeagueContext(leagueMetadata);
+      let leagueMetadata = leagueServiceHelper.packageLeagueMetadata(response.data[0]);
+      updateMetadataInContext(leagueMetadata);
     }).catch(error => {
       console.log(error);
     });
-  }
-
-  const packageLeagueMetadata = (data) => {
-    let arr = [
-      { key: 'leagueName', value: data.LeagueName },
-      { key: 'tournamentId', value: data.TournamentId },
-      { key: 'tournamentName', value: data.TournamentName },
-      { key: 'tournamentRegimeId', value: data.TournamentRegimeId },
-      { key: 'tournamentRegimeName', value: data.TournamentRegimeName },
-      { key: 'roleId', value: data.RoleId },
-      { key: 'roleName', value: data.RoleName }
-    ];
-
-    return arr;
   }
 
   const setSettingsInContext = (settings) => {
@@ -221,6 +195,14 @@ function League(props) {
     });
 
     settingsDispatch({ type: 'update', key: 'payoutSettings', value: settingList});
+  }
+
+  const updateMetadataInContext = (metadata) => {
+    let status = genericContextUpdate(metadata, dispatch);
+
+    if (status.success) {
+      dispatch({ type: 'update', key: 'leagueMetadataUpdated', value: new Date().valueOf() });
+    }
   }
 
   if (User.authenticated == undefined || User.authenticated) {

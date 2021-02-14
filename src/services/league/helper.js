@@ -3,16 +3,19 @@ export const leagueServiceHelper = {
   packageLeagueSummaries: function(data) {
     if (data != null && data.length) {
       let leagues = data.map(league => {
+        let buyIn = (league.NaturalBuyIn + league.TaxBuyIn).toFixed(2);
+        let netReturn = (league.TotalReturn - buyIn).toFixed(2);
+
         let leagueObj = {
-          id: league.leagueId,
-          name: league.name,
-          tournamentId: league.tournamentId,
-          tournamentName: league.tournamentName,
-          buyIn: league.naturalBuyIn + league.taxBuyIn,
-          payout: league.totalReturn,
-          role: league.role,
-          roleId: league.roleId,
-          auctionId: league.auctionId
+          id: league.LeagueId,
+          name: league.LeagueName,
+          tournamentId: league.TournamentId,
+          tournamentName: league.TournamentName,
+          buyIn: Number(buyIn),
+          payout: +league.TotalReturn,
+          netReturn: Number(netReturn),
+          role: league.Role,
+          roleId: league.RoleId
         };
     
         return leagueObj;
@@ -25,45 +28,61 @@ export const leagueServiceHelper = {
 
   extractUserId: function(leagueSummaryData) {
     if (leagueSummaryData != null && leagueSummaryData.length) {
-      return +leagueSummaryData[0].userId;
+      return +leagueSummaryData[0].UserId;
     }
     return null;
   },
 
-  packageLeagueInfo: function(userSummaries) {
-    if (userSummaries.length) {
-      let leagueInfo = {
-        name: userSummaries[0].name,
-        tournamentName: userSummaries[0].tournamentName,
-        auctionId: userSummaries[0].auctionId,
-        status: userSummaries[0].status,
-        users: []
-      };
-  
-      leagueInfo.users = userSummaries.map(user => {
+  packageLeagueMetadata: function(metadata) {
+    let data = {
+      leagueName: metadata.LeagueName,
+      numUsers: +metadata.NumUsers,
+      prizepool: +metadata.Prizepool,
+      myBuyIn: +metadata.MyBuyIn,
+      myPayout: +metadata.MyPayout,
+      leagueStatusId: metadata.StatusId,
+      tournamentId: metadata.TournamentId,
+      tournamentName: metadata.TournamentName,
+      tournamentRegimeId: metadata.TournamentRegimeId,
+      tournamentRegimeName: metadata.TournamentRegimeName,
+      roleId: metadata.RoleId,
+      roleName: metadata.RoleName
+    };
+
+    return data;
+  },
+
+  /**
+   * Packages league user summary data returned from the API into an array with relevant information. It is sorted in descending order based on the value in the "return" property
+   * @function packageLeagueUserInfo
+   * @param {Array.<Object>} userSummaries
+   * @returns {Array.<{id: Number, name: String, buyIn: Number, payout: Number, return: Number, numTeams: Number, numTeamsAlive: Number, rank: Number}>}
+   */
+  packageLeagueUserInfo: function(userSummaries) {
+    if (userSummaries.length > 0) {
+      let users = userSummaries.map(user => {
         return {
-          id: user.userId,
-          key: user.userId,
-          name: user.alias,
-          buyIn: user.naturalBuyIn + user.taxBuyIn,
-          payout: user.totalReturn,
-          return: user.totalReturn - user.naturalBuyIn - user.taxBuyIn,
-          numTeams: user.numTeams,
-          numTeamsAlive: user.numTeamsAlive
-        };
+          id: user.UserId,
+          name: user.Alias,
+          buyIn: Number((+user.NaturalBuyIn + +user.TaxBuyIn).toFixed(2)),
+          payout: Number((+user.TotalReturn).toFixed(2)),
+          return: Number((+user.TotalReturn - +user.NaturalBuyIn - +user.TaxBuyIn).toFixed(2)),
+          numTeams: +user.NumTeams,
+          numTeamsAlive: +user.NumTeamsAlive
+        }
       });
-  
-      // sorts the users in descending order by their net return
-      leagueInfo.users.sort(function(a, b) { return b.return - a.return });
-  
+
+      // sorts the users in descending order based on their net return
+      users.sort(function(a, b) { return b.return - a.return });
+
       // adds a rank property to each user after being sorted
-      // and formats the money value into a friendlier string representation
-      leagueInfo.users.forEach((user, index) => {
+      users.forEach((user, index) => {
         user.rank = index + 1;
       });
-  
-      return leagueInfo;
+
+      return users;
     }
+
     return null;
   },
 

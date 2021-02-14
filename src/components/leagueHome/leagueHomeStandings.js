@@ -6,12 +6,12 @@ import 'antd/dist/antd.css';
 import AlivePie from '../alivePie/alivePie';
 
 import { navigate } from '@reach/router';
-import { Data } from '../../services/league/endpoints';
-import Pubsub from '../../utilities/pubsub';
-import { NOTIF } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
 import { formatMoney } from '../../utilities/helper';
 import { useAuthState } from '../../context/authContext';
+import LeagueService from '../../services/league/league.service';
+import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { leagueServiceHelper } from '../../services/league/helper';
 
 const { Text } = Typography;
 
@@ -21,24 +21,28 @@ function LeagueHomeStandings(props) {
   const [loading, setLoading] = useState(true);
 
   const { leagueId } = useLeagueState();
-  const { userId } = useAuthState();
+  const { userId, authenticated } = useAuthState();
 
   useEffect(() => {
-    Pubsub.subscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHomeStandings, populateStandings);
-
-    if (Data.leagueInfo?.users.length > 0) {
-      // in case the API call returns before this component has a chance to register as a subscriber
-      populateStandings();
+    if (authenticated && leagueId) {
+      fetchLeagueUserSummaries();
     }
+  }, [leagueId, authenticated]);
 
-    return (() => {
-      Pubsub.unsubscribe(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED, LeagueHomeStandings);
+  const fetchLeagueUserSummaries = () => {
+    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES, { leagueId }).then(response => {
+      let leagueUsers = leagueServiceHelper.packageLeagueUserInfo(response.data)
+      populateStandings(leagueUsers);
+    }).catch(error => {
+      console.log(error);
     });
-  }, []);
+  }
 
-  const populateStandings = () => {
-    setUserList(Data.leagueInfo.users);
-    setLoading(false);
+  const populateStandings = (leagueUsers) => {
+    if (leagueUsers !== undefined && leagueUsers.length > 0) {
+      setUserList(leagueUsers);
+      setLoading(false);
+    }
   }
 
   const userColumns = [
@@ -163,6 +167,7 @@ function LeagueHomeStandings(props) {
     <Table
       columns={userColumns}
       dataSource={userList}
+      rowKey='id'
       rowClassName='pointer'
       size='small'
       pagination={false}
