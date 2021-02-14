@@ -3,18 +3,17 @@ import './auctionChat.css';
 
 import { formatTimestamp } from '../../utilities/helper';
 
-import { Row, Col, List, Card, Input, Button } from 'antd'
+import { Row, List, Card, Input } from 'antd'
 import 'antd/dist/antd.css';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF, AUCTION_SERVICE_ENDPOINTS } from '../../utilities/constants';
-import { sendSocketMessage } from '../../utilities/auctionService';
 import AuctionService from '../../services/autction/auction.service';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
 
 const { Search } = Input;
 
-function AuctionChat() {
+function AuctionChat(props) {
   
   const [chatMessage, setChatMessage] = useState('');
   const [messages, setMessages] = useState([]);
@@ -64,7 +63,8 @@ function AuctionChat() {
       content: value
     };
 
-    sendSocketMessage(messageObj);
+    // sendSocketMessage(messageObj);
+    props.sendSocketMessage('MESSAGE', messageObj);
 
     setChatMessage('');
   }

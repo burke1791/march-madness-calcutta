@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import 'antd/dist/antd.css';
-import { AUCTION_STATUS, NOTIF } from '../../utilities/constants';
-import { startAuction, resetClock, nextItem, closeAuction } from '../../utilities/auctionService';
-import Pubsub from '../../utilities/pubsub';
+import { AUCTION_STATUS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
+import { useAuctionState } from '../../context/auctionContext';
 
 const btnStyle = {
   marginTop: '4px'
@@ -23,28 +22,17 @@ function AuctionAdmin(props) {
   const [resetClockLoading, setResetClockLoading] = useState(false);
 
   const { leagueId } = useLeagueState();
+  const { status, prevUpdate } = useAuctionState();
 
   useEffect(() => {
-    Pubsub.subscribe(NOTIF.NEW_AUCTION_DATA, AuctionAdmin, handleNewAuctionData);
-    Pubsub.subscribe(NOTIF.AUCTION_ERROR, AuctionAdmin, handleAuctionError);
+    handleNewAuctionData();
+  }, [prevUpdate]);
 
-    return (() => {
-      Pubsub.unsubscribe(NOTIF.NEW_AUCTION_DATA, AuctionAdmin);
-      Pubsub.unsubscribe(NOTIF.AUCTION_ERROR, AuctionAdmin);
-    });
-  }, []);
-
+  // @TODO: figure out some state change to listen on for this functionality
   const handleNewAuctionData = () => {
     setResetClockLoading(false);
     setNextLoading(false);
     setStartLoading(false);
-  }
-
-  const handleAuctionError = (errorObj) => {
-    setStartLoading(false);
-    setNextLoading(false);
-    setResetClockLoading(false);
-    message.error(errorObj.Error);
   }
   
   const generateStartStopButton = () => {
@@ -54,12 +42,12 @@ function AuctionAdmin(props) {
     let name = 'start';
     let action = openAuction;
 
-    if (props.status === AUCTION_STATUS.BIDDING || props.status === AUCTION_STATUS.SOLD) {
+    if (status === AUCTION_STATUS.BIDDING || status === AUCTION_STATUS.SOLD) {
       btnText = 'Close Auction';
       btnType = 'danger';
       name = 'stop';
       action = endAuction;
-    } else if (props.status === AUCTION_STATUS.END) {
+    } else if (status === AUCTION_STATUS.END) {
       btnText = 'Auction Closed';
       btnType = 'primary'
       disabled = true;
@@ -82,34 +70,38 @@ function AuctionAdmin(props) {
   }
 
   const openAuction = (event) => {
-    if (props.status === AUCTION_STATUS.INITIAL) {
+    if (status === AUCTION_STATUS.INITIAL) {
       setStartLoading(true);
       
-      startAuction(leagueId);
+      // startAuction(leagueId);
+      props.sendSocketMessage('START_AUCTION', { leagueId });
     }
   }
 
   const endAuction = (event) => {
-    if (props.status === AUCTION_STATUS.BIDDING || props.status === AUCTION_STATUS.SOLD) {
+    if (status === AUCTION_STATUS.BIDDING || status === AUCTION_STATUS.SOLD) {
       setStartLoading(true);
 
-      closeAuction(leagueId);
+      // closeAuction(leagueId);
+      props.sendSocketMessage('CLOSE_AUCTION', { leagueId });
     }
   }
 
   const nextAuctionItem = (event) => {
-    if (props.status === AUCTION_STATUS.SOLD) {
+    if (status === AUCTION_STATUS.SOLD) {
       setNextLoading(true);
       
-      nextItem(leagueId);
+      // nextItem(leagueId);
+      props.sendSocketMessage('NEXT_ITEM', { leagueId });
     }
   }
 
   const resetAuctionClock = (event) => {
-    if (props.status === AUCTION_STATUS.SOLD || props.status === AUCTION_STATUS.BIDDING) {
+    if (status === AUCTION_STATUS.SOLD || status === AUCTION_STATUS.BIDDING) {
       setResetClockLoading(true);
 
-      resetClock(leagueId);
+      // resetClock(leagueId);
+      props.sendSocketMessage('RESET_CLOCK', { leagueId });
     }
   }
   

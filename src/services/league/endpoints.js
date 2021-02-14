@@ -19,21 +19,12 @@ export const leagueEndpoints = {
   },
 
   getLeagueSummaries: function(apiService, params) {
-    if (!leaguesFetched || params.override) {
-      apiService({
-        method: 'GET',
-        url: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_SUMMARIES
-      }).then(response => {
-        Data.leagues = leagueServiceHelper.packageLeagueSummaries(response.data);
-        let userId = leagueServiceHelper.extractUserId(response.data);
-        leaguesFetched = true;
-        Pubsub.publish(NOTIF.LEAGUE_SUMMARIES_FETCHED, null);
-        Pubsub.publish(NOTIF.USER_ID, userId);
-      }).catch(error => {
-        leaguesFetched = false;
-        console.log(error);
-      });
-    }
+    let options = {
+      method: 'GET',
+      url: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_SUMMARIES
+    };
+
+    return apiService(options);
   },
 
   createLeague: function(apiService, params) {
@@ -83,27 +74,21 @@ export const leagueEndpoints = {
   },
 
   getLeagueUserSummaries: function(apiService, params) {
-    apiService({
+    let options = {
       method: 'GET',
       url: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES + `/${params.leagueId}`
-    }).then(response => {
-      Data.leagueInfo = leagueServiceHelper.packageLeagueInfo(response.data);
-      Pubsub.publish(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED);
-    }).catch(error => {
-      console.log(error);
-    });
+    };
+
+    return apiService(options);
   },
 
   getUpcomingGames: function(apiService, params) {
-    apiService({
+    let options = {
       method: 'GET',
       url: LEAGUE_SERVICE_ENDPOINTS.UPCOMING_GAMES + `/${params.leagueId}`
-    }).then(response => {
-      Data.upcomingGames = leagueServiceHelper.packageUpcomingGames(response.data);
-      Pubsub.publish(NOTIF.UPCOMING_GAMES_DOWNLOADED);
-    }).catch(error => {
-      console.log(error);
-    });
+    };
+
+    return apiService(options);
   },
 
   getRemainingTeamsCount: function(apiService, params) {
@@ -144,7 +129,6 @@ export const leagueEndpoints = {
     });
   },
 
-  // called within a promise
   getLeagueSettings: function(apiService, params) {
     let options = {
       method: 'GET',
