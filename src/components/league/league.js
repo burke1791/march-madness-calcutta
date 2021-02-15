@@ -219,7 +219,7 @@ function League(props) {
               <Tournament path='tournament' />
               {/* <MessageBoard path='message_board' leagueId={props.leagueId} role={role} /> */}
               {/* <MessageThread path='message_board/:topicId' leagueId={props.leagueId} role={role} /> */}
-              <MemberPage path='member' />
+              <MemberPage path='member/:userId' />
               <LeagueSettings path='settings/:settingsGroup' />
             </Router>
           </Content>

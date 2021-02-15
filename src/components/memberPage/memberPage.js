@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-import { Layout, Table, Row, Typography } from 'antd';
+import { Layout, Table, Row, Typography, message } from 'antd';
 import 'antd/dist/antd.css';
-import Pubsub from '../../utilities/pubsub';
-import { NOTIF, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import LeagueService from '../../services/league/league.service';
-import { Data, clearUserTeams } from '../../services/league/endpoints'; 
 import { formatMoney, teamDisplayName } from '../../utilities/helper';
 import { useLeagueState } from '../../context/leagueContext';
+import { leagueServiceHelper } from '../../services/league/helper';
+import { useAuthState } from '../../context/authContext';
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
@@ -16,7 +16,7 @@ const columns = [
   {
     title: 'Team Name',
     dataIndex: 'name',
-    align: 'center',
+    align: 'left',
     width: 250,
     render: (text, record) => {
       if (record.seed != null) {
@@ -62,26 +62,64 @@ function MemberPage(props) {
   const [loading, setLoading] = useState(true);
 
   const { leagueId } = useLeagueState();
+  const { authenticated } = useAuthState();
 
   useEffect(() => {
-    Pubsub.subscribe(NOTIF.LEAGUE_USER_TEAMS_FETCHED, MemberPage, handleTeams);
+    if (authenticated) {
+      fetchTeams();
+    }
+  }, [authenticated])
 
-    LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS, {
+  const fetchTeams = () => {
+    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS, {
       leagueId: leagueId,
-      userId: props.location.state.userId
-    });
+      userId: props.userId
+    }).then(response => {
+      if (response.data.length > 0) {
+        let userAlias = leagueServiceHelper.parseUserAlias(response.data);
+        let userTeams =  leagueServiceHelper.packageUserTeams(response.data);
 
-    return (() => {
-      Pubsub.unsubscribe(NOTIF.LEAGUE_USER_TEAMS_FETCHED, MemberPage);
-      clearUserTeams();
-    });
-  }, []);
-
-  const handleTeams = () => {
-    setAlias(Data.userAlias);
-    setTeams(Data.userTeams);
-    setLoading(false);
+        setAlias(userAlias);
+        setTeams(userTeams);
+      }
+      
+      setLoading(false);
+    }).catch(error => {
+      setLoading(false);
+      console.log(error);
+    })
   }
+
+  const groupTeamsTable = (groupTeams) => {
+    const columns = [
+      { width: 25 }, // I don't like this, but it's a quick fix for now
+      { title: 'Team Name', dataIndex: 'name' },
+      {
+        title: 'Payout',
+        dataIndex: 'payout',
+        render: (text) => <Text>{formatMoney(text)}</Text>
+      }
+    ];
+
+    return (
+      <Table
+        columns={columns}
+        dataSource={groupTeams}
+        pagination={false}
+        rowKey='id'
+        rowClassName='pointer'
+        onRow={
+          (record, index) => {
+            return {
+              onClick: (event) => {
+                message.info('Team page coming soon');
+              }
+            };
+          }
+        }
+      />
+    );
+  };
 
   return (
     <Layout>
@@ -93,19 +131,26 @@ function MemberPage(props) {
           <Table
             columns={columns}
             dataSource={teams}
+            rowClassName='pointer'
             size='small'
             pagination={false}
             loading={loading}
-            rowKey='teamId'
+            rowKey='id'
             onRow={
               (record, index) => {
                 return {
                   onClick: (event) => {
-                    console.log('team page coming soon?');
+                    message.info('Team page coming soon');
                   }
                 };
               }
             }
+            expandable={{ 
+              expandedRowRender: record => groupTeamsTable(record.groupTeams),
+              rowExpandable: record => record.groupFlag,
+              expandRowByClick: true,
+              defaultExpandAllRows: true
+            }}
           />
         </Row>
       </Content>

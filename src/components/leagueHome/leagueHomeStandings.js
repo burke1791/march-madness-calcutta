@@ -177,7 +177,7 @@ function LeagueHomeStandings(props) {
           return {
             onClick: (event) => {
               if (leagueId) {
-                navigate(`/leagues/${leagueId}/member`, { state: { userId: record.id }});
+                navigate(`/leagues/${leagueId}/member/${record.id}`, { state: { userId: record.id }});
               } else {
                 console.log('leagueId is falsy');
               }
