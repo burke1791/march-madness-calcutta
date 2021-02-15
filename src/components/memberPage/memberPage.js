@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-import { Layout, Table, Row, Typography } from 'antd';
+import { Layout, Table, Row, Typography, message } from 'antd';
 import 'antd/dist/antd.css';
-import Pubsub from '../../utilities/pubsub';
-import { NOTIF, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import LeagueService from '../../services/league/league.service';
-import { Data, clearUserTeams } from '../../services/league/endpoints'; 
 import { formatMoney, teamDisplayName } from '../../utilities/helper';
 import { useLeagueState } from '../../context/leagueContext';
+import { leagueServiceHelper } from '../../services/league/helper';
+import { useAuthState } from '../../context/authContext';
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
@@ -16,7 +16,7 @@ const columns = [
   {
     title: 'Team Name',
     dataIndex: 'name',
-    align: 'center',
+    align: 'left',
     width: 250,
     render: (text, record) => {
       if (record.seed != null) {
@@ -59,29 +59,96 @@ function MemberPage(props) {
 
   const [alias, setAlias] = useState('');
   const [teams, setTeams] = useState([]);
+  const [numTeams, setNumTeams] = useState(0);
+  const [totalBuyIn, setTotalBuyIn] = useState(0);
+  const [taxBuyIn, setTaxBuyIn] = useState(0);
+  const [payout, setPayout] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const { leagueId } = useLeagueState();
+  const { authenticated } = useAuthState();
 
   useEffect(() => {
-    Pubsub.subscribe(NOTIF.LEAGUE_USER_TEAMS_FETCHED, MemberPage, handleTeams);
+    if (authenticated) {
+      fetchUserMetadata();
+      fetchTeams();
+    }
+  }, [authenticated, props.userId]);
 
-    LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS, {
+  const fetchUserMetadata = () => {
+    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_USER_METADATA, {
       leagueId: leagueId,
-      userId: props.location.state.userId
-    });
+      userId: props.userId
+    }).then(response => {
+      if (response.data.length > 0) {
+        let data = response.data[0];
 
-    return (() => {
-      Pubsub.unsubscribe(NOTIF.LEAGUE_USER_TEAMS_FETCHED, MemberPage);
-      clearUserTeams();
-    });
-  }, []);
-
-  const handleTeams = () => {
-    setAlias(Data.userAlias);
-    setTeams(Data.userTeams);
-    setLoading(false);
+        setAlias(data.Alias);
+        setNumTeams(data.NumTeams);
+        setTotalBuyIn(Number(data.NaturalBuyIn + data.TaxBuyIn));
+        setTaxBuyIn(Number(data.TaxBuyIn));
+        setPayout(Number(data.TotalReturn));
+      }
+    })
   }
+
+  const fetchTeams = () => {
+    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS, {
+      leagueId: leagueId,
+      userId: props.userId
+    }).then(response => {
+      if (response.data.length > 0) {
+        let userTeams =  leagueServiceHelper.packageUserTeams(response.data);
+
+        setTeams(userTeams);
+      }
+      
+      setLoading(false);
+    }).catch(error => {
+      setLoading(false);
+      console.log(error);
+    })
+  }
+
+  const groupTeamsTable = (groupTeams) => {
+    const columns = [
+      { width: 25 }, // I don't like this, but it's a quick fix for now
+      {
+        title: 'Team Name',
+        dataIndex: 'name',
+        render: (text, record) => {
+          if (record.seed != null) {
+            return <Text delete={record.eliminated}>{teamDisplayName(text, record.seed)}</Text>;
+          }
+          return <Text delete={record.eliminated}>{text}</Text>;
+        }
+      },
+      {
+        title: 'Payout',
+        dataIndex: 'payout',
+        render: (text) => <Text>{formatMoney(text)}</Text>
+      }
+    ];
+
+    return (
+      <Table
+        columns={columns}
+        dataSource={groupTeams}
+        pagination={false}
+        rowKey='id'
+        rowClassName='pointer'
+        onRow={
+          (record, index) => {
+            return {
+              onClick: (event) => {
+                message.info('Team page coming soon');
+              }
+            };
+          }
+        }
+      />
+    );
+  };
 
   return (
     <Layout>
@@ -93,19 +160,28 @@ function MemberPage(props) {
           <Table
             columns={columns}
             dataSource={teams}
+            rowClassName='pointer'
             size='small'
             pagination={false}
             loading={loading}
-            rowKey='teamId'
+            rowKey='id'
             onRow={
               (record, index) => {
-                return {
-                  onClick: (event) => {
-                    console.log('team page coming soon?');
-                  }
-                };
+                if (!record.groupFlag) {
+                  return {
+                    onClick: (event) => {
+                      message.info('Team page coming soon');
+                    }
+                  };
+                }
               }
             }
+            expandable={{ 
+              expandedRowRender: record => groupTeamsTable(record.groupTeams),
+              rowExpandable: record => record.groupFlag,
+              expandRowByClick: true,
+              defaultExpandAllRows: true
+            }}
           />
         </Row>
       </Content>

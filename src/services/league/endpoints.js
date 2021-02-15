@@ -114,19 +114,35 @@ export const leagueEndpoints = {
     }
   },
 
+  getLeagueUserMetadata: function(apiService, params) {
+    let options = {
+      method: 'GET',
+      url: LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_USER_METADATA + `/${params.leagueId}/${params.userId}`
+    };
+
+    return apiService(options);
+  },
+
   fetchUserTeams: function(apiService, params) {
-    apiService({
+    let options = {
       method: 'GET',
       url: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS + `/${params.leagueId}/${params.userId}`
-    }).then(response => {
-      if (response.data.length > 0) {
-        Data.userTeams = leagueServiceHelper.packageUserTeams(response.data);
-        Data.userAlias = leagueServiceHelper.parseUserAlias(response.data);
-      }
-      Pubsub.publish(NOTIF.LEAGUE_USER_TEAMS_FETCHED, null);
-    }).catch(error => {
-      console.log(error);
-    });
+    }
+
+    return apiService(options);
+    
+    // apiService({
+    //   method: 'GET',
+    //   url: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS + `/${params.leagueId}/${params.userId}`
+    // }).then(response => {
+    //   if (response.data.length > 0) {
+    //     Data.userTeams = leagueServiceHelper.packageUserTeams(response.data);
+    //     Data.userAlias = leagueServiceHelper.parseUserAlias(response.data);
+    //   }
+    //   Pubsub.publish(NOTIF.LEAGUE_USER_TEAMS_FETCHED, null);
+    // }).catch(error => {
+    //   console.log(error);
+    // });
   },
 
   getLeagueSettings: function(apiService, params) {

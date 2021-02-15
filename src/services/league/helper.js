@@ -115,37 +115,108 @@ export const leagueServiceHelper = {
   },
 
   packageUserTeams: function(teams) {
-    const userTeams = teams.map(team => {
-      return {
-        teamId: team.TeamId,
-        name: team.Name,
-        seed: team.Seed,
-        price: team.Price,
-        payout: team.Payout,
-        netReturn: team.Payout - team.Price,
-        eliminated: team.Eliminated
-      };
+    let userTeams = [];
+    let groups = [];
+    let groupsProcessed = [];
+
+    // fill in group records
+    teams.forEach(teamObj => {
+      let groupName = teamObj.GroupName;
+
+      // if the team is part of a group AND that group hasn't already been handled
+      if (groupName != null && !groupsProcessed.includes(groupName)) {
+        let groupPayout = getGroupPayout(teams, teamObj.GroupId);
+        let groupNetReturn = groupPayout - teamObj.Price;
+        
+        let groupObj = {
+          id: teamObj.GroupId,
+          name: groupName,
+          groupFlag: true,
+          price: teamObj.Price,
+          payout: groupPayout,
+          netReturn: groupNetReturn,
+          eliminated: teamGroupEliminated(teams, teamObj.GroupId),
+          groupTeams: getGroupTeams(teams, teamObj.GroupId)
+        };
+
+        groupsProcessed.push(groupName)
+
+        groups.push(groupObj);
+      } else if (groupName == null) {
+        let team = {
+          id: teamObj.TeamId,
+          name: teamObj.Name,
+          groupFlag: false,
+          seed: teamObj.Seed,
+          price: teamObj.Price,
+          payout: teamObj.Payout,
+          netReturn: teamObj.Payout - teamObj.Price,
+          eliminated: !teamObj.IsAlive
+        };
+
+        userTeams.push(team);
+      }
     });
   
     // sorting the teams in descending order by their net return
     userTeams.sort(function(a, b) { return b.netReturn - a.netReturn });
+    groups.sort(function(a, b) { return b.netReturn - a.netRedurt });
   
-    // adding a tax object to the list of user teams
-    if (teams[0].TaxBuyIn > 0) {
-      userTeams.push({
-        teamId: 0,
-        name: 'Tax',
-        seed: null,
-        price: teams[0].TaxBuyIn,
-        payout: 0,
-        netReturn: -teams[0].TaxBuyIn
-      });
-    }
-  
-    return userTeams;
-  },
-
-  parseUserAlias: function(teams) {
-    return teams[0].Alias;
+    // merge the userTeams and groups arrays
+    return [...userTeams, ...groups];
   }
+}
+
+function getGroupPayout(teams, groupId) {
+  return teams.reduce((payout, teamObj) => {
+    if (teamObj.GroupId === groupId) {
+      return payout + teamObj.Payout;
+    }
+    return payout;
+  }, 0);
+}
+
+function teamGroupEliminated(teams, groupId) {
+  let eliminated = true;
+
+  teams.forEach(teamObj => {
+    if (teamObj.GroupId === groupId) {
+      if (!!teamObj.IsAlive) {
+        eliminated = false;
+      }
+    }
+  });
+
+  return eliminated;
+}
+
+function getGroupTeams(teams, groupId) {
+  let groupTeams = [];
+
+  teams.forEach(teamObj => {
+    if (teamObj.GroupId === groupId) {
+      let groupTeam = {
+        id: teamObj.TeamId,
+        name: teamObj.Name,
+        seed: teamObj.Seed,
+        price: null,
+        payout: teamObj.Payout,
+        netReturn: null,
+        eliminated: !teamObj.IsAlive
+      };
+
+      groupTeams.push(groupTeam);
+    }
+  });
+
+  // sort in descending order by payout
+  groupTeams.sort((a, b) => { return b.payout - a.payout });
+
+  return groupTeams;
+}
+
+export {
+  getGroupPayout,
+  teamGroupEliminated,
+  getGroupTeams
 }
