@@ -59,6 +59,10 @@ function MemberPage(props) {
 
   const [alias, setAlias] = useState('');
   const [teams, setTeams] = useState([]);
+  const [numTeams, setNumTeams] = useState(0);
+  const [totalBuyIn, setTotalBuyIn] = useState(0);
+  const [taxBuyIn, setTaxBuyIn] = useState(0);
+  const [payout, setPayout] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const { leagueId } = useLeagueState();
@@ -66,9 +70,27 @@ function MemberPage(props) {
 
   useEffect(() => {
     if (authenticated) {
+      fetchUserMetadata();
       fetchTeams();
     }
-  }, [authenticated])
+  }, [authenticated, props.userId]);
+
+  const fetchUserMetadata = () => {
+    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_USER_METADATA, {
+      leagueId: leagueId,
+      userId: props.userId
+    }).then(response => {
+      if (response.data.length > 0) {
+        let data = response.data[0];
+
+        setAlias(data.Alias);
+        setNumTeams(data.NumTeams);
+        setTotalBuyIn(Number(data.NaturalBuyIn + data.TaxBuyIn));
+        setTaxBuyIn(Number(data.TaxBuyIn));
+        setPayout(Number(data.TotalReturn));
+      }
+    })
+  }
 
   const fetchTeams = () => {
     LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS, {
@@ -76,10 +98,8 @@ function MemberPage(props) {
       userId: props.userId
     }).then(response => {
       if (response.data.length > 0) {
-        let userAlias = leagueServiceHelper.parseUserAlias(response.data);
         let userTeams =  leagueServiceHelper.packageUserTeams(response.data);
 
-        setAlias(userAlias);
         setTeams(userTeams);
       }
       
@@ -93,7 +113,16 @@ function MemberPage(props) {
   const groupTeamsTable = (groupTeams) => {
     const columns = [
       { width: 25 }, // I don't like this, but it's a quick fix for now
-      { title: 'Team Name', dataIndex: 'name' },
+      {
+        title: 'Team Name',
+        dataIndex: 'name',
+        render: (text, record) => {
+          if (record.seed != null) {
+            return <Text delete={record.eliminated}>{teamDisplayName(text, record.seed)}</Text>;
+          }
+          return <Text delete={record.eliminated}>{text}</Text>;
+        }
+      },
       {
         title: 'Payout',
         dataIndex: 'payout',
@@ -138,11 +167,13 @@ function MemberPage(props) {
             rowKey='id'
             onRow={
               (record, index) => {
-                return {
-                  onClick: (event) => {
-                    message.info('Team page coming soon');
-                  }
-                };
+                if (!record.groupFlag) {
+                  return {
+                    onClick: (event) => {
+                      message.info('Team page coming soon');
+                    }
+                  };
+                }
               }
             }
             expandable={{ 

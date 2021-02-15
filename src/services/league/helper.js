@@ -162,24 +162,8 @@ export const leagueServiceHelper = {
     userTeams.sort(function(a, b) { return b.netReturn - a.netReturn });
     groups.sort(function(a, b) { return b.netReturn - a.netRedurt });
   
-    // adding a tax object to the list of user teams
-    // if (teams[0].TaxBuyIn > 0) {
-    //   userTeams.push({
-    //     teamId: 0,
-    //     name: 'Tax',
-    //     seed: null,
-    //     price: teams[0].TaxBuyIn,
-    //     payout: 0,
-    //     netReturn: -teams[0].TaxBuyIn
-    //   });
-    // }
-  
     // merge the userTeams and groups arrays
     return [...userTeams, ...groups];
-  },
-
-  parseUserAlias: function(teams) {
-    return teams[0].Alias;
   }
 }
 
@@ -197,7 +181,9 @@ function teamGroupEliminated(teams, groupId) {
 
   teams.forEach(teamObj => {
     if (teamObj.GroupId === groupId) {
-      if (teamObj.IsAlive) return false;
+      if (!!teamObj.IsAlive) {
+        eliminated = false;
+      }
     }
   });
 
@@ -212,6 +198,7 @@ function getGroupTeams(teams, groupId) {
       let groupTeam = {
         id: teamObj.TeamId,
         name: teamObj.Name,
+        seed: teamObj.Seed,
         price: null,
         payout: teamObj.Payout,
         netReturn: null,

@@ -114,6 +114,15 @@ export const leagueEndpoints = {
     }
   },
 
+  getLeagueUserMetadata: function(apiService, params) {
+    let options = {
+      method: 'GET',
+      url: LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_USER_METADATA + `/${params.leagueId}/${params.userId}`
+    };
+
+    return apiService(options);
+  },
+
   fetchUserTeams: function(apiService, params) {
     let options = {
       method: 'GET',
