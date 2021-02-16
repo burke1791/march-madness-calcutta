@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Button, Table, Typography } from 'antd';
+import { Row, Button, Table } from 'antd';
 import 'antd/dist/antd.css';
 
 import LeagueModal from '../leagueModal/leagueModal';
@@ -9,87 +9,72 @@ import Pubsub from '../../utilities/pubsub';
 import { User } from '../../utilities/authService';
 import { Redirect, navigate } from '@reach/router';
 import LeagueService from '../../services/league/league.service';
-import { Data, leaguesFetched } from '../../services/league/endpoints';
 import { leagueTableColumns } from './leagueTableColumns';
+import { useAuthState, useAuthDispatch } from '../../context/authContext';
+import { leagueServiceHelper } from '../../services/league/helper';
+import { genericContextUpdate } from '../../context/helper';
 
 function Main() {
 
   const [loading, setLoading] = useState(true);
   const [leagueSummaries, setLeagueSummaries] = useState([
     {
-      key: 0,
+      id: 0,
       name: 'You haven\'t joined any leagues yet',
       buyIn: null,
       payout: null,
-      return: null
+      netReturn: null
     }
   ]);
 
+  const authDispatch = useAuthDispatch();
+
+  const { authenticated } = useAuthState();  
+
   useEffect(() => {
-    Pubsub.subscribe(NOTIF.SIGN_IN, Main, handleSignin);
     Pubsub.subscribe(NOTIF.SIGN_OUT, Main, handleSignout);
     Pubsub.subscribe(NOTIF.LEAGUE_JOINED, Main, handleLeagueJoin);
-    Pubsub.subscribe(NOTIF.LEAGUE_SUMMARIES_FETCHED, Main, handleNewLeagueInfo);
 
     return (() => {
-      Pubsub.unsubscribe(NOTIF.SIGN_IN, Main);
       Pubsub.unsubscribe(NOTIF.SIGN_OUT, Main);
       Pubsub.unsubscribe(NOTIF.LEAGUE_JOINED, Main);
-      Pubsub.unsubscribe(NOTIF.LEAGUE_SUMMARIES_FETCHED, Main);
     });
   }, []);
 
   useEffect(() => {
-    handleNewLeagueInfo();
-  }, []);
-
-  const fetchLeagueInfo = (override = false) => {
-    LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_SUMMARIES, { override });
-  }
+    if (authenticated) {
+      fetchLeagueSummaries();
+    } else {
+      setLoading(false);
+    }
+  }, [authenticated]);
 
   const handleLeagueJoin = () => {
-    fetchLeagueInfo(true);
+    fetchLeagueSummaries();
   }
 
-  // copy the summary info from Data into local state, which triggers a rerender
-  const handleNewLeagueInfo = () => {
-    if (Data.leagues && Data.leagues.length) {
-      setLeagueSummaries(
-        (() => {
-          return Data.leagues.map(league => {
-            return {
-              name: league.name,
-              buyIn: league.buyIn, //formatMoney(league.buyIn || '0'),
-              payout: league.payout, //formatMoney(league.payout || '0'),
-              return: league.payout - league.buyIn, //formatMoney(league.payout - league.buyIn),
-              roleId: league.roleId,
-              auctionId: league.auctionId,
-              tournamentId: league.tournamentId,
-              key: league.id
-            };
-          });
-        })()
-      );
-      setLoading(false);
-    } else if (leaguesFetched) {
-      // user does not belong to any leagues
-      setLoading(false);
-    } else {
-      // in case this component gets rendered after the sign in notification
-      fetchLeagueInfo();
-    }
-  }
+  const fetchLeagueSummaries = () => {
+    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_SUMMARIES).then(response => {
+      let userId = {
+        userId: leagueServiceHelper.extractUserId(response.data)
+      }
+      genericContextUpdate(userId, authDispatch);
 
-  // loads in league summary info from global state
-  // and rerenders the table on the main page
-  const handleSignin = () => {
-    fetchLeagueInfo();
+      let leagueArr = leagueServiceHelper.packageLeagueSummaries(response.data);
+      if (leagueArr.length) {
+        setLeagueSummaries(leagueArr);
+      }
+      setLoading(false);
+    }).catch(error => {
+      console.log(error);
+    })
   }
 
   // empties league summaries info on signout,
   // which triggers a rerender to show the default table on the main page
   const handleSignout = () => {
     setLeagueSummaries([]);
+    setLoading(false);
     // navigate('/');
   }
 
@@ -125,13 +110,14 @@ function Main() {
             size='small'
             pagination={false}
             loading={loading}
+            rowKey='id'
             onRow={
               (record) => {
                 return {
                   onClick: (event) => {
                     // utilize the router to go to the league page
-                    if (record.key > 0) {
-                      navigate(`/leagues/${record.key}`, { state: { auctionId: record.auctionId, roleId: record.roleId, tournamentId: record.tournamentId }});
+                    if (record.id > 0) {
+                      navigate(`/leagues/${record.id}`, { state: { roleId: record.roleId, tournamentId: record.tournamentId }});
                     }
                   }
                 };

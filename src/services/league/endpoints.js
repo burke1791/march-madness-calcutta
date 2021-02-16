@@ -19,21 +19,12 @@ export const leagueEndpoints = {
   },
 
   getLeagueSummaries: function(apiService, params) {
-    if (!leaguesFetched || params.override) {
-      apiService({
-        method: 'GET',
-        url: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_SUMMARIES
-      }).then(response => {
-        Data.leagues = leagueServiceHelper.packageLeagueSummaries(response.data);
-        let userId = leagueServiceHelper.extractUserId(response.data);
-        leaguesFetched = true;
-        Pubsub.publish(NOTIF.LEAGUE_SUMMARIES_FETCHED, null);
-        Pubsub.publish(NOTIF.USER_ID, userId);
-      }).catch(error => {
-        leaguesFetched = false;
-        console.log(error);
-      });
-    }
+    let options = {
+      method: 'GET',
+      url: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_SUMMARIES
+    };
+
+    return apiService(options);
   },
 
   createLeague: function(apiService, params) {
@@ -83,27 +74,21 @@ export const leagueEndpoints = {
   },
 
   getLeagueUserSummaries: function(apiService, params) {
-    apiService({
+    let options = {
       method: 'GET',
       url: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES + `/${params.leagueId}`
-    }).then(response => {
-      Data.leagueInfo = leagueServiceHelper.packageLeagueInfo(response.data);
-      Pubsub.publish(NOTIF.LEAGUE_USER_SUMMARIES_FETCHED);
-    }).catch(error => {
-      console.log(error);
-    });
+    };
+
+    return apiService(options);
   },
 
   getUpcomingGames: function(apiService, params) {
-    apiService({
+    let options = {
       method: 'GET',
       url: LEAGUE_SERVICE_ENDPOINTS.UPCOMING_GAMES + `/${params.leagueId}`
-    }).then(response => {
-      Data.upcomingGames = leagueServiceHelper.packageUpcomingGames(response.data);
-      Pubsub.publish(NOTIF.UPCOMING_GAMES_DOWNLOADED);
-    }).catch(error => {
-      console.log(error);
-    });
+    };
+
+    return apiService(options);
   },
 
   getRemainingTeamsCount: function(apiService, params) {
@@ -129,22 +114,37 @@ export const leagueEndpoints = {
     }
   },
 
-  fetchUserTeams: function(apiService, params) {
-    apiService({
+  getLeagueUserMetadata: function(apiService, params) {
+    let options = {
       method: 'GET',
-      url: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS + `/${params.leagueId}/${params.userId}`
-    }).then(response => {
-      if (response.data.length > 0) {
-        Data.userTeams = leagueServiceHelper.packageUserTeams(response.data);
-        Data.userAlias = leagueServiceHelper.parseUserAlias(response.data);
-      }
-      Pubsub.publish(NOTIF.LEAGUE_USER_TEAMS_FETCHED, null);
-    }).catch(error => {
-      console.log(error);
-    });
+      url: LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_USER_METADATA + `/${params.leagueId}/${params.userId}`
+    };
+
+    return apiService(options);
   },
 
-  // called within a promise
+  fetchUserTeams: function(apiService, params) {
+    let options = {
+      method: 'GET',
+      url: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS + `/${params.leagueId}/${params.userId}`
+    }
+
+    return apiService(options);
+    
+    // apiService({
+    //   method: 'GET',
+    //   url: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS + `/${params.leagueId}/${params.userId}`
+    // }).then(response => {
+    //   if (response.data.length > 0) {
+    //     Data.userTeams = leagueServiceHelper.packageUserTeams(response.data);
+    //     Data.userAlias = leagueServiceHelper.parseUserAlias(response.data);
+    //   }
+    //   Pubsub.publish(NOTIF.LEAGUE_USER_TEAMS_FETCHED, null);
+    // }).catch(error => {
+    //   console.log(error);
+    // });
+  },
+
   getLeagueSettings: function(apiService, params) {
     let options = {
       method: 'GET',

@@ -38,5 +38,6 @@ LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SETTINGS, leagueEn
 LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_SETTINGS, leagueEndpoints.updateLeagueSettings);
 LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_PAYOUT_SETTINGS, leagueEndpoints.getLeaguePayoutSettings);
 LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_PAYOUT_SETTINGS, leagueEndpoints.updateLeaguePayoutSettings);
+LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_USER_METADATA, leagueEndpoints.getLeagueUserMetadata);
 
 export default LeagueService;

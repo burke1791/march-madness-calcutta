@@ -8,12 +8,12 @@ import { formatMoney } from '../../utilities/helper';
 const columns = [
   {
     title: 'My Teams',
-    dataIndex: 'name',
-    key: 'name',
+    dataIndex: 'displayName',
+    key: 'itemId',
     align: 'left',
     width: '70%',
     render: (text, record) => {
-      if (record.teamId == -1) {
+      if (record.itemId == -1) {
         return <span style={{ fontWeight: 'bold', color: 'red' }}>{text}</span>;
       } else {
         return text;
@@ -27,7 +27,7 @@ const columns = [
     align: 'right',
     width: '30%',
     render: (text, record) => {
-      if (record.teamId == -1) {
+      if (record.itemId == -1) {
         return <span style={{ fontWeight: 'bold', color: 'red' }}>{formatMoney(text)}</span>;
       } else {
         return formatMoney(text);
@@ -44,9 +44,9 @@ function MyTeams(props) {
   useEffect(() => {
     if (props.myTax > 0) {
       let taxArray = [{
-        name: 'Tax',
+        displayName: 'Tax',
         price: props.myTax,
-        teamId: -1
+        itemId: -1
       }];
       setTeamsArr([...props.myTeams, ...taxArray]);
     } else {
@@ -61,7 +61,7 @@ function MyTeams(props) {
           <Table
             columns={columns}
             dataSource={teamsArr}
-            rowKey='teamId'
+            rowKey='itemId'
             pagination={false}
             size='small'
             bordered={false}

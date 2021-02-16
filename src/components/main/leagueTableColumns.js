@@ -33,7 +33,7 @@ export const leagueTableColumns = [
   },
   {
     title: 'Net Return',
-    dataIndex: 'return',
+    dataIndex: 'netReturn',
     align: 'center',
     responsive: ['md'],
     width: 150,

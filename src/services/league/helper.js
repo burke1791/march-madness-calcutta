@@ -3,16 +3,19 @@ export const leagueServiceHelper = {
   packageLeagueSummaries: function(data) {
     if (data != null && data.length) {
       let leagues = data.map(league => {
+        let buyIn = (league.NaturalBuyIn + league.TaxBuyIn).toFixed(2);
+        let netReturn = (league.TotalReturn - buyIn).toFixed(2);
+
         let leagueObj = {
-          id: league.leagueId,
-          name: league.name,
-          tournamentId: league.tournamentId,
-          tournamentName: league.tournamentName,
-          buyIn: league.naturalBuyIn + league.taxBuyIn,
-          payout: league.totalReturn,
-          role: league.role,
-          roleId: league.roleId,
-          auctionId: league.auctionId
+          id: league.LeagueId,
+          name: league.LeagueName,
+          tournamentId: league.TournamentId,
+          tournamentName: league.TournamentName,
+          buyIn: Number(buyIn),
+          payout: +league.TotalReturn,
+          netReturn: Number(netReturn),
+          role: league.Role,
+          roleId: league.RoleId
         };
     
         return leagueObj;
@@ -25,45 +28,61 @@ export const leagueServiceHelper = {
 
   extractUserId: function(leagueSummaryData) {
     if (leagueSummaryData != null && leagueSummaryData.length) {
-      return +leagueSummaryData[0].userId;
+      return +leagueSummaryData[0].UserId;
     }
     return null;
   },
 
-  packageLeagueInfo: function(userSummaries) {
-    if (userSummaries.length) {
-      let leagueInfo = {
-        name: userSummaries[0].name,
-        tournamentName: userSummaries[0].tournamentName,
-        auctionId: userSummaries[0].auctionId,
-        status: userSummaries[0].status,
-        users: []
-      };
-  
-      leagueInfo.users = userSummaries.map(user => {
+  packageLeagueMetadata: function(metadata) {
+    let data = {
+      leagueName: metadata.LeagueName,
+      numUsers: +metadata.NumUsers,
+      prizepool: +metadata.Prizepool,
+      myBuyIn: +metadata.MyBuyIn,
+      myPayout: +metadata.MyPayout,
+      leagueStatusId: metadata.StatusId,
+      tournamentId: metadata.TournamentId,
+      tournamentName: metadata.TournamentName,
+      tournamentRegimeId: metadata.TournamentRegimeId,
+      tournamentRegimeName: metadata.TournamentRegimeName,
+      roleId: metadata.RoleId,
+      roleName: metadata.RoleName
+    };
+
+    return data;
+  },
+
+  /**
+   * Packages league user summary data returned from the API into an array with relevant information. It is sorted in descending order based on the value in the "return" property
+   * @function packageLeagueUserInfo
+   * @param {Array.<Object>} userSummaries
+   * @returns {Array.<{id: Number, name: String, buyIn: Number, payout: Number, return: Number, numTeams: Number, numTeamsAlive: Number, rank: Number}>}
+   */
+  packageLeagueUserInfo: function(userSummaries) {
+    if (userSummaries.length > 0) {
+      let users = userSummaries.map(user => {
         return {
-          id: user.userId,
-          key: user.userId,
-          name: user.alias,
-          buyIn: user.naturalBuyIn + user.taxBuyIn,
-          payout: user.totalReturn,
-          return: user.totalReturn - user.naturalBuyIn - user.taxBuyIn,
-          numTeams: user.numTeams,
-          numTeamsAlive: user.numTeamsAlive
-        };
+          id: user.UserId,
+          name: user.Alias,
+          buyIn: Number((+user.NaturalBuyIn + +user.TaxBuyIn).toFixed(2)),
+          payout: Number((+user.TotalReturn).toFixed(2)),
+          return: Number((+user.TotalReturn - +user.NaturalBuyIn - +user.TaxBuyIn).toFixed(2)),
+          numTeams: +user.NumTeams,
+          numTeamsAlive: +user.NumTeamsAlive
+        }
       });
-  
-      // sorts the users in descending order by their net return
-      leagueInfo.users.sort(function(a, b) { return b.return - a.return });
-  
+
+      // sorts the users in descending order based on their net return
+      users.sort(function(a, b) { return b.return - a.return });
+
       // adds a rank property to each user after being sorted
-      // and formats the money value into a friendlier string representation
-      leagueInfo.users.forEach((user, index) => {
+      users.forEach((user, index) => {
         user.rank = index + 1;
       });
-  
-      return leagueInfo;
+
+      return users;
     }
+
     return null;
   },
 
@@ -96,37 +115,108 @@ export const leagueServiceHelper = {
   },
 
   packageUserTeams: function(teams) {
-    const userTeams = teams.map(team => {
-      return {
-        teamId: team.TeamId,
-        name: team.Name,
-        seed: team.Seed,
-        price: team.Price,
-        payout: team.Payout,
-        netReturn: team.Payout - team.Price,
-        eliminated: team.Eliminated
-      };
+    let userTeams = [];
+    let groups = [];
+    let groupsProcessed = [];
+
+    // fill in group records
+    teams.forEach(teamObj => {
+      let groupName = teamObj.GroupName;
+
+      // if the team is part of a group AND that group hasn't already been handled
+      if (groupName != null && !groupsProcessed.includes(groupName)) {
+        let groupPayout = getGroupPayout(teams, teamObj.GroupId);
+        let groupNetReturn = groupPayout - teamObj.Price;
+        
+        let groupObj = {
+          id: teamObj.GroupId,
+          name: groupName,
+          groupFlag: true,
+          price: teamObj.Price,
+          payout: groupPayout,
+          netReturn: groupNetReturn,
+          eliminated: teamGroupEliminated(teams, teamObj.GroupId),
+          groupTeams: getGroupTeams(teams, teamObj.GroupId)
+        };
+
+        groupsProcessed.push(groupName)
+
+        groups.push(groupObj);
+      } else if (groupName == null) {
+        let team = {
+          id: teamObj.TeamId,
+          name: teamObj.Name,
+          groupFlag: false,
+          seed: teamObj.Seed,
+          price: teamObj.Price,
+          payout: teamObj.Payout,
+          netReturn: teamObj.Payout - teamObj.Price,
+          eliminated: !teamObj.IsAlive
+        };
+
+        userTeams.push(team);
+      }
     });
   
     // sorting the teams in descending order by their net return
     userTeams.sort(function(a, b) { return b.netReturn - a.netReturn });
+    groups.sort(function(a, b) { return b.netReturn - a.netRedurt });
   
-    // adding a tax object to the list of user teams
-    if (teams[0].TaxBuyIn > 0) {
-      userTeams.push({
-        teamId: 0,
-        name: 'Tax',
-        seed: null,
-        price: teams[0].TaxBuyIn,
-        payout: 0,
-        netReturn: -teams[0].TaxBuyIn
-      });
-    }
-  
-    return userTeams;
-  },
-
-  parseUserAlias: function(teams) {
-    return teams[0].Alias;
+    // merge the userTeams and groups arrays
+    return [...userTeams, ...groups];
   }
+}
+
+function getGroupPayout(teams, groupId) {
+  return teams.reduce((payout, teamObj) => {
+    if (teamObj.GroupId === groupId) {
+      return payout + teamObj.Payout;
+    }
+    return payout;
+  }, 0);
+}
+
+function teamGroupEliminated(teams, groupId) {
+  let eliminated = true;
+
+  teams.forEach(teamObj => {
+    if (teamObj.GroupId === groupId) {
+      if (!!teamObj.IsAlive) {
+        eliminated = false;
+      }
+    }
+  });
+
+  return eliminated;
+}
+
+function getGroupTeams(teams, groupId) {
+  let groupTeams = [];
+
+  teams.forEach(teamObj => {
+    if (teamObj.GroupId === groupId) {
+      let groupTeam = {
+        id: teamObj.TeamId,
+        name: teamObj.Name,
+        seed: teamObj.Seed,
+        price: null,
+        payout: teamObj.Payout,
+        netReturn: null,
+        eliminated: !teamObj.IsAlive
+      };
+
+      groupTeams.push(groupTeam);
+    }
+  });
+
+  // sort in descending order by payout
+  groupTeams.sort((a, b) => { return b.payout - a.payout });
+
+  return groupTeams;
+}
+
+export {
+  getGroupPayout,
+  teamGroupEliminated,
+  getGroupTeams
 }

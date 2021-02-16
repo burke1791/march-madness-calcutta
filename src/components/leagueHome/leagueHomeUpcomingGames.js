@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 
 import { Table, Typography } from 'antd';
 import 'antd/dist/antd.css';
-import Pubsub from '../../utilities/pubsub';
-import { NOTIF } from '../../utilities/constants';
-import { Data } from '../../services/league/endpoints';
 import { useAuthState } from '../../context/authContext';
 import { teamDisplayName } from '../../utilities/helper';
+import LeagueService from '../../services/league/league.service';
+import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { leagueServiceHelper } from '../../services/league/helper';
+import { useLeagueState } from '../../context/leagueContext';
 
 const { Text } = Typography;
 
@@ -15,23 +16,26 @@ function LeagueHomeUpcomingGames(props) {
   const [upcomingGames, setUpcomingGames] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const { userId } = useAuthState();
+  const { userId, authenticated } = useAuthState();
+  const { leagueId } = useLeagueState();
 
   useEffect(() => {
-    Pubsub.subscribe(NOTIF.UPCOMING_GAMES_DOWNLOADED, LeagueHomeUpcomingGames, populateUpcomingGames);
-
-    if (Data.upcomingGames?.length > 0) {
-      // in case the API call returns before this component has a chance to register as a subscriber
-      populateUpcomingGames();
+    if (leagueId !== undefined && authenticated) {
+      fetchUpcomingGames();
     }
+  }, [leagueId, authenticated]);
 
-    return (() => {
-      Pubsub.unsubscribe(NOTIF.UPCOMING_GAMES_DOWNLOADED, LeagueHomeUpcomingGames);
+  const fetchUpcomingGames = () => {
+    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.UPCOMING_GAMES, { leagueId }).then(response => {
+      let games = leagueServiceHelper.packageUpcomingGames(response.data);
+      populateUpcomingGames(games);
+    }).catch(error => {
+      console.log(error);
     });
-  }, []);
+  }
 
-  const populateUpcomingGames = () => {
-    setUpcomingGames(Data.upcomingGames);
+  const populateUpcomingGames = (games) => {
+    setUpcomingGames(games);
     setLoading(false);
   }
 

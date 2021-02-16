@@ -3,120 +3,106 @@ import './auctionActions.css';
 
 import AuctionAdmin from '../auctionAdmin/auctionAdmin';
 
-import { Button, Card, Statistic, Row, Col, InputNumber, message } from 'antd';
+import { Button, Card, Statistic, Row, Col, InputNumber } from 'antd';
 import 'antd/dist/antd.css';
 
 import { formatMoney } from '../../utilities/helper';
-import { setItemComplete, placeAuctionBid } from '../../utilities/auctionService';
-import { userBuyIns, Auction } from '../../services/autction/endpoints';
 import AuctionService from '../../services/autction/auction.service';
-import Pubsub from '../../utilities/pubsub';
-import { NOTIF, AUCTION_STATUS, AUCTION_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { AUCTION_STATUS, AUCTION_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
+import { useAuctionState } from '../../context/auctionContext';
+import { auctionServiceHelper } from '../../services/autction/helper';
 
 const { Countdown } = Statistic;
 
 // @TODO this component does wayyyyy too much - break it up please!
-function AuctionActions() {
+function AuctionActions(props) {
   
   const [teamName, setTeamName] = useState('');
   const [biddingDisabled, setBiddingDisabled] = useState(true);
   const [highBid, setHighBid] = useState(0);
   const [highBidder, setHighBidder] = useState('n/a');
-  const [totalSpent, setTotalSpent] = useState(0);
   const [bidVal, setBidVal] = useState(0);
   const [endTime, setEndTime] = useState(0);
-  const [status, setStatus] = useState(false);
   const [offset, setOffset] = useState(0);
 
   const { roleId, leagueId } = useLeagueState();
   const { userId, authenticated } = useAuthState();
+  const { status, displayName, price, winnerAlias, lastBid, prevUpdate } = useAuctionState();
 
   useEffect(() => {
-    Pubsub.subscribe(NOTIF.NEW_AUCTION_DATA, AuctionActions, handleAuctionUpdate);
-    Pubsub.subscribe(NOTIF.AUCTION_BUYINS_DOWNLOADED, AuctionActions, updateTotalSpent);
-    Pubsub.subscribe(NOTIF.SERVER_SYNCED, AuctionActions, updateOffset);
-    Pubsub.subscribe(NOTIF.AUCTION_ERROR, AuctionActions, handleAuctionError);
-
-    return (() => {
-      Pubsub.unsubscribe(NOTIF.NEW_AUCTION_DATA, AuctionActions);
-      Pubsub.unsubscribe(NOTIF.AUCTION_BUYINS_DOWNLOADED, AuctionActions);
-      Pubsub.unsubscribe(NOTIF.SERVER_SYNCED, AuctionActions);
-      Pubsub.unsubscribe(NOTIF.AUCTION_ERROR, AuctionActions);
-    });
-  }, []);
+    updateBidButtonState();
+  }, [prevUpdate]);
 
   useEffect(() => {
     if (authenticated) {
-      AuctionService.callApi(AUCTION_SERVICE_ENDPOINTS.SERVER_TIMESTAMP);
+      getServerOffset();
     }
   }, [authenticated]);
 
-  const updateOffset = (offset) => {
-    setOffset(offset);
-  }
+  useEffect(() => {
+    setTeamName(displayName);
+  }, [displayName]);
 
-  const handleAuctionError = (errorObj) => {
-    // setBiddingDisabled(true);
-    // message.error(errorObj.Error);
-  }
-
-  // updates local state with the new auction info from global state
-  const handleAuctionUpdate = () => {
-    setTeamName(generateTeamName());
-    setHighBid(Auction.current.price);
-
-    // this is a hacky way of executing this logic - redo when you break up this component
-    if (Auction.current.price === 0) {
+  useEffect(() => {
+    if (price === 0) {
       resetBidVal();
     }
-    
-    // sets highBidder to the user's alias if Auction.currentWinner is a userId, otherwise sets it to "n/a"
-    setHighBidder(Auction.current == undefined || Auction.current.winnerAlias == null ? 'n/a' : Auction.current.winnerAlias);
 
-    updateClock();
+    setHighBid(price);
+  }, [price]);
 
-    // disables bid buttons if the auction is not currently in progress
-    if (Auction.status == AUCTION_STATUS.BIDDING) {
-      setBiddingDisabled(false);
+  useEffect(() => {
+    if (winnerAlias == null) {
+      setHighBidder('n/a');
     } else {
-      setBiddingDisabled(true);
+      setHighBidder(winnerAlias);
+    }
+  }, [winnerAlias]);
+
+  useEffect(() => {
+    if (lastBid) {
+      updateClock();
     }
 
-    setStatus(Auction.status);
+    if (lastBid && status === AUCTION_STATUS.BIDDING) {
+      setBiddingDisabled(false);
+    }
+  }, [lastBid]);
+
+  const getServerOffset = () => {
+    AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.SERVER_TIMESTAMP, {}).then(response => {
+      let clockOffset = auctionServiceHelper.updateServerPing(response.data[0].ServerTimestamp);
+      updateOffset(clockOffset);
+    });
   }
 
-  const generateTeamName = () => {
-    if (Auction.current && Auction.current.itemName && Auction.current.itemSeed) {
-      return '(' + +Auction.current.itemSeed + ') ' + Auction.current.itemName;
-    } else if (Auction.current.itemName) {
-      return Auction.current.itemName;
-    }
-
-    return '';
+  const updateOffset = (clockOffset) => {
+    setOffset(clockOffset);
   }
 
   const updateClock = () => {
-    let lastBid = Auction.current.lastBid.valueOf();
+    let lastBidValueOf = lastBid.valueOf();
 
-    let itemEnd = new Date(lastBid + 15000 - offset);
+    let itemEnd = new Date(lastBidValueOf + 15000 - offset);
 
     setEndTime(itemEnd);
   }
 
-  const updateTotalSpent = () => {
-    for (var user of userBuyIns) {
-      if (user.userId == userId) {
-        setTotalSpent(user.totalBuyIn);
-      }
+  const updateBidButtonState = () => {
+    console.log(status);
+    if (status === AUCTION_STATUS.BIDDING) {
+      setBiddingDisabled(false);
+    } else {
+      setBiddingDisabled(true);
     }
   }
 
   const itemComplete = () => {
-    //DataService.setItemComplete(props.auctionId);
     if (roleId == 1 || roleId == 2) {
-      setItemComplete(leagueId);
+      // setItemComplete(leagueId);
+      props.sendSocketMessage('ITEM_COMPLETE', { leagueId });
     }
   }
 
@@ -135,7 +121,8 @@ function AuctionActions() {
   const placeBid = (value) => {
     setBiddingDisabled(true);
 
-    placeAuctionBid(leagueId, value);
+    // placeAuctionBid(leagueId, value);
+    props.sendSocketMessage('PLACE_BID', { leagueId: leagueId, amount: value });
   }
 
   // when settings are implemented client-side, reset it to the league's minimum bid
@@ -146,7 +133,7 @@ function AuctionActions() {
   const generateAdminButtons = () => {
     if (roleId == 1 || roleId == 2) {
       return (
-        <AuctionAdmin status={status} />
+        <AuctionAdmin sendSocketMessage={props.sendSocketMessage} />
       );
     } else {
       return null;
@@ -176,7 +163,7 @@ function AuctionActions() {
         <Row type='flex' justify='space-between' gutter={8} style={{ marginTop: '6px' }}>
           <Col span={12} className='flex-growVert-parent'>
             <Card size='small' bodyStyle={{ textAlign: 'center' }} className='flex-growVert-child'>
-              <Statistic title='Total Spent' value={formatMoney(totalSpent)} />
+              <Statistic title='Total Spent' value={formatMoney(props.totalSpent)} />
             </Card>
           </Col>
           <Col span={12} className='flex-growVert-parent'>
