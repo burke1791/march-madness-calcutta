@@ -187,6 +187,15 @@ export const leagueEndpoints = {
     };
 
     return apiService(options);
+  },
+
+  getLeagueSeedGroups: function(apiService, params) {
+    let options = {
+      method: 'GET',
+      url: LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SEED_GROUPS + `/${params.leagueId}`
+    };
+
+    return apiService(options);
   }
 };
 

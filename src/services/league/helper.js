@@ -164,6 +164,28 @@ export const leagueServiceHelper = {
   
     // merge the userTeams and groups arrays
     return [...userTeams, ...groups];
+  },
+
+  packageLeagueSeedGroups: function(groups) {
+    let seedGroups = [];
+    let groupsProcessed = [];
+
+    groups.forEach(groupTeam => {
+      let groupName = groupTeam.GroupName;
+
+      if (!groupsProcessed.includes(groupName)) {
+        let group = {
+          groupId: groupTeam.TournamentSeedGroupId,
+          groupName: groupName,
+          teams: getSeedGroupTeams(groupTeam.TournamentSeedGroupId, groups)
+        };
+
+        seedGroups.push(group);
+        groupsProcessed.push(groupName);
+      }
+    });
+
+    return seedGroups;
   }
 }
 
@@ -211,6 +233,24 @@ function getGroupTeams(teams, groupId) {
 
   // sort in descending order by payout
   groupTeams.sort((a, b) => { return b.payout - a.payout });
+
+  return groupTeams;
+}
+
+function getSeedGroupTeams(groupId, teams) {
+  let groupTeams = [];
+
+  teams.forEach(team => {
+    if (team.TournamentSeedGroupId == groupId) {
+      let groupTeam = {
+        teamId: team.TeamId,
+        seed: team.Seed,
+        teamName: team.TeamDisplayName
+      };
+
+      groupTeams.push(groupTeam);
+    }
+  });
 
   return groupTeams;
 }

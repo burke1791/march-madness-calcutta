@@ -23,7 +23,8 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   GET_LEAGUE_SETTINGS: '/getLeagueSettings',
   UPDATE_LEAGUE_SETTINGS: '/updateLeagueSettings',
   GET_LEAGUE_PAYOUT_SETTINGS: '/getLeaguePayoutSettings',
-  UPDATE_LEAGUE_PAYOUT_SETTINGS: '/updateLeaguePayoutSettings'
+  UPDATE_LEAGUE_PAYOUT_SETTINGS: '/updateLeaguePayoutSettings',
+  GET_LEAGUE_SEED_GROUPS: '/getLeagueSeedGroups'
 }
 
 export const AUCTION_SERVICE_ENDPOINTS = {
