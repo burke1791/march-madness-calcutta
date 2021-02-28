@@ -9,6 +9,8 @@ import LeagueService from '../../services/league/league.service';
 import { useSettingsDispatch, useSettingsState } from '../../context/leagueSettingsContext';
 import Setting from './setting';
 import { QuestionCircleTwoTone } from '@ant-design/icons';
+import SeedGroupSettings from './seedGroupSettings';
+import { SETTINGS_TOOLTIPS } from '../../utilities/constants';
 
 const { Content } = Layout;
 
@@ -64,6 +66,10 @@ function LeagueSettings(props) {
       return generateSettingsView(settingsList);
     } else if (props.settingsGroup == 'payout') {
       return generateSettingsView(payoutSettings);
+    } else if (props.settingsGroup == 'seed_groups') {
+      return (
+        <SeedGroupSettings />
+      );
     }
     return null;
   }
@@ -136,11 +142,31 @@ function LeagueSettings(props) {
       name = 'Auction Settings';
     } else if (props.settingsGroup == 'payout') {
       name = 'Payout Settings'
+    } else if (props.settingsGroup == 'seed_groups') {
+      name = 'Seed Group Settings'
     } else {
       name = 'Settings';
     }
 
     return name;
+  }
+
+  const getSettingsTooltipText = () => {
+    let tooltip = null;
+
+    if (props.settingsGroup == 'seed_groups') {
+      tooltip = SETTINGS_TOOLTIPS.GROUPS_HEADER;
+    }
+
+    return tooltip;
+  }
+
+  const getSettingsTooltipIcon = () => {
+    if (props.settingsGroup == 'seed_groups') {
+      return <QuestionCircleTwoTone />;
+    }
+
+    return null;
   }
 
   return (
@@ -149,7 +175,7 @@ function LeagueSettings(props) {
         <LeagueHeader class='primary' text={leagueName} />
       </Row>
       <Row justify='center'>
-        <LeagueHeader class='secondary' text={generateSettingsGroupText()} />
+        <LeagueHeader class='secondary' text={generateSettingsGroupText()} tooltipText={getSettingsTooltipText()} tooltipIcon={getSettingsTooltipIcon()} />
       </Row>
       {generateSettings()}
       <Row justify='center'>

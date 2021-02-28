@@ -119,3 +119,11 @@ export const SETTING_TYPES = {
   BOOLEAN: 'Boolean',
   TEXT: 'Text'
 };
+
+export const SETTING_CLASS = {
+  GROUPS: 'groups'
+};
+
+export const SETTINGS_TOOLTIPS = {
+  GROUPS_HEADER: 'Put two or more tournament teams into a single item to be auctioned off'
+};
