@@ -11,6 +11,7 @@ import Setting from './setting';
 import { QuestionCircleTwoTone } from '@ant-design/icons';
 import SeedGroupSettings from './seedGroupSettings';
 import { SETTINGS_TOOLTIPS } from '../../utilities/constants';
+import SettingsUpdateButton from './settingsUpdateButton';
 
 const { Content } = Layout;
 
@@ -29,31 +30,37 @@ function LeagueSettings(props) {
   }, [leagueId, JSON.stringify(settingsList)]);
 
   const updateSettings = () => {
-    setLoading(true);
-
-    if (newSettings?.length) {
-      let settingsUpdate = constructUpdatedSettingsArray(props.settingsGroup, newSettings);
-      let endpoint = getUpdateSettingsEndpoint(props.settingsGroup);
-
-      LeagueService.callApiWithPromise(endpoint, { 
-        leagueId: leagueId,
-        settings: settingsUpdate
-      }).then(response => {
-        setLoading(false);
-        
-        if (response.data[0]?.Error) {
-          displayError(response.data[0].Error);
-        } else if (response.data[0]?.ValidationError) {
-          // generate validation error messages
-        } else {
-          settingsDispatch({ type: 'update', key: 'settingsRefreshTrigger', value: new Date().valueOf() });
-        }
-      }).catch(error => {
-        console.log(error);
-      });
+    if (props.settingsGroup == 'seed_groups') {
+      // show modal with new group form
+      // will need to create a new modal, because I didn't have the foresight to make my existing modal flexible enough
+      console.log('NEED TO SHOW MODAL WITH NEW GROUP FORM!!');
     } else {
-      setLoading(false);
-      // TODO: provide feedback
+      setLoading(true);
+
+      if (newSettings?.length) {
+        let settingsUpdate = constructUpdatedSettingsArray(props.settingsGroup, newSettings);
+        let endpoint = getUpdateSettingsEndpoint(props.settingsGroup);
+
+        LeagueService.callApiWithPromise(endpoint, { 
+          leagueId: leagueId,
+          settings: settingsUpdate
+        }).then(response => {
+          setLoading(false);
+          
+          if (response.data[0]?.Error) {
+            displayError(response.data[0].Error);
+          } else if (response.data[0]?.ValidationError) {
+            // generate validation error messages
+          } else {
+            settingsDispatch({ type: 'update', key: 'settingsRefreshTrigger', value: new Date().valueOf() });
+          }
+        }).catch(error => {
+          console.log(error);
+        });
+      } else {
+        setLoading(false);
+        // TODO: provide feedback
+      }
     }
   }
 
@@ -169,6 +176,22 @@ function LeagueSettings(props) {
     return null;
   }
 
+  const getUpdateButtonText = () => {
+    let text = '';
+
+    if (props.settingsGroup == 'auction') {
+      text = 'Update Auction Settings';
+    } else if (props.settingsGroup == 'payout') {
+      text = 'Update Payout Settings'
+    } else if (props.settingsGroup == 'seed_groups') {
+      text = 'New Group'
+    } else {
+      text = 'Update Settings';
+    }
+
+    return text;
+  }
+
   return (
     <Content style={{ overflowX: 'hidden' }}>
       <Row justify='center'>
@@ -178,18 +201,11 @@ function LeagueSettings(props) {
         <LeagueHeader class='secondary' text={generateSettingsGroupText()} tooltipText={getSettingsTooltipText()} tooltipIcon={getSettingsTooltipIcon()} />
       </Row>
       {generateSettings()}
-      <Row justify='center'>
-        <Col span={12} style={{ textAlign: 'center' }}>
-          <hr></hr>
-          <Button
-            type='primary'
-            loading={loading}
-            onClick={updateSettings}
-          >
-            {`Update ${generateSettingsGroupText()}`}
-          </Button>
-        </Col>
-      </Row>
+      <SettingsUpdateButton 
+        text={getUpdateButtonText()}
+        onClick={updateSettings}
+        loading={loading}
+      />
     </Content>
   );
 }

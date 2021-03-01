@@ -52,7 +52,7 @@ const seedGroupColumns = [
   {
     title: 'Group Name',
     dataIndex: 'groupName',
-    width: 250
+    width: 350
   },
   {
     title: 'Teams',
