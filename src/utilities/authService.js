@@ -28,6 +28,9 @@ export function signUp(username, email, password) {
     console.log(error);
     User.authenticated = false;
     clearDataOnSignout();
+    if (error.code == 'UsernameExistsException') {
+      Pubsub.publish(NOTIF.AUTH_ERROR, ERROR_MESSAGES.EMAIL_EXISTS);
+    }
     Pubsub.publish(NOTIF.SIGN_OUT, null);
   });
 }

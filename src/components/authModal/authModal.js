@@ -52,10 +52,8 @@ function AuthModal() {
 
   const toggleLoading = (state) => {
     if (state == undefined) {
-      console.log('toggle loading natural');
       setLoading(!loading);
     } else {
-      console.log('toggle loading literal');
       setLoading(state);
     }
   }
