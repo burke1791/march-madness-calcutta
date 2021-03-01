@@ -111,7 +111,8 @@ export const NOTIF = {
 
 export const ERROR_MESSAGES = {
   GENERAL: 'Error',
-  INVALID_CREDENTIALS: 'Invalid Credentials'
+  INVALID_CREDENTIALS: 'Invalid Credentials',
+  EMAIL_EXISTS: 'Email address already in use'
 }
 
 export const SETTING_TYPES = {
