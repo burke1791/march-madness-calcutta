@@ -76,6 +76,8 @@ export const NOTIF = {
   AUTH_MODAL_SHOW: 'auth_modal_show',
   AUTH_FORM_TOGGLE: 'auth_form_toggle',
   AUTH_ERROR: 'auth_error',
+  SEED_GROUP_MODAL_SHOW: 'seed_group_modal_show',
+  SEED_GROUP_MODAL_DISMISS: 'seed_group_modal_dismiss',
   TOURNAMENT_OPTIONS_DOWNLOADED: 'tournament_options_downloaded',
   LEAGUE_MODAL_SHOW: 'league_modal_show',
   LEAGUE_FORM_TOGGLE: 'league_form_toggle',

@@ -10,8 +10,10 @@ import { useSettingsDispatch, useSettingsState } from '../../context/leagueSetti
 import Setting from './setting';
 import { QuestionCircleTwoTone } from '@ant-design/icons';
 import SeedGroupSettings from './seedGroupSettings';
-import { SETTINGS_TOOLTIPS } from '../../utilities/constants';
+import { NOTIF, SETTINGS_TOOLTIPS } from '../../utilities/constants';
 import SettingsUpdateButton from './settingsUpdateButton';
+import Pubsub from '../../utilities/pubsub';
+import SeedGroupModal from './seedGroupModal';
 
 const { Content } = Layout;
 
@@ -31,9 +33,7 @@ function LeagueSettings(props) {
 
   const updateSettings = () => {
     if (props.settingsGroup == 'seed_groups') {
-      // show modal with new group form
-      // will need to create a new modal, because I didn't have the foresight to make my existing modal flexible enough
-      console.log('NEED TO SHOW MODAL WITH NEW GROUP FORM!!');
+      Pubsub.publish(NOTIF.SEED_GROUP_MODAL_SHOW, null);
     } else {
       setLoading(true);
 
@@ -206,6 +206,7 @@ function LeagueSettings(props) {
         onClick={updateSettings}
         loading={loading}
       />
+      <SeedGroupModal />
     </Content>
   );
 }
