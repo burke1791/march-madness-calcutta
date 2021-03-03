@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Input, Select } from 'antd';
 import 'antd/dist/antd.css';
-import { useLeagueState } from '../../context/leagueContext';
+import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
-import { AUCTION_SERVICE_ENDPOINTS, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { AUCTION_SERVICE_ENDPOINTS, LEAGUE_SERVICE_ENDPOINTS, NOTIF } from '../../utilities/constants';
 import AuctionService from '../../services/autction/auction.service';
 import { auctionServiceHelper } from '../../services/autction/helper';
+import LeagueService from '../../services/league/league.service';
+import Pubsub from '../../utilities/pubsub';
 
 const layout = {
   labelCol: {
@@ -26,6 +28,8 @@ function NewSeedGroup(props) {
   const { leagueId } = useLeagueState();
   const { authenticated } = useAuthState();
 
+  const leagueDispatch = useLeagueDispatch();
+
   useEffect(() => {
     if (authenticated && leagueId) {
       fetchTournamentTeams();
@@ -43,15 +47,34 @@ function NewSeedGroup(props) {
   }
   
   const handleSubmit = (values) => {
+    setErrorMessage('');
     setLoading(true);
 
     let payload = {
+      leagueId: leagueId,
       groupName: values.groupName,
       groupTeams: packageTeamsForApiCall(values.groupTeams) 
     };
 
     console.log(payload);
-    // call update endpoint
+
+    createNewSeedGroup(payload);
+  }
+
+  const createNewSeedGroup = (payload) => {
+    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.NEW_LEAGUE_SEED_GROUP, { payload }).then(response => {
+      setLoading(false);
+      leagueDispatch({ type: 'update', key: 'seedGroupsRefresh', value: new Date().valueOf() });
+
+      if (response.data && response.data[0]?.Error != undefined) {
+        setErrorMessage(response.data[0].Error);
+      } else {
+        Pubsub.publish(NOTIF.SEED_GROUP_MODAL_DISMISS, null);
+      }
+    }).catch(error => {
+      console.log(error);
+      setLoading(false);
+    });
   }
 
   const packageTeamsForApiCall = (teams) => {

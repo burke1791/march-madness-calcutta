@@ -196,6 +196,26 @@ export const leagueEndpoints = {
     };
 
     return apiService(options);
+  },
+
+  newLeagueSeedGroup: function(apiService, params) {
+    let options = {
+      method: 'POST',
+      url: LEAGUE_SERVICE_ENDPOINTS.NEW_LEAGUE_SEED_GROUP,
+      data: params.payload
+    };
+
+    return apiService(options);
+  },
+
+  deleteLeagueSeedGroup: function(apiService, params) {
+    let options = {
+      method: 'POST',
+      url: LEAGUE_SERVICE_ENDPOINTS.DELETE_LEAGUE_SEED_GROUP,
+      data: params.payload
+    };
+
+    return apiService(options);
   }
 };
 
