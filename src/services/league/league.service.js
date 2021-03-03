@@ -39,5 +39,8 @@ LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_SETTINGS, leagu
 LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_PAYOUT_SETTINGS, leagueEndpoints.getLeaguePayoutSettings);
 LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_PAYOUT_SETTINGS, leagueEndpoints.updateLeaguePayoutSettings);
 LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_USER_METADATA, leagueEndpoints.getLeagueUserMetadata);
+LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SEED_GROUPS, leagueEndpoints.getLeagueSeedGroups);
+LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.NEW_LEAGUE_SEED_GROUP, leagueEndpoints.newLeagueSeedGroup);
+LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.DELETE_LEAGUE_SEED_GROUP, leagueEndpoints.deleteLeagueSeedGroup);
 
 export default LeagueService;

@@ -23,7 +23,10 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   GET_LEAGUE_SETTINGS: '/getLeagueSettings',
   UPDATE_LEAGUE_SETTINGS: '/updateLeagueSettings',
   GET_LEAGUE_PAYOUT_SETTINGS: '/getLeaguePayoutSettings',
-  UPDATE_LEAGUE_PAYOUT_SETTINGS: '/updateLeaguePayoutSettings'
+  UPDATE_LEAGUE_PAYOUT_SETTINGS: '/updateLeaguePayoutSettings',
+  GET_LEAGUE_SEED_GROUPS: '/getLeagueSeedGroups',
+  NEW_LEAGUE_SEED_GROUP: '/newLeagueSeedGroup',
+  DELETE_LEAGUE_SEED_GROUP: '/deleteLeagueSeedGroup'
 }
 
 export const AUCTION_SERVICE_ENDPOINTS = {
@@ -75,6 +78,8 @@ export const NOTIF = {
   AUTH_MODAL_SHOW: 'auth_modal_show',
   AUTH_FORM_TOGGLE: 'auth_form_toggle',
   AUTH_ERROR: 'auth_error',
+  SEED_GROUP_MODAL_SHOW: 'seed_group_modal_show',
+  SEED_GROUP_MODAL_DISMISS: 'seed_group_modal_dismiss',
   TOURNAMENT_OPTIONS_DOWNLOADED: 'tournament_options_downloaded',
   LEAGUE_MODAL_SHOW: 'league_modal_show',
   LEAGUE_FORM_TOGGLE: 'league_form_toggle',
@@ -119,4 +124,12 @@ export const SETTING_TYPES = {
   INPUT_NUMBER: 'Number',
   BOOLEAN: 'Boolean',
   TEXT: 'Text'
+};
+
+export const SETTING_CLASS = {
+  GROUPS: 'groups'
+};
+
+export const SETTINGS_TOOLTIPS = {
+  GROUPS_HEADER: 'Put two or more tournament teams into a single item to be auctioned off'
 };
