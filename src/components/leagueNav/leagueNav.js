@@ -92,6 +92,9 @@ function LeagueNav() {
             <Menu.Item key='settings/auction'>
               Auction Settings
             </Menu.Item>
+            <Menu.Item key='settings/seed_groups'>
+              Seed Groups
+            </Menu.Item>
             <Menu.Item key='settings/payout'>
               Payout Settings
             </Menu.Item>

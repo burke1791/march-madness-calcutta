@@ -24,6 +24,17 @@ function LeagueHeader(props) {
     }
   }, [props.class]);
 
+  const getTooltip = (icon, text) => {
+    if (icon != null && text != null) {
+      return {
+        icon: [icon, icon],
+        tooltips: [text, text]
+      };
+    }
+
+    return null;
+  }
+
   return (
     <Header style={{ background: 'none', textAlign: 'center', height: '48px' }}>
       <Title
@@ -31,6 +42,7 @@ function LeagueHeader(props) {
         level={level}
         style={style}
         type={type}
+        copyable={getTooltip(props.tooltipIcon, props.tooltipText)}
       >
         {props.text}
       </Title>

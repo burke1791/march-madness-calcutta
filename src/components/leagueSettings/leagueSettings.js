@@ -9,6 +9,11 @@ import LeagueService from '../../services/league/league.service';
 import { useSettingsDispatch, useSettingsState } from '../../context/leagueSettingsContext';
 import Setting from './setting';
 import { QuestionCircleTwoTone } from '@ant-design/icons';
+import SeedGroupSettings from './seedGroupSettings';
+import { NOTIF, SETTINGS_TOOLTIPS } from '../../utilities/constants';
+import SettingsUpdateButton from './settingsUpdateButton';
+import Pubsub from '../../utilities/pubsub';
+import SeedGroupModal from './seedGroupModal';
 
 const { Content } = Layout;
 
@@ -27,31 +32,35 @@ function LeagueSettings(props) {
   }, [leagueId, JSON.stringify(settingsList)]);
 
   const updateSettings = () => {
-    setLoading(true);
-
-    if (newSettings?.length) {
-      let settingsUpdate = constructUpdatedSettingsArray(props.settingsGroup, newSettings);
-      let endpoint = getUpdateSettingsEndpoint(props.settingsGroup);
-
-      LeagueService.callApiWithPromise(endpoint, { 
-        leagueId: leagueId,
-        settings: settingsUpdate
-      }).then(response => {
-        setLoading(false);
-        
-        if (response.data[0]?.Error) {
-          displayError(response.data[0].Error);
-        } else if (response.data[0]?.ValidationError) {
-          // generate validation error messages
-        } else {
-          settingsDispatch({ type: 'update', key: 'settingsRefreshTrigger', value: new Date().valueOf() });
-        }
-      }).catch(error => {
-        console.log(error);
-      });
+    if (props.settingsGroup == 'seed_groups') {
+      Pubsub.publish(NOTIF.SEED_GROUP_MODAL_SHOW, null);
     } else {
-      setLoading(false);
-      // TODO: provide feedback
+      setLoading(true);
+
+      if (newSettings?.length) {
+        let settingsUpdate = constructUpdatedSettingsArray(props.settingsGroup, newSettings);
+        let endpoint = getUpdateSettingsEndpoint(props.settingsGroup);
+
+        LeagueService.callApiWithPromise(endpoint, { 
+          leagueId: leagueId,
+          settings: settingsUpdate
+        }).then(response => {
+          setLoading(false);
+          
+          if (response.data[0]?.Error) {
+            displayError(response.data[0].Error);
+          } else if (response.data[0]?.ValidationError) {
+            // generate validation error messages
+          } else {
+            settingsDispatch({ type: 'update', key: 'settingsRefreshTrigger', value: new Date().valueOf() });
+          }
+        }).catch(error => {
+          console.log(error);
+        });
+      } else {
+        setLoading(false);
+        // TODO: provide feedback
+      }
     }
   }
 
@@ -64,6 +73,10 @@ function LeagueSettings(props) {
       return generateSettingsView(settingsList);
     } else if (props.settingsGroup == 'payout') {
       return generateSettingsView(payoutSettings);
+    } else if (props.settingsGroup == 'seed_groups') {
+      return (
+        <SeedGroupSettings />
+      );
     }
     return null;
   }
@@ -136,11 +149,47 @@ function LeagueSettings(props) {
       name = 'Auction Settings';
     } else if (props.settingsGroup == 'payout') {
       name = 'Payout Settings'
+    } else if (props.settingsGroup == 'seed_groups') {
+      name = 'Seed Group Settings'
     } else {
       name = 'Settings';
     }
 
     return name;
+  }
+
+  const getSettingsTooltipText = () => {
+    let tooltip = null;
+
+    if (props.settingsGroup == 'seed_groups') {
+      tooltip = SETTINGS_TOOLTIPS.GROUPS_HEADER;
+    }
+
+    return tooltip;
+  }
+
+  const getSettingsTooltipIcon = () => {
+    if (props.settingsGroup == 'seed_groups') {
+      return <QuestionCircleTwoTone />;
+    }
+
+    return null;
+  }
+
+  const getUpdateButtonText = () => {
+    let text = '';
+
+    if (props.settingsGroup == 'auction') {
+      text = 'Update Auction Settings';
+    } else if (props.settingsGroup == 'payout') {
+      text = 'Update Payout Settings'
+    } else if (props.settingsGroup == 'seed_groups') {
+      text = 'New Group'
+    } else {
+      text = 'Update Settings';
+    }
+
+    return text;
   }
 
   return (
@@ -149,21 +198,15 @@ function LeagueSettings(props) {
         <LeagueHeader class='primary' text={leagueName} />
       </Row>
       <Row justify='center'>
-        <LeagueHeader class='secondary' text={generateSettingsGroupText()} />
+        <LeagueHeader class='secondary' text={generateSettingsGroupText()} tooltipText={getSettingsTooltipText()} tooltipIcon={getSettingsTooltipIcon()} />
       </Row>
       {generateSettings()}
-      <Row justify='center'>
-        <Col span={12} style={{ textAlign: 'center' }}>
-          <hr></hr>
-          <Button
-            type='primary'
-            loading={loading}
-            onClick={updateSettings}
-          >
-            {`Update ${generateSettingsGroupText()}`}
-          </Button>
-        </Col>
-      </Row>
+      <SettingsUpdateButton 
+        text={getUpdateButtonText()}
+        onClick={updateSettings}
+        loading={loading}
+      />
+      <SeedGroupModal />
     </Content>
   );
 }
