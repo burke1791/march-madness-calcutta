@@ -72,6 +72,7 @@ function LeagueNav() {
           onClick={handleLeagueNavClick}
           defaultSelectedKeys={['leagueHome']}
           style={{ height: '100%', borderRight: 0 }}
+          defaultOpenKeys={['settingSub']}
         >
           <Menu.Item key='leagueHome'>
             League Home
