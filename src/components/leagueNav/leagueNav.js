@@ -90,6 +90,9 @@ function LeagueNav() {
             Message Board
           </Menu.Item> */}
           <SubMenu key='settingSub' title='Settings'>
+            <Menu.Item key='settings/league'>
+              League Settings
+            </Menu.Item>
             <Menu.Item key='settings/auction'>
               Auction Settings
             </Menu.Item>
