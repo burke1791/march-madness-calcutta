@@ -64,6 +64,8 @@ export const leagueServiceHelper = {
         return {
           id: user.UserId,
           name: user.Alias,
+          roleId: user.RoleId,
+          role: user.Role,
           buyIn: Number((+user.NaturalBuyIn + +user.TaxBuyIn).toFixed(2)),
           payout: Number((+user.TotalReturn).toFixed(2)),
           return: Number((+user.TotalReturn - +user.NaturalBuyIn - +user.TaxBuyIn).toFixed(2)),

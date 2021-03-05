@@ -130,19 +130,6 @@ export const leagueEndpoints = {
     }
 
     return apiService(options);
-    
-    // apiService({
-    //   method: 'GET',
-    //   url: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS + `/${params.leagueId}/${params.userId}`
-    // }).then(response => {
-    //   if (response.data.length > 0) {
-    //     Data.userTeams = leagueServiceHelper.packageUserTeams(response.data);
-    //     Data.userAlias = leagueServiceHelper.parseUserAlias(response.data);
-    //   }
-    //   Pubsub.publish(NOTIF.LEAGUE_USER_TEAMS_FETCHED, null);
-    // }).catch(error => {
-    //   console.log(error);
-    // });
   },
 
   getLeagueSettings: function(apiService, params) {

@@ -158,6 +158,8 @@ describe('packageLeagueUserInfo', () => {
       {
         id: 4,
         name: 'username',
+        roleId: 1,
+        role: 'role',
         buyIn: 1.23,
         payout: 0,
         return: -1.23,
@@ -168,6 +170,8 @@ describe('packageLeagueUserInfo', () => {
       {
         id: 5,
         name: 'username2',
+        roleId: 3,
+        role: 'role2',
         buyIn: 4.68,
         payout: 0.12,
         return: -4.56,

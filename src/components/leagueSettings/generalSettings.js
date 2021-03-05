@@ -3,6 +3,7 @@ import { Col, Divider, Layout, Row, Table, Typography } from 'antd';
 import 'antd/dist/antd.css';
 import LeagueHeader from '../league/leagueHeader';
 import { useLeagueState } from '../../context/leagueContext';
+import LeagueRoster from './leagueRoster';
 
 const { Title } = Typography;
 const { Content } = Layout;
@@ -44,11 +45,13 @@ function GeneralSettings() {
             </Title>
           </Row>
           <Divider orientation='left'>League Members</Divider>
-          {/* <Row>
-            <Table
-
-            />
-          </Row> */}
+          <Row style={{ paddingLeft: 12, paddingRight: 12 }}>
+            <LeagueRoster />
+          </Row>
+          <Divider orientation='left'>Invite Link</Divider>
+          <Row style={{ paddingLeft: 12, paddingRight: 12 }}>
+            
+          </Row>
         </Col>
       </Row>
     </Content>
