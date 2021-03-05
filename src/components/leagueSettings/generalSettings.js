@@ -10,7 +10,7 @@ const { Content } = Layout;
 
 function GeneralSettings() {
 
-  const { leagueName } = useLeagueState();
+  const { leagueName, inviteCode } = useLeagueState();
 
   const [leagueNameText, setLeagueNameText] = useState(leagueName);
   const [leagueNameEdited, setLeagueNameEdited] = useState(false);
@@ -50,7 +50,7 @@ function GeneralSettings() {
           </Row>
           <Divider orientation='left'>Invite Link</Divider>
           <Row style={{ paddingLeft: 12, paddingRight: 12 }}>
-            
+
           </Row>
         </Col>
       </Row>

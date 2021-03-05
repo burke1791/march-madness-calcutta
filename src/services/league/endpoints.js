@@ -203,6 +203,16 @@ export const leagueEndpoints = {
     };
 
     return apiService(options);
+  },
+
+  kickLeagueMember: function(apiService, params) {
+    let options = {
+      method: 'POST',
+      url: LEAGUE_SERVICE_ENDPOINTS.KICK_LEAGUE_MEMBER,
+      data: params.payload
+    };
+
+    return apiService(options);
   }
 };
 

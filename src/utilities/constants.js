@@ -26,7 +26,8 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   UPDATE_LEAGUE_PAYOUT_SETTINGS: '/updateLeaguePayoutSettings',
   GET_LEAGUE_SEED_GROUPS: '/getLeagueSeedGroups',
   NEW_LEAGUE_SEED_GROUP: '/newLeagueSeedGroup',
-  DELETE_LEAGUE_SEED_GROUP: '/deleteLeagueSeedGroup'
+  DELETE_LEAGUE_SEED_GROUP: '/deleteLeagueSeedGroup',
+  KICK_LEAGUE_MEMBER: '/kickLeagueMember'
 }
 
 export const AUCTION_SERVICE_ENDPOINTS = {

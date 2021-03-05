@@ -92,7 +92,8 @@ describe('packageLeagueMetadata', () => {
       TournamentRegimeId: 4,
       TournamentRegimeName: 'tournament regime name',
       RoleId: 5,
-      RoleName: 'role name'
+      RoleName: 'role name',
+      InviteCode: 'invite_code'
     };
 
     let expected = {
@@ -107,7 +108,8 @@ describe('packageLeagueMetadata', () => {
       tournamentRegimeId: 4,
       tournamentRegimeName: 'tournament regime name',
       roleId: 5,
-      roleName: 'role name'
+      roleName: 'role name',
+      inviteCode: 'invite_code'
     };
 
     expect(leagueServiceHelper.packageLeagueMetadata(data)).toEqual(expected);
