@@ -132,5 +132,7 @@ export const SETTING_CLASS = {
 };
 
 export const SETTINGS_TOOLTIPS = {
-  GROUPS_HEADER: 'Put two or more tournament teams into a single item to be auctioned off'
+  GROUPS_HEADER: 'Put two or more tournament teams into a single item to be auctioned off',
+  INVITE_CODE: 'Use this code when you click on the "Join League" button on the main page',
+  INVITE_URL: 'This Url can be used to navigate directly to a "Join League" page'
 };

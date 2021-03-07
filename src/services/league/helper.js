@@ -47,7 +47,8 @@ export const leagueServiceHelper = {
       tournamentRegimeName: metadata.TournamentRegimeName,
       roleId: metadata.RoleId,
       roleName: metadata.RoleName,
-      inviteCode: metadata.InviteCode
+      inviteCode: metadata.InviteCode,
+      inviteUrl: metadata.InviteUrl
     };
 
     return data;
