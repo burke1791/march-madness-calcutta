@@ -48,8 +48,7 @@ export const leagueEndpoints = {
 
   joinLeague: function(apiService, params) {
     let league = {
-      name: params.name,
-      password: params.password
+      inviteCode: params.inviteCode
     };
   
     apiService({
@@ -57,7 +56,9 @@ export const leagueEndpoints = {
       url: LEAGUE_SERVICE_ENDPOINTS.JOIN_LEAGUE,
       data: league
     }).then(response => {
-      Pubsub.publish(NOTIF.LEAGUE_JOINED);
+      console.log('league joined');
+      console.log(response.data);
+      Pubsub.publish(NOTIF.LEAGUE_JOINED, response.data[0]);
     }).catch(error => {
       console.log(error);
     });
@@ -130,19 +131,6 @@ export const leagueEndpoints = {
     }
 
     return apiService(options);
-    
-    // apiService({
-    //   method: 'GET',
-    //   url: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS + `/${params.leagueId}/${params.userId}`
-    // }).then(response => {
-    //   if (response.data.length > 0) {
-    //     Data.userTeams = leagueServiceHelper.packageUserTeams(response.data);
-    //     Data.userAlias = leagueServiceHelper.parseUserAlias(response.data);
-    //   }
-    //   Pubsub.publish(NOTIF.LEAGUE_USER_TEAMS_FETCHED, null);
-    // }).catch(error => {
-    //   console.log(error);
-    // });
   },
 
   getLeagueSettings: function(apiService, params) {
@@ -212,6 +200,26 @@ export const leagueEndpoints = {
     let options = {
       method: 'POST',
       url: LEAGUE_SERVICE_ENDPOINTS.DELETE_LEAGUE_SEED_GROUP,
+      data: params.payload
+    };
+
+    return apiService(options);
+  },
+
+  kickLeagueMember: function(apiService, params) {
+    let options = {
+      method: 'POST',
+      url: LEAGUE_SERVICE_ENDPOINTS.KICK_LEAGUE_MEMBER,
+      data: params.payload
+    };
+
+    return apiService(options);
+  },
+
+  updateLeagueName: function(apiService, params) {
+    let options = {
+      method: 'POST',
+      url: LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_NAME,
       data: params.payload
     };
 

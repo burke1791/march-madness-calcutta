@@ -30,7 +30,7 @@ function League(props) {
   const dispatch = useLeagueDispatch();
   const settingsDispatch = useSettingsDispatch();
 
-  const { leagueId } = useLeagueState();
+  const { leagueId, leagueMetadataRefresh } = useLeagueState();
   const { settingsRefreshTrigger } = useSettingsState();
   const { authenticated } = useAuthState();
 
@@ -54,7 +54,7 @@ function League(props) {
     if (!!leagueId && authenticated) {
       fetchMetadata(leagueId);
     }
-  }, [leagueId, authenticated]);
+  }, [leagueId, authenticated, leagueMetadataRefresh]);
 
   const cleanupContext = () => {
     dispatch({ type: 'clear' });

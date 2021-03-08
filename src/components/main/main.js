@@ -111,6 +111,7 @@ function Main() {
             pagination={false}
             loading={loading}
             rowKey='id'
+            rowClassName='pointer'
             onRow={
               (record) => {
                 return {

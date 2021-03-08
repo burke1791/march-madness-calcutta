@@ -84,6 +84,9 @@ export function getCurrentSession() {
     Pubsub.publish(NOTIF.SIGN_IN, session);
     Pubsub.publish(NOTIF.AUTH, true);
   }).catch(error => {
+    if (error == 'No current user') {
+      Pubsub.publish(NOTIF.SIGN_OUT, null);
+    }
     console.log(error);
   });
 }

@@ -6,7 +6,7 @@ import 'antd/dist/antd.css';
 import AlivePie from '../alivePie/alivePie';
 
 import { navigate } from '@reach/router';
-import { useLeagueState } from '../../context/leagueContext';
+import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
 import { formatMoney } from '../../utilities/helper';
 import { useAuthState } from '../../context/authContext';
 import LeagueService from '../../services/league/league.service';
@@ -17,11 +17,12 @@ const { Text } = Typography;
 
 function LeagueHomeStandings(props) {
 
-  const [userList, setUserList] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const { leagueId } = useLeagueState();
+  const { leagueId, userList } = useLeagueState();
   const { userId, authenticated } = useAuthState();
+
+  const leagueDispatch = useLeagueDispatch();
 
   useEffect(() => {
     if (authenticated && leagueId) {
@@ -31,7 +32,7 @@ function LeagueHomeStandings(props) {
 
   const fetchLeagueUserSummaries = () => {
     LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES, { leagueId }).then(response => {
-      let leagueUsers = leagueServiceHelper.packageLeagueUserInfo(response.data)
+      let leagueUsers = leagueServiceHelper.packageLeagueUserInfo(response.data);
       populateStandings(leagueUsers);
     }).catch(error => {
       console.log(error);
@@ -40,7 +41,7 @@ function LeagueHomeStandings(props) {
 
   const populateStandings = (leagueUsers) => {
     if (leagueUsers !== undefined && leagueUsers.length > 0) {
-      setUserList(leagueUsers);
+      leagueDispatch({ type: 'update', key: 'userList', value: leagueUsers });
       setLoading(false);
     }
   }
