@@ -207,7 +207,7 @@ function League(props) {
 
   if (User.authenticated == undefined || User.authenticated) {
     return (
-      <Layout style={{ height: 'calc(100vh - 64px)' }}>
+      <Layout style={{ minHeight: 'calc(100vh - 64px)', height: '100%' }}>
         <LeagueNav />
         <Layout>
           <Content>
