@@ -213,6 +213,16 @@ export const leagueEndpoints = {
     };
 
     return apiService(options);
+  },
+
+  updateLeagueName: function(apiService, params) {
+    let options = {
+      method: 'POST',
+      url: LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_NAME,
+      data: params.payload
+    };
+
+    return apiService(options);
   }
 };
 

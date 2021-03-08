@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Col, Divider, Layout, Row, Table, Typography } from 'antd';
+import { Col, Divider, Layout, message, Row, Typography } from 'antd';
 import 'antd/dist/antd.css';
 import LeagueHeader from '../league/leagueHeader';
-import { useLeagueState } from '../../context/leagueContext';
+import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
 import LeagueRoster from './leagueRoster';
-import { SETTINGS_TOOLTIPS } from '../../utilities/constants';
+import { LEAGUE_SERVICE_ENDPOINTS, SETTINGS_TOOLTIPS } from '../../utilities/constants';
 import { QuestionCircleTwoTone } from '@ant-design/icons';
+import LeagueService from '../../services/league/league.service';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
 
 function GeneralSettings() {
 
-  const { leagueName, inviteCode, inviteUrl } = useLeagueState();
+  const { leagueId, leagueName, inviteCode, inviteUrl } = useLeagueState();
+
+  const leagueDispatch = useLeagueDispatch();
 
   const [leagueNameText, setLeagueNameText] = useState(leagueName);
   const [leagueNameEdited, setLeagueNameEdited] = useState(false);
@@ -26,8 +29,24 @@ function GeneralSettings() {
   const leagueNameChange = (text) => {
     setLeagueNameText(text);
     setLeagueNameEdited(true);
+
+    let payload = {
+      leagueId: leagueId,
+      newLeagueName: text // state updates aren't synchronous so we need to use the function input instead of the state variable
+    };
+
     // fire API request to update league name
-    // re-download league metadata
+    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_NAME, { payload }).then(response => {
+      if (response.data && response.data.length && response.data[0]?.Error) {
+        message.error(response.data[0].Error);
+      } else {
+        leagueDispatch({ type: 'update', key: 'leagueMetadataRefresh', value: new Date().valueOf() });
+        message.success('League Name Updated');
+      }
+    }).catch(error => {
+      console.log(error);
+      message.error('Error updating league name. Please try again later');
+    });
   }
 
   const getInviteTooltipIcon = (inviteType) => {
@@ -59,7 +78,7 @@ function GeneralSettings() {
             <Title
               level={4}
               editable={{
-                maxLength: 128,
+                maxLength: 50,
                 onChange: leagueNameChange
               }}
             >

@@ -43,5 +43,6 @@ LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SEED_GROUPS, leagu
 LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.NEW_LEAGUE_SEED_GROUP, leagueEndpoints.newLeagueSeedGroup);
 LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.DELETE_LEAGUE_SEED_GROUP, leagueEndpoints.deleteLeagueSeedGroup);
 LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.KICK_LEAGUE_MEMBER, leagueEndpoints.kickLeagueMember);
+LeagueService.newEndpoint(LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_NAME, leagueEndpoints.updateLeagueName);
 
 export default LeagueService;

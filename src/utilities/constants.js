@@ -27,7 +27,8 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   GET_LEAGUE_SEED_GROUPS: '/getLeagueSeedGroups',
   NEW_LEAGUE_SEED_GROUP: '/newLeagueSeedGroup',
   DELETE_LEAGUE_SEED_GROUP: '/deleteLeagueSeedGroup',
-  KICK_LEAGUE_MEMBER: '/kickLeagueMember'
+  KICK_LEAGUE_MEMBER: '/kickLeagueMember',
+  UPDATE_LEAGUE_NAME: '/updateLeagueName'
 }
 
 export const AUCTION_SERVICE_ENDPOINTS = {
@@ -133,6 +134,6 @@ export const SETTING_CLASS = {
 
 export const SETTINGS_TOOLTIPS = {
   GROUPS_HEADER: 'Put two or more tournament teams into a single item to be auctioned off',
-  INVITE_CODE: 'Use this code when you click on the "Join League" button on the main page',
+  INVITE_CODE: 'Your friends can use this code when they click the "Join League" button on the main page',
   INVITE_URL: 'This Url can be used to navigate directly to a "Join League" page'
 };
