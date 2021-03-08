@@ -33,7 +33,7 @@ function App() {
                   <LandingPage path='/' />
                   <Main path='/home' />
                   <League path='/leagues/:leagueId/*' />
-                  <JoinLeague path='/joinLeague' />
+                  {/* <JoinLeague path='/joinLeague' /> */}
                 </Router>
               </TournamentProvider>
             </SettingsProvider>
