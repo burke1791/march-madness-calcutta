@@ -30,14 +30,14 @@ function JoinLeague(props) {
   }, []);
 
   useEffect(() => {
-    let urlInvite = location.search.match(/(?<=\?inviteCode=)(.+?)(?=&|$)/g);
-    console.log(urlInvite);
+    let reg = new RegExp(/(?:\?inviteCode=)(.+?)(?=&|$)/g);
+    let urlInvite = reg.exec(location.search);
 
     if (urlInvite == null && !joinSuccess) {
       props.location.search = '';
       navigate('/home', { replace: true });
-    } else if (urlInvite != null && urlInvite.length >= 1) {
-      setInviteCode(urlInvite[0]);
+    } else if (urlInvite != null && urlInvite.length >= 2) {
+      setInviteCode(urlInvite[1]);
     }
   }, [location.search]);
 
