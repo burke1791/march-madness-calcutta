@@ -27,7 +27,7 @@ function JoinLeague(props) {
     return (() => {
       Pubsub.unsubscribe(NOTIF.LEAGUE_JOINED, JoinLeague);
     });
-  });
+  }, []);
 
   useEffect(() => {
     let urlInvite = location.search.match(/(?<=\?inviteCode=)(.+?)(?=&|$)/g);
