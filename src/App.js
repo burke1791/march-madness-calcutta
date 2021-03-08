@@ -12,6 +12,7 @@ import { LeagueProvider } from './context/leagueContext';
 import { AuthProvider } from './context/authContext';
 import { SettingsProvider } from './context/leagueSettingsContext';
 import { TournamentProvider } from './context/tournamentContext';
+import JoinLeague from './components/league/joinLeague';
 
 const { Header } = Layout;
 
@@ -32,6 +33,7 @@ function App() {
                   <LandingPage path='/' />
                   <Main path='/home' />
                   <League path='/leagues/:leagueId/*' />
+                  <JoinLeague path='/joinLeague' />
                 </Router>
               </TournamentProvider>
             </SettingsProvider>

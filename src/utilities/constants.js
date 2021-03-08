@@ -78,6 +78,7 @@ export const NOTIF = {
   AUTH: 'auth',
   LEAGUE_SERVICE: 'league_service',
   AUTH_MODAL_SHOW: 'auth_modal_show',
+  AUTH_MODAL_DISMISS: 'auth_modal_dismiss',
   AUTH_FORM_TOGGLE: 'auth_form_toggle',
   AUTH_ERROR: 'auth_error',
   SEED_GROUP_MODAL_SHOW: 'seed_group_modal_show',

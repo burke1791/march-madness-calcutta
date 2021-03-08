@@ -38,6 +38,7 @@ function NewLeagueForm(props) {
 
     let name = values.leagueName;
     let password = values.leaguePassword;
+    let inviteCode = values.inviteCode;
 
     if (props.leagueType === LEAGUE_FORM_TYPE.CREATE) {
       LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.NEW_LEAGUE, { 
@@ -47,7 +48,7 @@ function NewLeagueForm(props) {
         tournamentScopeId: tournamentScopeId
       });
     } else {
-      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.JOIN_LEAGUE, { name: name, password: password });
+      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.JOIN_LEAGUE, { inviteCode });
     }
   }
 
@@ -91,10 +92,47 @@ function NewLeagueForm(props) {
               {generateTournamentScopeOptions()}
             </Select>
           </Form.Item>
+          <Form.Item 
+            name='leagueName'
+            label='League Name'
+            rules={[
+              {
+                required: true,
+                message: 'Please input a league name!'
+              }
+            ]}
+          >
+            <Input placeholder='league name' />
+          </Form.Item>
+          <Form.Item 
+            name='leaguePassword'
+            label='League Password'
+            rules={[
+              {
+                required: true,
+                message: 'Please input a league name!'
+              }
+            ]}  
+          >
+            <Input placeholder='league password' />
+          </Form.Item>
         </React.Fragment>
       );
     } else {
-      return null;
+      return (
+        <Form.Item
+          name='inviteCode'
+          label='Invite Code'
+          rules={[
+            {
+              required: true,
+              message: 'Please input the league\'s invite code'
+            }
+          ]}
+        >
+          <Input placeholder='invite code' />
+        </Form.Item>
+      );
     }
   }
 
@@ -133,30 +171,6 @@ function NewLeagueForm(props) {
     >
       {generateErrorMessage()}
       {generateTournamentType()}
-      <Form.Item 
-        name='leagueName'
-        label='League Name'
-        rules={[
-          {
-            required: true,
-            message: 'Please input a league name!'
-          }
-        ]}
-      >
-        <Input placeholder='league name' />
-      </Form.Item>
-      <Form.Item 
-        name='leaguePassword'
-        label='League Password'
-        rules={[
-          {
-            required: true,
-            message: 'Please input a league name!'
-          }
-        ]}  
-      >
-        <Input placeholder='league password' />
-      </Form.Item>
       <Form.Item>
         <Button type='primary' loading={props.loading} htmlType='submit' className='new-league-button' style={{ width: '100%' }}>Submit</Button>
         <Button 

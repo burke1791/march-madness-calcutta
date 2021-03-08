@@ -48,8 +48,7 @@ export const leagueEndpoints = {
 
   joinLeague: function(apiService, params) {
     let league = {
-      name: params.name,
-      password: params.password
+      inviteCode: params.inviteCode
     };
   
     apiService({
@@ -57,7 +56,9 @@ export const leagueEndpoints = {
       url: LEAGUE_SERVICE_ENDPOINTS.JOIN_LEAGUE,
       data: league
     }).then(response => {
-      Pubsub.publish(NOTIF.LEAGUE_JOINED);
+      console.log('league joined');
+      console.log(response.data);
+      Pubsub.publish(NOTIF.LEAGUE_JOINED, response.data[0]);
     }).catch(error => {
       console.log(error);
     });

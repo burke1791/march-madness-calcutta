@@ -19,11 +19,13 @@ function AuthModal() {
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.AUTH_MODAL_SHOW, AuthModal, showModal);
+    Pubsub.subscribe(NOTIF.AUTH_MODAL_DISMISS, AuthModal, handleCancel);
     Pubsub.subscribe(NOTIF.SIGN_IN, AuthModal, handleCancel);
     Pubsub.subscribe(NOTIF.SIGN_UP_PLEASE_CONFIRM, AuthModal, handleConfirm);
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.AUTH_MODAL_SHOW, AuthModal);
+      Pubsub.unsubscribe(NOTIF.AUTH_MODAL_DISMISS, AuthModal);
       Pubsub.unsubscribe(NOTIF.SIGN_IN, AuthModal);
       Pubsub.unsubscribe(NOTIF.SIGN_UP_PLEASE_CONFIRM, AuthModal);
     });
