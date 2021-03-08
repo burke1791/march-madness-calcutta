@@ -26,7 +26,7 @@ function Topnav() {
     Pubsub.subscribe(NOTIF.SIGN_OUT, Topnav, handleSignout);
     Pubsub.subscribe(NOTIF.USER_ID, Topnav, handleUserId);
 
-    getCurrentSession();
+    autoSignin();
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.SIGN_IN, Topnav);
@@ -35,8 +35,15 @@ function Topnav() {
     });
   }, []);
 
+  const autoSignin = () => {
+    authDispatch({ type: 'update', key: 'authStatus', value: 'in-flight' });
+
+    getCurrentSession();
+  }
+
   const handleSignin = (session) => {
     if (!!session) {
+      authDispatch({ type: 'update', key: 'authStatus', value: 'returned' });
       authDispatch({ type: 'update', key: 'authenticated', value: true });
       authDispatch({ type: 'update', key: 'token', value: session.idToken.jwtToken });
     }

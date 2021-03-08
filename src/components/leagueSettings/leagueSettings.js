@@ -14,6 +14,7 @@ import { NOTIF, SETTINGS_TOOLTIPS } from '../../utilities/constants';
 import SettingsUpdateButton from './settingsUpdateButton';
 import Pubsub from '../../utilities/pubsub';
 import SeedGroupModal from './seedGroupModal';
+import GeneralSettings from './generalSettings';
 
 const { Content } = Layout;
 
@@ -69,7 +70,9 @@ function LeagueSettings(props) {
   }
 
   const generateSettings = () => {
-    if (props.settingsGroup == 'auction') {
+    if (props.settingsGroup == 'league') {
+      return <GeneralSettings />;
+    } else if (props.settingsGroup == 'auction') {
       return generateSettingsView(settingsList);
     } else if (props.settingsGroup == 'payout') {
       return generateSettingsView(payoutSettings);
@@ -145,7 +148,9 @@ function LeagueSettings(props) {
   const generateSettingsGroupText = () => {
     let name = '';
 
-    if (props.settingsGroup == 'auction') {
+    if (props.settingsGroup == 'league') {
+      name = 'League Settings';
+    } else if (props.settingsGroup == 'auction') {
       name = 'Auction Settings';
     } else if (props.settingsGroup == 'payout') {
       name = 'Payout Settings'
@@ -179,7 +184,9 @@ function LeagueSettings(props) {
   const getUpdateButtonText = () => {
     let text = '';
 
-    if (props.settingsGroup == 'auction') {
+    if (props.settingsGroup == 'league') {
+      text = null
+    } else if (props.settingsGroup == 'auction') {
       text = 'Update Auction Settings';
     } else if (props.settingsGroup == 'payout') {
       text = 'Update Payout Settings'

@@ -92,7 +92,9 @@ describe('packageLeagueMetadata', () => {
       TournamentRegimeId: 4,
       TournamentRegimeName: 'tournament regime name',
       RoleId: 5,
-      RoleName: 'role name'
+      RoleName: 'role name',
+      InviteCode: 'invite_code',
+      InviteUrl: 'invite_url'
     };
 
     let expected = {
@@ -107,7 +109,9 @@ describe('packageLeagueMetadata', () => {
       tournamentRegimeId: 4,
       tournamentRegimeName: 'tournament regime name',
       roleId: 5,
-      roleName: 'role name'
+      roleName: 'role name',
+      inviteCode: 'invite_code',
+      inviteUrl: 'invite_url'
     };
 
     expect(leagueServiceHelper.packageLeagueMetadata(data)).toEqual(expected);
@@ -158,6 +162,8 @@ describe('packageLeagueUserInfo', () => {
       {
         id: 4,
         name: 'username',
+        roleId: 1,
+        role: 'role',
         buyIn: 1.23,
         payout: 0,
         return: -1.23,
@@ -168,6 +174,8 @@ describe('packageLeagueUserInfo', () => {
       {
         id: 5,
         name: 'username2',
+        roleId: 3,
+        role: 'role2',
         buyIn: 4.68,
         payout: 0.12,
         return: -4.56,

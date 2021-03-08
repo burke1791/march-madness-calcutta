@@ -72,6 +72,7 @@ function LeagueNav() {
           onClick={handleLeagueNavClick}
           defaultSelectedKeys={['leagueHome']}
           style={{ height: '100%', borderRight: 0 }}
+          defaultOpenKeys={['settingSub']}
         >
           <Menu.Item key='leagueHome'>
             League Home
@@ -89,6 +90,9 @@ function LeagueNav() {
             Message Board
           </Menu.Item> */}
           <SubMenu key='settingSub' title='Settings'>
+            <Menu.Item key='settings/league'>
+              League Settings
+            </Menu.Item>
             <Menu.Item key='settings/auction'>
               Auction Settings
             </Menu.Item>

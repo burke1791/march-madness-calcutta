@@ -6,6 +6,12 @@ import 'antd/dist/antd.css';
 const { Header } = Layout;
 const { Title } = Typography;
 
+const defaultHeaderStyle = {
+  background: 'none',
+  textAlign: 'center',
+  height: 48
+}
+
 function LeagueHeader(props) {
 
   const [level, setLevel] = useState(1);
@@ -35,8 +41,13 @@ function LeagueHeader(props) {
     return null;
   }
 
+  const getHeaderStyle = () => {
+    // keeps defaults, but overwrites them if provided by the parent
+    return {...defaultHeaderStyle, ...props.headerStyle};
+  }
+
   return (
-    <Header style={{ background: 'none', textAlign: 'center', height: '48px' }}>
+    <Header style={getHeaderStyle()}>
       <Title
         ellipsis={{ rows: 1 }}
         level={level}
