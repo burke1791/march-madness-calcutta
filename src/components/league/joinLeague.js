@@ -32,8 +32,6 @@ function JoinLeague(props) {
   useEffect(() => {
     let reg = new RegExp(/(?:\?inviteCode=)(.+?)(?=&|$)/g);
     let urlInvite = reg.exec(location.search);
-    // let urlInvite = location.search.match(/(\?inviteCode=)(.+?)(?=&|$)/g);
-    console.log(urlInvite);
 
     if (urlInvite == null && !joinSuccess) {
       props.location.search = '';
