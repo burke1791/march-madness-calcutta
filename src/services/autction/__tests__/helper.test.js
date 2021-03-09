@@ -6,6 +6,7 @@ describe('updateAuctionStatus', () => {
     let statusObj = {
       Status: 'initial',
       CurrentItemId: 1,
+      TeamLogoUrl: 'url',
       ItemTypeId: 1,
       ItemName: 'test name',
       Seed: null,
@@ -19,6 +20,7 @@ describe('updateAuctionStatus', () => {
     let expected = {
       status: 'initial',
       currentItemId: 1,
+      teamLogoUrl: 'url',
       itemTypeId: 1,
       itemName: 'test name',
       itemSeed: null,
@@ -74,7 +76,8 @@ describe('packageAuctionTeams', () => {
         DisplayName: '(1) test name',
         Price: null,
         Seed: 1,
-        UserId: null
+        UserId: null,
+        TeamLogoUrl: 'url1'
       },
       {
         ItemId: '2',
@@ -84,7 +87,8 @@ describe('packageAuctionTeams', () => {
         DisplayName: 'test name2',
         Price: 3.69,
         Seed: null,
-        UserId: 2
+        UserId: 2,
+        TeamLogoUrl: 'url2'
       }
     ];
 
@@ -96,7 +100,8 @@ describe('packageAuctionTeams', () => {
         displayName: '(1) test name',
         seed: 1,
         owner: 0,
-        price: null
+        price: null,
+        teamLogoUrl: 'url1'
       },
       {
         itemId: 2,
@@ -105,7 +110,8 @@ describe('packageAuctionTeams', () => {
         displayName: 'test name2',
         seed: null,
         owner: 2,
-        price: 3.69
+        price: 3.69,
+        teamLogoUrl: 'url2'
       }
     ];
 

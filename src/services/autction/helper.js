@@ -27,6 +27,7 @@ export const auctionServiceHelper = {
     return {
       status: status.Status,
       currentItemId: status.CurrentItemId,
+      teamLogoUrl: status.TeamLogoUrl,
       itemTypeId: status.ItemTypeId,
       itemName: status.ItemName,
       itemSeed: status.Seed,
@@ -60,6 +61,7 @@ export const auctionServiceHelper = {
     const teamArr = teams.map(teamObj => {
       let team = {
         itemId: Number(teamObj.ItemId),
+        teamLogoUrl: teamObj.TeamLogoUrl,
         itemTypeId: Number(teamObj.ItemTypeId),
         itemName: teamObj.ItemName,
         displayName: teamObj.DisplayName,

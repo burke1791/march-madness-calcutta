@@ -109,7 +109,6 @@ function LeagueAuction(props) {
     console.log(data);
 
     let auctionTeams = auctionServiceHelper.packageAuctionTeams(data);
-
     setTeams(auctionTeams);
     
     const myTeamsArr = auctionTeams.filter(team => {
