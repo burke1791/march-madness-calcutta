@@ -1,11 +1,13 @@
 export const API_CONFIG = {
   AUCTION_SERVICE_BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_AUCTION_SERVICE_API_URL : process.env.REACT_APP_AUCTION_SERVICE_API_URL,
-  LEAGUE_SERVICE_BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_LEAGUE_SERVICE_API_URL : process.env.REACT_APP_LEAGUE_SERVICE_API_URL
+  LEAGUE_SERVICE_BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_LEAGUE_SERVICE_API_URL : process.env.REACT_APP_LEAGUE_SERVICE_API_URL,
+  USER_SERVICE_BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_USER_SERVICE_API_URL : process.env.REACT_APP_USER_SERVICE_API_URL
 }
 
 export const SERVICES = {
   LEAGUE_SERVICE: 'league_service',
-  AUCTION_SERVICE: 'auction_service'
+  AUCTION_SERVICE: 'auction_service',
+  USER_SERVICE: 'user_service'
 }
 
 export const LEAGUE_SERVICE_ENDPOINTS = {
@@ -38,6 +40,10 @@ export const AUCTION_SERVICE_ENDPOINTS = {
   FETCH_AUCTION_TEAMS: '/getAuctionTeams',
   FETCH_AUCTION_BUYINS: '/getAuctionMemberBuyIns',
   START_AUCTION: '/startAuction'
+}
+
+export const USER_SERVICE_ENDPOINTS = {
+  GET_USER_METADATA: '/getUserMetadata'
 }
 
 export const THEME_COLORS = {
