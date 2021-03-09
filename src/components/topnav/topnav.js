@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { navigate, Link } from '@reach/router';
+import React, { useEffect } from 'react';
+import { Link } from '@reach/router';
 
 import AuthModal from '../authModal/authModal';
 
-import { Menu, Button } from 'antd';
+import { Menu } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 
-import { AUTH_FORM_TYPE, NOTIF } from '../../utilities/constants';
+import { AUTH_FORM_TYPE, NOTIF, USER_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';
-import { User, signOut, getCurrentSession } from '../../utilities/authService';
+import { signOut, getCurrentSession } from '../../utilities/authService';
 import { useAuthDispatch, useAuthState } from '../../context/authContext';
+import UserService from '../../services/user/user.service';
+import { genericContextUpdate } from '../../context/helper';
+import { userServiceHelper } from '../../services/user/helper';
 
 
 const { SubMenu } = Menu;
@@ -19,21 +22,25 @@ function Topnav() {
 
   const authDispatch = useAuthDispatch();
 
-  const { authenticated } = useAuthState();
+  const { authenticated, userMetadataRefresh } = useAuthState();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.SIGN_IN, Topnav, handleSignin);
     Pubsub.subscribe(NOTIF.SIGN_OUT, Topnav, handleSignout);
-    Pubsub.subscribe(NOTIF.USER_ID, Topnav, handleUserId);
 
     autoSignin();
 
     return (() => {
       Pubsub.unsubscribe(NOTIF.SIGN_IN, Topnav);
       Pubsub.unsubscribe(NOTIF.SIGN_OUT, Topnav);
-      Pubsub.unsubscribe(NOTIF.USER_ID, Topnav);
     });
   }, []);
+
+  useEffect(() => {
+    if (authenticated) {
+      fetchUserMetadata();
+    }
+  }, [authenticated, userMetadataRefresh]);
 
   const autoSignin = () => {
     authDispatch({ type: 'update', key: 'authStatus', value: 'in-flight' });
@@ -53,8 +60,16 @@ function Topnav() {
     authDispatch({ type: 'clear' });
   }
 
-  const handleUserId = (userId) => {
-    authDispatch({ type: 'update', key: 'userId', value: userId });
+  const fetchUserMetadata = () => {
+    UserService.callApiWithPromise(USER_SERVICE_ENDPOINTS.GET_USER_METADATA).then(response => {
+      console.log(response);
+      if (response.data && response.data.length) {
+        let userMetadata = userServiceHelper.packageUserMetadata(response.data[0]);
+        genericContextUpdate(userMetadata, authDispatch);
+      }
+    }).catch(error => {
+      console.log(error);
+    });
   }
 
   const generateAuthenticatedDropdown = () => {

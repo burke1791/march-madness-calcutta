@@ -13,6 +13,7 @@ import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
 import { useAuctionState } from '../../context/auctionContext';
 import { auctionServiceHelper } from '../../services/autction/helper';
+import Team from '../team/team';
 
 const { Countdown } = Statistic;
 
@@ -29,7 +30,7 @@ function AuctionActions(props) {
 
   const { roleId, leagueId } = useLeagueState();
   const { userId, authenticated } = useAuthState();
-  const { status, displayName, price, winnerAlias, lastBid, prevUpdate } = useAuctionState();
+  const { status, displayName, price, winnerAlias, lastBid, prevUpdate, teamLogoUrl } = useAuctionState();
 
   useEffect(() => {
     updateBidButtonState();
@@ -143,9 +144,7 @@ function AuctionActions(props) {
   return (
     <Row>
       <Card size='small' style={{ width: '100%' }}>
-        <div className='team-name'>
-          <span>{teamName}</span>
-        </div>
+        <Team name={teamName} imageSrc={teamLogoUrl} imgStyle={{ maxHeight: 48, maxWidth: 48 }} />
         {generateAdminButtons()}
         <Row type='flex' justify='space-between' gutter={8} style={{ marginTop: '6px' }}>
           <Col span={12} className='flex-growVert-parent'>
