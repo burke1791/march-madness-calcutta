@@ -25,7 +25,6 @@ function AuctionTeams(props) {
           style={{ padding: '6px 10px', maxHeight: 'calc(100vh - 160px)', overflow: 'auto', width: '100%' }}
           renderItem={team => (
             <List.Item className={team.price ? 'purchased' : ''} style={{ justifyContent: 'space-between' }}>
-              {/* <h3>{team.displayName}</h3> */}
               <Team name={team.displayName} style={{ fontSize: 18 }} imageSrc={team.teamLogoUrl} imgStyle={{ maxHeight: 25, maxWidth: 25 }} />
               <h4>{team.price ? formatMoney(team.price) : 'undrafted'}</h4>
             </List.Item>
