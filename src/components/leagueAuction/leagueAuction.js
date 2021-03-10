@@ -55,7 +55,6 @@ function LeagueAuction(props) {
   }, [authenticated]);
 
   useEffect(() => {
-    console.log(newItemTimestamp);
     if (leagueId && newItemTimestamp) {
       fetchAuctionTeams();
       fetchAuctionBuyIns();
@@ -84,7 +83,6 @@ function LeagueAuction(props) {
 
   const fetchAuctionBuyIns = () => {
     AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_BUYINS, { leagueId }).then(response => {
-      console.log(response.data);
       processAuctionBuyIns(response.data);
     }).catch(error => {
       console.log(error);
@@ -106,13 +104,11 @@ function LeagueAuction(props) {
   }
 
   const processAuctionTeams = (data) => {
-    console.log(data);
-
     let auctionTeams = auctionServiceHelper.packageAuctionTeams(data);
     setTeams(auctionTeams);
     
     const myTeamsArr = auctionTeams.filter(team => {
-      if (team.owner === userId) {
+      if (team.owner == userId) {
         return team;
       }
     });
@@ -144,8 +140,6 @@ function LeagueAuction(props) {
       }
       return prev + current.totalBuyIn;
     }, 0);
-
-    console.log(userBuyIns);
 
     setMyTotalBuyIn(currentUserTotalBuyIn);
     setMyTax(myTaxBurden);
