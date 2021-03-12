@@ -247,6 +247,7 @@ function getSeedGroupTeams(groupId, teams) {
   teams.forEach(team => {
     if (team.TournamentSeedGroupId == groupId) {
       let groupTeam = {
+        slotId: team.TournamentSlotId,
         teamId: team.TeamId,
         seed: team.Seed,
         teamName: team.TeamDisplayName
