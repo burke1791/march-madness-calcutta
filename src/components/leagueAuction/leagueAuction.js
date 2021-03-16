@@ -46,13 +46,7 @@ function LeagueAuction(props) {
     return (() => {
       clearAuctionTeams();
     });
-  }, [leagueId]);
-
-  useEffect(() => {
-    if (authenticated) {
-      handleSignIn();
-    }
-  }, [authenticated]);
+  }, [leagueId, authenticated]);
 
   useEffect(() => {
     if (leagueId && newItemTimestamp) {
@@ -60,12 +54,6 @@ function LeagueAuction(props) {
       fetchAuctionBuyIns();
     }
   }, [newItemTimestamp]);
-
-  const handleSignIn = () => {
-    if (leagueId) {
-      fetchAllAuctionData();
-    }
-  }
 
   const fetchAllAuctionData = () => {
     fetchAuctionTeams();
