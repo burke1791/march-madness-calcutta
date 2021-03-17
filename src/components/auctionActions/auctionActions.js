@@ -88,7 +88,7 @@ function AuctionActions(props) {
   const updateClock = () => {
     let lastBidValueOf = lastBid.valueOf();
 
-    let itemEnd = new Date(lastBidValueOf + 15000 - offset);
+    let itemEnd = new Date(lastBidValueOf + getInterval() - offset);
 
     setEndTime(itemEnd);
   }
@@ -143,11 +143,19 @@ function AuctionActions(props) {
   }
 
   const getMinimumBid = () => {
-    let minBidObj = settingsList.find(obj => obj.settingId == 3);
+    let minBidObj = settingsList?.find(obj => obj.settingId == 3);
 
     let minBidValue = Number(minBidObj?.inputList[0]?.serverValue) || 1;
 
     return minBidValue;
+  }
+
+  const getInterval = () => {
+    let intervalObj = settingsList?.find(obj => obj.settingId == 1);
+
+    let interval = Number(intervalObj?.inputList[0]?.serverValue) || 15;
+
+    return interval * 1000;
   }
   
   return (
