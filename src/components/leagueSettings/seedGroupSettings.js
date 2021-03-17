@@ -24,9 +24,10 @@ function SeedGroupSettings(props) {
         return (
           <List
             dataSource={record.teams}
+            size='small'
             renderItem={item => {
               return (
-                <List.Item key={item.teamId} size='small'>
+                <List.Item key={item.slotId} size='small'>
                   {teamDisplayName(item.teamName, item.seed)}
                 </List.Item>
               );

@@ -14,6 +14,7 @@ import { useAuthState } from '../../context/authContext';
 import { useAuctionState } from '../../context/auctionContext';
 import { auctionServiceHelper } from '../../services/autction/helper';
 import Team from '../team/team';
+import { useSettingsState } from '../../context/leagueSettingsContext';
 
 const { Countdown } = Statistic;
 
@@ -30,11 +31,12 @@ function AuctionActions(props) {
 
   const { roleId, leagueId } = useLeagueState();
   const { userId, authenticated } = useAuthState();
-  const { status, displayName, price, winnerAlias, lastBid, prevUpdate, teamLogoUrl } = useAuctionState();
+  const { status, displayName, price, winnerAlias, lastBid, prevUpdate, teamLogoUrl, connected } = useAuctionState();
+  const { settingsList } = useSettingsState();
 
   useEffect(() => {
     updateBidButtonState();
-  }, [prevUpdate]);
+  }, [prevUpdate, connected]);
 
   useEffect(() => {
     if (authenticated) {
@@ -86,14 +88,13 @@ function AuctionActions(props) {
   const updateClock = () => {
     let lastBidValueOf = lastBid.valueOf();
 
-    let itemEnd = new Date(lastBidValueOf + 15000 - offset);
+    let itemEnd = new Date(lastBidValueOf + getInterval() - offset);
 
     setEndTime(itemEnd);
   }
 
   const updateBidButtonState = () => {
-    console.log(status);
-    if (status === AUCTION_STATUS.BIDDING) {
+    if (status === AUCTION_STATUS.BIDDING && connected) {
       setBiddingDisabled(false);
     } else {
       setBiddingDisabled(true);
@@ -140,6 +141,22 @@ function AuctionActions(props) {
       return null;
     }
   }
+
+  const getMinimumBid = () => {
+    let minBidObj = settingsList?.find(obj => obj.settingId == 3);
+
+    let minBidValue = Number(minBidObj?.inputList[0]?.serverValue) || 1;
+
+    return minBidValue;
+  }
+
+  const getInterval = () => {
+    let intervalObj = settingsList?.find(obj => obj.settingId == 1);
+
+    let interval = Number(intervalObj?.inputList[0]?.serverValue) || 15;
+
+    return interval * 1000;
+  }
   
   return (
     <Row>
@@ -169,18 +186,21 @@ function AuctionActions(props) {
             <Card size='small' className='flex-growVert-child'>
               <Row type='flex' justify='space-around' gutter={8}>
                 <InputNumber
-                  min={0}
+                  min={getMinimumBid()}
                   formatter={value => `\$ ${value}`}
                   parser={value => value.replace(/\$\s?/g, '')}
                   onChange={bidChange}
                   precision={0}
+                  step={getMinimumBid()}
                   value={bidVal}
                   style={{ width: '50%' }}
                 />
                 <Button type='primary' style={{ width: '30%' }} disabled={biddingDisabled} onClick={placeCustomBid}>Bid</Button>
               </Row>
               <Row type='flex' justify='center' style={{ textAlign: 'center', marginTop: '6px' }} gutter={8}>
-                <Button type='primary' disabled={biddingDisabled} style={{ width: '90%' }} onClick={placeMinimumBid}>${highBid + 1} (Min Bid)</Button>
+                <Button type='primary' disabled={biddingDisabled} style={{ width: '90%' }} onClick={placeMinimumBid}>
+                  ${highBid + 1 >= getMinimumBid() ? highBid + 1 : getMinimumBid()} (Min Legal Bid)
+                </Button>
               </Row>
             </Card>
           </Col>

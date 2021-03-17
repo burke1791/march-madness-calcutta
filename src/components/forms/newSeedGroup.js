@@ -25,7 +25,9 @@ function NewSeedGroup(props) {
   const [errorMessage, setErrorMessage] = useState('');
   const [tournamentTeams, setTournamentTeams] = useState([]);
 
-  const { leagueId } = useLeagueState();
+  const [form] = Form.useForm();
+
+  const { leagueId, seedGroupsRefresh } = useLeagueState();
   const { authenticated } = useAuthState();
 
   const leagueDispatch = useLeagueDispatch();
@@ -34,7 +36,7 @@ function NewSeedGroup(props) {
     if (authenticated && leagueId) {
       fetchTournamentTeams();
     }
-  }, [authenticated, leagueId]);
+  }, [authenticated, leagueId, seedGroupsRefresh]);
 
   const fetchTournamentTeams = () => {
     // repurposing an auction service endpoint - will probably want to create a specialized endpoint within league service
@@ -69,6 +71,7 @@ function NewSeedGroup(props) {
       if (response.data && response.data[0]?.Error != undefined) {
         setErrorMessage(response.data[0].Error);
       } else {
+        form.resetFields();
         Pubsub.publish(NOTIF.SEED_GROUP_MODAL_DISMISS, null);
       }
     }).catch(error => {
@@ -102,7 +105,7 @@ function NewSeedGroup(props) {
 
   return (
     <Form
-      name='validate_other'
+      form={form}
       {...layout}
       onFinish={handleSubmit}
       style={{ maxWidth: 320 }}
@@ -139,8 +142,6 @@ function NewSeedGroupName() {
 
 function NewSeedGroupTeams(props) {
 
-  const [groupTeams, setGroupTeams] = useState([]);
-
   return (
     <Form.Item
       name='groupTeams'
@@ -157,7 +158,7 @@ function NewSeedGroupTeams(props) {
       <Select
         mode='multiple'
         placeholder='Select teams'
-        value={groupTeams}
+        listItemHeight={128}
         style={{ width: '100%' }}
       >
         {props.tournamentTeams.map(team => {
