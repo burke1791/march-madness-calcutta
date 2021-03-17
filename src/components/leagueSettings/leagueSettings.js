@@ -54,6 +54,7 @@ function LeagueSettings(props) {
             // generate validation error messages
           } else {
             settingsDispatch({ type: 'update', key: 'settingsRefreshTrigger', value: new Date().valueOf() });
+            message.success('Settings Updated');
           }
         }).catch(error => {
           console.log(error);

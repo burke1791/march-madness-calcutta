@@ -10,6 +10,7 @@ import { NOTIF, AUCTION_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import AuctionService from '../../services/autction/auction.service';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
+import { useAuctionState } from '../../context/auctionContext';
 
 const { Search } = Input;
 
@@ -22,6 +23,7 @@ function AuctionChat(props) {
 
   const { leagueId } = useLeagueState();
   const { authenticated } = useAuthState();
+  const { connected } = useAuctionState();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.NEW_CHAT_MESSAGE, AuctionChat, handleNewMessage);
@@ -38,10 +40,10 @@ function AuctionChat(props) {
     return (() => {
       clearMessages();
     });
-  }, [leagueId, authenticated]);
+  }, [leagueId, authenticated, connected]);
 
   const getAllMessages = () => {
-    if (leagueId && authenticated) {
+    if (leagueId && authenticated && connected) {
       AuctionService.callApi(AUCTION_SERVICE_ENDPOINTS.FETCH_CHAT, { leagueId });
     }
   }
@@ -54,6 +56,7 @@ function AuctionChat(props) {
   };
 
   const clearMessages = () => {
+    messagesRef.current = [];
     setMessages([]);
   }
 

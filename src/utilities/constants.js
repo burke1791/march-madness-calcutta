@@ -120,7 +120,10 @@ export const NOTIF = {
   MM_RESULTS_DOWNLOADED: 'mm_results_downloaded',
   MM_SCORE_SET: 'mm_score_set',
   MM_SCORE_SET_ERR: 'mm_score_set_err',
-  USER_ID: 'user_id'
+  USER_ID: 'user_id',
+  AUCTION_MODAL_SHOW: 'auction_modal_show',
+  AUCTION_MODAL_DISMISS: 'auction_modal_dismiss',
+  AUCTION_SERVICE_RECONNECT: 'auction_service_reconnect'
 };
 
 export const ERROR_MESSAGES = {
