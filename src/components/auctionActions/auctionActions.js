@@ -30,11 +30,11 @@ function AuctionActions(props) {
 
   const { roleId, leagueId } = useLeagueState();
   const { userId, authenticated } = useAuthState();
-  const { status, displayName, price, winnerAlias, lastBid, prevUpdate, teamLogoUrl } = useAuctionState();
+  const { status, displayName, price, winnerAlias, lastBid, prevUpdate, teamLogoUrl, connected } = useAuctionState();
 
   useEffect(() => {
     updateBidButtonState();
-  }, [prevUpdate]);
+  }, [prevUpdate, connected]);
 
   useEffect(() => {
     if (authenticated) {
@@ -92,8 +92,7 @@ function AuctionActions(props) {
   }
 
   const updateBidButtonState = () => {
-    console.log(status);
-    if (status === AUCTION_STATUS.BIDDING) {
+    if (status === AUCTION_STATUS.BIDDING && connected) {
       setBiddingDisabled(false);
     } else {
       setBiddingDisabled(true);

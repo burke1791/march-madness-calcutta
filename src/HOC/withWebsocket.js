@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useAuctionDispatch } from '../context/auctionContext';
+import { message } from 'antd';
+import React, { useEffect, useRef } from 'react';
+import { useAuctionDispatch, useAuctionState } from '../context/auctionContext';
 import { useAuthState } from '../context/authContext';
 import { useLeagueState } from '../context/leagueContext';
 import { AUCTION_STATUS, NOTIF } from '../utilities/constants';
@@ -11,55 +12,83 @@ function withAuctionWebsocket(WrappedComponent, config) {
   return function(props) {
     const { authenticated, token } = useAuthState();
     const { leagueId } = useLeagueState();
+    const { reconnectTrigger } = useAuctionState();
 
     const auctionDispatch = useAuctionDispatch();
 
-    const [socket, setSocket] = useState(null);
+    const socket = useRef(null);
 
     useEffect(() => {
-      if (authenticated && leagueId && token && (socket === null || socket.readyState == 3)) {
+      if (authenticated && leagueId && token && (socket.current === null || socket.current.readyState == 3)) {
         connect();
       }
 
       return(() => {
-        if (socket !== null) {
-          socket.close();
+        console.log(socket.current);
+        if (socket.current !== null) {
+          socket.current.close(1000);
         }
       });
     }, [token, leagueId]);
 
+    useEffect(() => {
+      console.log('reconnect triggered');
+      if (authenticated && leagueId && token && (socket.current === null || socket.current.readyState == 3)) {
+        connect();
+      }
+    }, [reconnectTrigger]);
+
     const connect = () => {
-      let client = new WebSocket(`${config.socketService}?Authorizer=${token}&leagueId=${leagueId}`)
+      socket.current = new WebSocket(`${config.socketService}?Authorizer=${token}&leagueId=${leagueId}`)
 
       /**
        * @todo send feedback to the user
        */
-      client.onopen = function(event) {
+      socket.current.onopen = function(event) {
         console.log(event);
+        auctionDispatch({ type: 'update', key: 'connected', value: true });
+        Pubsub.publish(NOTIF.AUCTION_MODAL_DISMISS);
       }
 
       /**
        * @todo send feedback to the user
        */
-      client.onerror = function(error) {
+      socket.current.onerror = function(error) {
         console.log(error)
       }
 
-      client.onmessage = function(event) {
+      socket.current.onmessage = function(event) {
         let { msgType, msgObj, message } = JSON.parse(event.data);
         console.log(msgType);
         console.log(msgObj);
 
         emit(msgType, msgObj, message);
       }
-      
-      setSocket(client);
+
+      socket.current.onclose = function(event) {
+        console.log(event);
+        auctionDispatch({ type: 'update', key: 'connected', value: false });
+
+        // if the socket was closed for any reason other than navigating away from the page
+        if (event.code != 1000) {
+          Pubsub.publish(NOTIF.AUCTION_MODAL_SHOW);
+        }
+      }
     }
 
     const sendSocketMessage = (action, payload) => {
-      let messageObj = generateMessageObj(action, payload);
+      if (socket.current.readyState == 3) {
+        message.warning('You are not connected to the auction service');
+        Pubsub.publish(NOTIF.AUCTION_MODAL_SHOW);
 
-      socket.send(messageObj);
+        // this simply halts all loading animations
+        auctionDispatch({ type: 'update', key: 'prevUpdate', value: new Date().valueOf() });
+      } else {
+        let messageObj = generateMessageObj(action, payload);
+        console.log(messageObj);
+
+        socket.current.send(messageObj);
+      }
     }
 
     const generateMessageObj = (action, payload) => {

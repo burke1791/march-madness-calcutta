@@ -15,6 +15,7 @@ import { clearAuctionTeams } from '../../services/autction/endpoints';
 import withAuctionWebsocket from '../../HOC/withWebsocket';
 import { auctionServiceHelper } from '../../services/autction/helper';
 import { useAuctionDispatch, useAuctionState } from '../../context/auctionContext';
+import AuctionModal from './auctionModal';
 
 function LeagueAuction(props) {
 
@@ -28,7 +29,7 @@ function LeagueAuction(props) {
 
   const { leagueId } = useLeagueState();
   const { userId, authenticated } = useAuthState();
-  const { newItemTimestamp, errorMessage, prevUpdate } = useAuctionState();
+  const { newItemTimestamp, errorMessage, prevUpdate, connected } = useAuctionState();
 
   const auctionDispatch = useAuctionDispatch();
 
@@ -46,7 +47,7 @@ function LeagueAuction(props) {
     return (() => {
       clearAuctionTeams();
     });
-  }, [leagueId, authenticated]);
+  }, [leagueId, authenticated, connected]);
 
   useEffect(() => {
     if (leagueId && newItemTimestamp) {
@@ -155,6 +156,7 @@ function LeagueAuction(props) {
         <MyTeams myTeams={myTeams} myTax={myTax} />
         <MemberList users={leagueUsers} />
       </Col>
+      <AuctionModal title='Connection to Auction Service Closed' />
     </Row>
   );
 }
