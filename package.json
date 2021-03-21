@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/colors": "^6.0.0",
     "@ant-design/icons": "^4.3.0",
     "@aws-amplify/auth": "^3.4.17",
     "@reach/router": "^1.2.1",
     "antd": "^4.10.0",
-    "aws-amplify": "^3.3.14",
+    "aws-amplify": "^3.3.25",
     "axios": "^0.21.1",
     "react": "^17.0.1",
     "react-canvas-js": "^1.0.1",

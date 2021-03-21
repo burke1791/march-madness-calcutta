@@ -1,36 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-import { Row } from 'antd'
+import { Layout } from 'antd'
 import 'antd/dist/antd.css';
 
+import LeagueHeader from '../league/leagueHeader';
 import Bracket from '../bracket/bracket';
-import Pubsub from '../../utilities/pubsub';
-import { NOTIF, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
-import LeagueService from '../../services/league/league.service';
 
-function Tournament(props) {
+const { Content } = Layout;
 
-  const [games, setGames] = useState([]);
+function Tournament() {
 
-  const { leagueId } = useLeagueState();
+  const { leagueName, tournamentName, tournamentRegimeName } = useLeagueState();
 
-  useEffect(() => {
-    Pubsub.subscribe(NOTIF.TOURNAMENT_BRACKET_GAMES, Tournament, handleGames);
+  const secondaryHeaderText = () => {
+    let text = tournamentName;
 
-    LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.TOURNAMENT_BRACKET_GAMES, { leagueId });
+    if (tournamentRegimeName != null) {
+      text += ' - ' + tournamentRegimeName;
+    }
 
-    return (() => {
-      Pubsub.unsubscribe(NOTIF.TOURNAMENT_BRACKET_GAMES, Tournament);
-    });
-  }, [leagueId]);
-
-  const handleGames = (games) => {
-    setGames(games);
+    return text;
   }
 
   return (
-    <Bracket games={games} />
+    <Layout>
+      <LeagueHeader class='primary' text={leagueName} />
+      <LeagueHeader class='secondary' text={secondaryHeaderText()} />
+      <Content style={{ overflowX: 'hidden', textAlign: 'center' }}>
+        <Bracket />
+      </Content>
+    </Layout>
   );
 }
 
