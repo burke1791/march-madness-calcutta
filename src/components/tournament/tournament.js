@@ -27,7 +27,7 @@ function Tournament() {
     <Layout>
       <LeagueHeader class='primary' text={leagueName} />
       <LeagueHeader class='secondary' text={secondaryHeaderText()} />
-      <Content style={{ overflowX: 'hidden', textAlign: 'center' }}>
+      <Content style={{ textAlign: 'center', height: '100%' }}>
         <Bracket />
       </Content>
     </Layout>
