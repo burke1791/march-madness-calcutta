@@ -35,6 +35,8 @@ function getTeams(game) {
   return [
     {
       teamId: game.Team1Id,
+      logoUrl: game.Team1LogoUrl,
+      eliminated: !game.Team1IsAlive,
       seed: game.Team1Seed,
       teamName: game.Team1Name,
       displayName: game.Team1DisplayName,
@@ -48,6 +50,8 @@ function getTeams(game) {
     },
     {
       teamId: game.Team2Id,
+      logoUrl: game.Team2LogoUrl,
+      eliminated: !game.Team2IsAlive,
       seed: game.Team2Seed,
       teamName: game.Team2Name,
       displayName: game.Team2DisplayName,
