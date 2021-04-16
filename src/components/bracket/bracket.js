@@ -1,6 +1,10 @@
+import { Popover } from 'antd';
 import React, { useState, useEffect, Fragment } from 'react';
 import { v4 } from 'uuid';
 import { useTournamentState } from '../../context/tournamentContext';
+import { teamDisplayName } from '../../utilities/helper';
+import Team from '../team/team';
+import BracketTeamPopover from './bracketTeam';
 
 const messenger = new NotificationCenter();
 
@@ -278,9 +282,29 @@ function BracketGame(props) {
       <rect x='2' y='5' width={gameWidth} height='30' fill='rgba(0,0,0,0)' rx='3' ry='3' />
 
       {/* teams */}
-      <BracketTeam x={0} y={3} anchor={props.anchor} displayName={getTeamDisplayName(props.team1.seed, props.team1.teamName)} score={props.team1.score} id={props.team1.teamId} ownerId={props.team1.userId} winner={isWinner(props.team1.teamId)} />
+      <BracketTeam
+        x={0}
+        y={3}
+        anchor={props.anchor}
+        displayName={getTeamDisplayName(props.team1.seed, props.team1.teamName)}
+        score={props.team1.score}
+        id={props.team1.teamId}
+        ownerId={props.team1.userId}
+        winner={isWinner(props.team1.teamId)}
+        team={props.team1}
+      />
 
-      <BracketTeam x={0} y={18.5} anchor={props.anchor} displayName={getTeamDisplayName(props.team2.seed, props.team2.teamName)} score={props.team2.score} id={props.team2.teamId} ownerId={props.team2.userId} winner={isWinner(props.team2.teamId)} />
+      <BracketTeam
+        x={0}
+        y={18.5}
+        anchor={props.anchor}
+        displayName={getTeamDisplayName(props.team2.seed, props.team2.teamName)}
+        score={props.team2.score}
+        id={props.team2.teamId}
+        ownerId={props.team2.userId}
+        winner={isWinner(props.team2.teamId)}
+        team={props.team2}
+      />
 
       {/* game name */}
       {/* <text x='100' y='68' textAnchor='middle' style={gameNameStyle}>
@@ -289,7 +313,6 @@ function BracketGame(props) {
     </svg>
   );
 }
-
 
 function BracketTeam(props) {
 
@@ -365,36 +388,39 @@ function BracketTeam(props) {
   }
 
   return (
-    <g
-      onMouseEnter={() => sendHoverMsg(true)}
-      onMouseLeave={() => sendHoverMsg(false)}
-    >
-      <rect
-        x={props.x + 2}
-        y={props.y + 2}
-        width={gameWidth}
-        height={15}
-        fill={getTeamBackground()}
-        rx={3}
-        ry={3}
-        style={{ stroke: '#dedede', strokeWidth: 1 }}
-      />
+    <Popover title={<Team imageSrc={props.team.logoUrl} style={{ fontSize: 18 }} imgStyle={{ maxWidth: 25 }} name={teamDisplayName(props.team.teamName, props.team.seed)} />} content={<BracketTeamPopover team={props.team} />}>
+      <g
+        onMouseEnter={() => sendHoverMsg(true)}
+        onMouseLeave={() => sendHoverMsg(false)}
+      >
+        <rect
+          x={props.x + 2}
+          y={props.y + 2}
+          width={gameWidth}
+          height={15}
+          fill={getTeamBackground()}
+          rx={3}
+          ry={3}
+          style={{ stroke: '#dedede', strokeWidth: 1 }}
+        />
 
-      <RectClipped x={props.x} y={props.y} height={16.5} width={115}>
-        <text x={props.x + (props.anchor == 'left' ? 5 : gameWidth - 5)} y={props.y + 14} textAnchor={props.anchor == 'left' ? 'start' : 'end'} style={getTeamTextStyle()} fill={getTeamColor()}>
-          {props.displayName}
+        <RectClipped x={props.x} y={props.y} height={16.5} width={115}>
+          <text x={props.x + (props.anchor == 'left' ? 5 : gameWidth - 5)} y={props.y + 14} textAnchor={props.anchor == 'left' ? 'start' : 'end'} style={getTeamTextStyle()} fill={getTeamColor()}>
+            {props.displayName}
+          </text>
+        </RectClipped>
+
+        {generateScoreBackgroundPath()}
+        <line x1={props.x + (props.anchor == 'left' ? gameWidth - scoreWidth : scoreWidth + 4)} y1={props.y + 2.5} x2={props.x + (props.anchor == 'left' ? gameWidth - scoreWidth : scoreWidth + 4)} y2={props.y + 16.5} style={{ stroke: '#dedede', strokeWidth: 1 }} />
+
+        <text x={props.x + (props.anchor == 'left' ? (gameWidth - (scoreWidth / 2)) : (scoreWidth + 4) / 2)} y={props.y + 14} textAnchor='middle' style={getScoreTextStyle()} fill={getScoreColor()}>
+          {props.score}
         </text>
-      </RectClipped>
-
-      {generateScoreBackgroundPath()}
-      <line x1={props.x + (props.anchor == 'left' ? gameWidth - scoreWidth : scoreWidth + 4)} y1={props.y + 2.5} x2={props.x + (props.anchor == 'left' ? gameWidth - scoreWidth : scoreWidth + 4)} y2={props.y + 16.5} style={{ stroke: '#dedede', strokeWidth: 1 }} />
-
-      <text x={props.x + (props.anchor == 'left' ? (gameWidth - (scoreWidth / 2)) : (scoreWidth + 4) / 2)} y={props.y + 14} textAnchor='middle' style={getScoreTextStyle()} fill={getScoreColor()}>
-        {props.score}
-      </text>
-    </g>
+      </g>
+    </Popover>
   );
 }
+
 
 // copied from https://github.com/moodysalem/react-tournament-bracket/blob/master/src/components/Clipped.tsx
 function Clipped(props) {

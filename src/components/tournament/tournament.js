@@ -67,7 +67,6 @@ function Tournament() {
   const fetchTournamentTree = () => {
     TournamentService.callApiWithPromise(TOURNAMENT_SERVICE_ENDPOINTS.GET_TOURNAMENT_TREE, { leagueId }).then(response => {
       let games = tournamentServiceHelper.packageTournamentTree(response.data);
-      console.log(games);
       setGames(games);
     }).catch(error => {
       console.log(error);
@@ -78,6 +77,12 @@ function Tournament() {
   const fetchLeagueUsers = () => {
     LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES, { leagueId }).then(response => {
       let leagueUsers = leagueServiceHelper.packageLeagueUserInfo(response.data, true);
+      // sort users alphabetically
+      leagueUsers.sort(function(a, b) {
+        if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+        if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+        return 0;
+      });
       setUsers(leagueUsers);
     }).catch(error => {
       console.log(error);
