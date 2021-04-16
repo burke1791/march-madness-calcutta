@@ -71,6 +71,7 @@ function League(props) {
 
   const fetchPayoutSettings = (leagueId) => {
     LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_PAYOUT_SETTINGS, { leagueId }).then(response => {
+      console.log(response);
       setPayoutSettingsInContext(response.data);
     }).catch(error => {
       console.log(error);
@@ -87,7 +88,7 @@ function League(props) {
   }
 
   const setSettingsInContext = (settings) => {
-    if (settings[0].LeagueId !== props.leagueId) {
+    if (settings.length && settings[0].LeagueId !== props.leagueId) {
       // something ain't right
       console.log('settings may not be correct');
     }
@@ -132,7 +133,7 @@ function League(props) {
   }
 
   const setPayoutSettingsInContext = (settings) => {
-    if (settings[0].LeagueId !== props.leagueId) {
+    if (settings.length && settings[0].LeagueId !== props.leagueId) {
       // something ain't right
       console.log('payout settings may not be correct');
     }
