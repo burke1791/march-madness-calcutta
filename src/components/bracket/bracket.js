@@ -23,7 +23,7 @@ function BracketFactory(props) {
 
   const getSubBracketGames = (anchor) => {
     if (props.games && props.games.length) {
-      let root = props.games.find(game => game.childMatchupId == null);
+      let root = findRootGame();
       let leftRootMatchupId = root.parentMatchupIds[0];
       let rightRootMatchupId = root.parentMatchupIds[1];
 
@@ -39,6 +39,14 @@ function BracketFactory(props) {
     }
 
     return [];
+  }
+
+  const findRootGame = () => {
+    if (props.games && props.games.length) {
+      return props.games.find(game => game.childMatchupId == null);
+    }
+
+    return null;
   }
 
   const constructBinarySubTree = (rootMatchupId, games) => {
@@ -87,12 +95,52 @@ function BracketFactory(props) {
   return (
     <div style={bracketWrapperStyle}>
       <svg height={getVerticalSize(props.games, true)} width={getHorizontalSize(props.games, true)}>
+        <RootGame game={findRootGame()} verticalSplit={true} maxX={getHorizontalSize(props.games, true)} maxY={getVerticalSize(props.games, true)} />
         <Bracket anchor='left' games={getSubBracketGames('left')} maxX={getHorizontalSize(props.games, true)} maxY={getVerticalSize(props.games, true)} />
         <Bracket anchor='right' games={getSubBracketGames('right')} maxX={getHorizontalSize(props.games, true)} maxY={getVerticalSize(props.games, true)} />
       </svg>
     </div>
   );
 }
+
+function RootGame(props) {
+
+  const getWinnerLogoUrl = () => {
+    if (props.game != null) {
+      if (props.game.teams[0].score > props.game.teams[1].score) return props.game.teams[0].logoUrl;
+      if (props.game.teams[1].score > props.game.teams[0].score) return props.game.teams[0].logoUrl;
+      return null;
+    }
+  }
+
+  const getChampGamePosition = () => {
+    if (props.verticalSplit) {
+      return {
+        x: (props.maxX / 2) - (gameWidth / 2),
+        y: props.maxY / 4
+      }
+    }
+
+    return null;
+  }
+
+
+  if (props.verticalSplit && props.game != null) {
+    return (
+      <>
+        <BracketGame
+          team1={props.game.teams[0]}
+          team2={props.game.teams[1]}
+          anchor='left'
+          pos={getChampGamePosition()}
+        />
+      </>
+    );
+    } else {
+      return null;
+    }
+}
+
 
 function Bracket(props) {
 

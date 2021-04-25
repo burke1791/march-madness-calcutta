@@ -6,6 +6,26 @@ const { Text } = Typography;
 
 function BracketTeamPopover(props) {
 
+  const getEliminatedText = () => {
+    if (props.team.teamName == null) {
+      return null;
+    } else if (props.team.eliminated) {
+      return 'Eliminated';
+    } else {
+      return 'Alive';
+    }
+  }
+
+  const getEliminatedType = () => {
+    if (props.team.teamName == null) {
+      return null;
+    } else if (props.team.eliminated) {
+      return 'danger';
+    } else {
+      return 'success';
+    }
+  }
+
   return (
     <div>
       <Row>
@@ -23,7 +43,7 @@ function BracketTeamPopover(props) {
       <Row>
         <div>
           <Text>Status: </Text>
-          <Text type={props.team.eliminated ? 'danger' : 'success'}>{props.team.eliminated ? 'Eliminated' : 'Alive'}</Text>
+          <Text type={getEliminatedType()}>{getEliminatedText()}</Text>
         </div>
       </Row>
     </div>
