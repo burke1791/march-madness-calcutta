@@ -15,7 +15,7 @@ function Team(props) {
 
   return (
     <div style={{...defaultStyle, ...props.style}}>
-      <div style={{ width: props.imgStyle.maxWidth ? props.imgStyle.maxWidth + 10 : '100%', textAlign: 'center', display: 'inline-block' }}>
+      <div style={{ width: props.imgStyle?.maxWidth ? props.imgStyle.maxWidth + 10 : '100%', textAlign: 'center', display: 'inline-block' }}>
         <img src={props.imageSrc} style={{...defaultImgStyle, ...props.imgStyle}} />
       </div>
       <div style={{ marginLeft: 8, display: 'inline-block' }}>

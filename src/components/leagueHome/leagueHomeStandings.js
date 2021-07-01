@@ -32,7 +32,7 @@ function LeagueHomeStandings(props) {
 
   const fetchLeagueUserSummaries = () => {
     LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES, { leagueId }).then(response => {
-      let leagueUsers = leagueServiceHelper.packageLeagueUserInfo(response.data);
+      let leagueUsers = leagueServiceHelper.packageLeagueUserInfo(response.data, true);
       populateStandings(leagueUsers);
     }).catch(error => {
       console.log(error);

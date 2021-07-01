@@ -60,7 +60,7 @@ export const leagueServiceHelper = {
    * @param {Array.<Object>} userSummaries
    * @returns {Array.<{id: Number, name: String, buyIn: Number, payout: Number, return: Number, numTeams: Number, numTeamsAlive: Number, rank: Number}>}
    */
-  packageLeagueUserInfo: function(userSummaries) {
+  packageLeagueUserInfo: function(userSummaries, removeUsersWithoutTeams) {
     if (userSummaries.length > 0) {
       let users = userSummaries.map(user => {
         return {
@@ -75,6 +75,10 @@ export const leagueServiceHelper = {
           numTeamsAlive: +user.NumTeamsAlive
         }
       });
+
+      if (removeUsersWithoutTeams) {
+        users = users.filter(user => user.numTeams > 0);
+      }
 
       // sorts the users in descending order based on their net return
       users.sort(function(a, b) { return b.return - a.return });
