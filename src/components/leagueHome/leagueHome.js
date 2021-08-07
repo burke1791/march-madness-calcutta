@@ -69,12 +69,12 @@ function LeagueHome() {
       <Content style={{ overflowX: 'hidden' }}>
         <LeagueHomeCards userCount={numUsers} prizepool={prizepool} remainingTeams={remainingTeamsCount} buyIn={myBuyIn} payout={myPayout} />
         <Row type='flex' justify='center' gutter={[12, 8]}>
-          <Col md={20} xxl={12}>
+          <Col md={20} xxl={16}>
             <LeagueHomeStandings />
           </Col>
         </Row>
         <Row type='flex' justify='center' gutter={[12, 8]}>
-          <Col md={20} xxl={12}>
+          <Col md={20} xxl={16}>
             <LeagueHomeUpcomingGames />
           </Col>
         </Row>
