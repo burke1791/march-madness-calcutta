@@ -128,7 +128,7 @@ function LeagueHomeStandings(props) {
       dataIndex: 'return',
       align: 'center',
       width: 150,
-      responsive: ['md'],
+      responsive: ['xl'],
       render: (text, record) => {
         if (record.id == userId) {
           return {
@@ -147,7 +147,7 @@ function LeagueHomeStandings(props) {
       dataIndex: 'teamsAlive',
       align: 'center',
       width: 75,
-      responsive: ['lg'],
+      responsive: ['xxl'],
       render: (text, record) => {
         if (record.id == userId) {
           return {
