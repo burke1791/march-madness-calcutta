@@ -10,11 +10,11 @@ export const auctionServiceHelper = {
   packageChatMessages: function(messages) {
     const msgArr = messages.map(msgObj => {
       let chatMessage = {
-        msgId: msgObj.id,
-        userId: msgObj.userId,
-        alias: msgObj.alias,
-        content: msgObj.content,
-        timestamp: msgObj.timestamp
+        msgId: msgObj.MessageId,
+        userId: msgObj.UserId,
+        alias: msgObj.Alias,
+        content: msgObj.Content,
+        timestamp: msgObj.Timestamp
       };
   
       return chatMessage;
