@@ -40,7 +40,7 @@ function LeagueAuction(props) {
   }, [prevUpdate]);
 
   useEffect(() => {
-    if (leagueId && authenticated) {
+    if (leagueId && authenticated && connected) {
       fetchAllAuctionData();
     }
 
@@ -80,7 +80,7 @@ function LeagueAuction(props) {
 
   const fetchAuctionStatus = () => {
     AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_STATUS, { leagueId }).then(response => {
-      let itemSoldFlag = response.data[0].Status === AUCTION_STATUS.SOLD;
+      let itemSoldFlag = response.data[0]?.Status === AUCTION_STATUS.SOLD;
 
       // indicate to listeners that an item was sold
       if (itemSoldFlag) {
@@ -88,6 +88,7 @@ function LeagueAuction(props) {
       }
 
       let statusObj = auctionServiceHelper.updateAuctionStatus(response.data[0]);
+      console.log(statusObj);
       updateAuctionStatusInContext(statusObj);
     });
   }

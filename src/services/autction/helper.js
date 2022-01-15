@@ -24,6 +24,8 @@ export const auctionServiceHelper = {
   },
 
   updateAuctionStatus: function(status) {
+    console.log(status.LastBidTimestamp);
+    console.log(typeof status.LastBidTimestamp);
     return {
       status: status.Status,
       currentItemId: status.CurrentItemId,
@@ -35,7 +37,7 @@ export const auctionServiceHelper = {
       price: +status.CurrentItemPrice,
       winnerId: status.CurrentItemWinner,
       winnerAlias: status.Alias,
-      lastBid: new Date(status.LastBidTimestamp),
+      lastBid: isNaN(+status.LastBidTimestamp) ? new Date(status.LastBidTimestamp) : new Date(+status.LastBidTimestamp),
       errorMessage: null
     };
   },
