@@ -76,9 +76,10 @@ export const leagueServiceHelper = {
         }
       });
 
-      if (removeUsersWithoutTeams) {
-        users = users.filter(user => user.numTeams > 0);
-      }
+      // @TODO: this will moved to the back end
+      // if (removeUsersWithoutTeams) {
+      //   users = users.filter(user => user.numTeams > 0);
+      // }
 
       // sorts the users in descending order based on their net return
       users.sort(function(a, b) { return b.return - a.return });
