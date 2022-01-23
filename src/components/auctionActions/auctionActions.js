@@ -31,7 +31,7 @@ function AuctionActions(props) {
 
   const { roleId, leagueId } = useLeagueState();
   const { userId, authenticated } = useAuthState();
-  const { status, displayName, price, winnerAlias, lastBid, prevUpdate, teamLogoUrl, connected } = useAuctionState();
+  const { status, displayName, currentItemId, itemTypeId, price, winnerAlias, lastBid, prevUpdate, teamLogoUrl, connected } = useAuctionState();
   const { settingsList } = useSettingsState();
 
   useEffect(() => {
@@ -125,7 +125,7 @@ function AuctionActions(props) {
     setBiddingDisabled(true);
 
     // placeAuctionBid(leagueId, value);
-    props.sendSocketMessage('PLACE_BID', { leagueId: leagueId, amount: value });
+    props.sendSocketMessage('PLACE_BID', { leagueId: leagueId, amount: value, itemId: currentItemId, itemTypeId: itemTypeId });
   }
 
   // when settings are implemented client-side, reset it to the league's minimum bid

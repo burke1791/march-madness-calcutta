@@ -115,7 +115,9 @@ function LeagueAuction(props) {
     let keys = Object.keys(statusObj);
 
     for (var key of keys) {
-      auctionDispatch({ type: 'update', key: key, value: statusObj[key] });
+      if (statusObj[key] !== undefined) {
+        auctionDispatch({ type: 'update', key: key, value: statusObj[key] });
+      }
     }
   }
 

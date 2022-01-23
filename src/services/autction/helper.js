@@ -24,8 +24,6 @@ export const auctionServiceHelper = {
   },
 
   updateAuctionStatus: function(status) {
-    console.log(status.LastBidTimestamp);
-    console.log(typeof status.LastBidTimestamp);
     return {
       status: status.Status,
       currentItemId: status.CurrentItemId,
