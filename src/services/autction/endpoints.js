@@ -24,7 +24,9 @@ export const auctionEndpoints = {
       method: 'GET',
       url: AUCTION_SERVICE_ENDPOINTS.FETCH_CHAT + `/${params.leagueId}`
     }).then(response => {
+      console.log(response);
       let chatMessages = auctionServiceHelper.packageChatMessages(response.data);
+      console.log(chatMessages);
       Pubsub.publish(NOTIF.NEW_CHAT_MESSAGE, chatMessages);
     }).catch(error => {
       console.log(error);

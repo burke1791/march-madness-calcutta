@@ -20,6 +20,7 @@ import AuctionModal from './auctionModal';
 function LeagueAuction(props) {
 
   const [teams, setTeams] = useState([]);
+  const [auctionTeamsLoading, setAuctionTeamsLoading] = useState(true);
   const [prizepool, setPrizepool] = useState(0);
   const [myTeams, setMyTeams] = useState([]);
   const [myTax, setMyTax] = useState(0);
@@ -40,7 +41,7 @@ function LeagueAuction(props) {
   }, [prevUpdate]);
 
   useEffect(() => {
-    if (leagueId && authenticated) {
+    if (leagueId && authenticated && connected) {
       fetchAllAuctionData();
     }
 
@@ -80,7 +81,7 @@ function LeagueAuction(props) {
 
   const fetchAuctionStatus = () => {
     AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_STATUS, { leagueId }).then(response => {
-      let itemSoldFlag = response.data[0].Status === AUCTION_STATUS.SOLD;
+      let itemSoldFlag = response.data[0]?.Status === AUCTION_STATUS.SOLD;
 
       // indicate to listeners that an item was sold
       if (itemSoldFlag) {
@@ -88,6 +89,7 @@ function LeagueAuction(props) {
       }
 
       let statusObj = auctionServiceHelper.updateAuctionStatus(response.data[0]);
+      console.log(statusObj);
       updateAuctionStatusInContext(statusObj);
     });
   }
@@ -95,6 +97,7 @@ function LeagueAuction(props) {
   const processAuctionTeams = (data) => {
     let auctionTeams = auctionServiceHelper.packageAuctionTeams(data);
     setTeams(auctionTeams);
+    setAuctionTeamsLoading(false);
     
     const myTeamsArr = auctionTeams.filter(team => {
       if (team.owner == userId) {
@@ -114,7 +117,9 @@ function LeagueAuction(props) {
     let keys = Object.keys(statusObj);
 
     for (var key of keys) {
-      auctionDispatch({ type: 'update', key: key, value: statusObj[key] });
+      if (statusObj[key] !== undefined) {
+        auctionDispatch({ type: 'update', key: key, value: statusObj[key] });
+      }
     }
   }
 
@@ -146,7 +151,7 @@ function LeagueAuction(props) {
     // @TODO refactor this styling after implementing a toggle functionality for the league navigation
     <Row style={sidebarInUse ? { height: 'calc(100vh - 64px)' } : { height: 'calc(100vh - 114px)' }}>
       <Col span={8}>
-        <AuctionTeams teams={teams} prizepool={prizepool} />
+        <AuctionTeams teams={teams} prizepool={prizepool} loading={auctionTeamsLoading} />
       </Col>
       <Col span={10} className='flex-growVert-parent'>
         <AuctionActions totalSpent={myTotalBuyIn} sendSocketMessage={props.sendSocketMessage} />

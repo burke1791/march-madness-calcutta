@@ -10,11 +10,11 @@ export const auctionServiceHelper = {
   packageChatMessages: function(messages) {
     const msgArr = messages.map(msgObj => {
       let chatMessage = {
-        msgId: msgObj.id,
-        userId: msgObj.userId,
-        alias: msgObj.alias,
-        content: msgObj.content,
-        timestamp: msgObj.timestamp
+        msgId: msgObj.MessageId,
+        userId: msgObj.UserId,
+        alias: msgObj.Alias,
+        content: msgObj.Content,
+        timestamp: msgObj.Timestamp
       };
   
       return chatMessage;
@@ -35,7 +35,7 @@ export const auctionServiceHelper = {
       price: +status.CurrentItemPrice,
       winnerId: status.CurrentItemWinner,
       winnerAlias: status.Alias,
-      lastBid: new Date(status.LastBidTimestamp),
+      lastBid: isNaN(+status.LastBidTimestamp) ? new Date(status.LastBidTimestamp) : new Date(+status.LastBidTimestamp),
       errorMessage: null
     };
   },
