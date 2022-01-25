@@ -20,6 +20,7 @@ import AuctionModal from './auctionModal';
 function LeagueAuction(props) {
 
   const [teams, setTeams] = useState([]);
+  const [auctionTeamsLoading, setAuctionTeamsLoading] = useState(true);
   const [prizepool, setPrizepool] = useState(0);
   const [myTeams, setMyTeams] = useState([]);
   const [myTax, setMyTax] = useState(0);
@@ -96,6 +97,7 @@ function LeagueAuction(props) {
   const processAuctionTeams = (data) => {
     let auctionTeams = auctionServiceHelper.packageAuctionTeams(data);
     setTeams(auctionTeams);
+    setAuctionTeamsLoading(false);
     
     const myTeamsArr = auctionTeams.filter(team => {
       if (team.owner == userId) {
@@ -149,7 +151,7 @@ function LeagueAuction(props) {
     // @TODO refactor this styling after implementing a toggle functionality for the league navigation
     <Row style={sidebarInUse ? { height: 'calc(100vh - 64px)' } : { height: 'calc(100vh - 114px)' }}>
       <Col span={8}>
-        <AuctionTeams teams={teams} prizepool={prizepool} />
+        <AuctionTeams teams={teams} prizepool={prizepool} loading={auctionTeamsLoading} />
       </Col>
       <Col span={10} className='flex-growVert-parent'>
         <AuctionActions totalSpent={myTotalBuyIn} sendSocketMessage={props.sendSocketMessage} />
