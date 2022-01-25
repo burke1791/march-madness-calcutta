@@ -137,11 +137,15 @@ function NewLeagueForm(props) {
   }
 
   const generateTournamentOptions = () => {
-    const options = tournaments.map(tournament => {
-      return <Option value={tournament.TournamentId} key={tournament.TournamentId}>{tournament.TournamentName}</Option>;
-    });
+    if (tournaments?.length) {
+      const options = tournaments.map(tournament => {
+        return <Option value={tournament.TournamentId} key={tournament.TournamentId}>{tournament.TournamentName}</Option>;
+      });
 
-    return (options);
+      return (options);
+    }
+
+    return null;
   }
 
   const generateTournamentScopeOptions = () => {
