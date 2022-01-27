@@ -92,9 +92,9 @@ function GeneralSettings() {
           <Divider orientation='left'>Invite Link</Divider>
           <Row style={{ paddingLeft: 12, paddingRight: 12 }}>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <LeagueHeader class='secondary' text='League Invite Code' tooltipText={getInviteTooltipText('code')} tooltipIcon={getInviteTooltipIcon('code')} headerStyle={{ padding: 0, textAlign: 'left' }} />
+              <LeagueHeader class='secondary' text='Invite Code' tooltipText={getInviteTooltipText('code')} tooltipIcon={getInviteTooltipIcon('code')} headerStyle={{ padding: 0, textAlign: 'left' }} />
               <Text keyboard copyable>{inviteCode}</Text>
-              <LeagueHeader class='secondary' text='League Invite Code' tooltipText={getInviteTooltipText('url')} tooltipIcon={getInviteTooltipIcon('url')} headerStyle={{ padding: 0, textAlign: 'left', marginTop: 12 }} />
+              <LeagueHeader class='secondary' text='Invite Url' tooltipText={getInviteTooltipText('url')} tooltipIcon={getInviteTooltipIcon('url')} headerStyle={{ padding: 0, textAlign: 'left', marginTop: 12 }} />
               <Text code copyable>{inviteUrl}</Text>
             </div>
           </Row>
