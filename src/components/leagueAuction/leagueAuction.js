@@ -16,6 +16,7 @@ import withAuctionWebsocket from '../../HOC/withWebsocket';
 import { auctionServiceHelper } from '../../services/autction/helper';
 import { useAuctionDispatch, useAuctionState } from '../../context/auctionContext';
 import AuctionModal from './auctionModal';
+import AuctionLoadingModal from './auctionLoadingModal';
 
 function LeagueAuction(props) {
 
@@ -66,6 +67,7 @@ function LeagueAuction(props) {
   const fetchAuctionTeams = () => {
     AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_TEAMS, { leagueId }).then(response => {
       processAuctionTeams(response.data);
+      auctionDispatch({ type: 'update', key: 'teamsDownloadedDate', value: new Date().valueOf() });
     }).catch(error => {
       console.log(error);
     });
@@ -74,6 +76,7 @@ function LeagueAuction(props) {
   const fetchAuctionBuyIns = () => {
     AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_BUYINS, { leagueId }).then(response => {
       processAuctionBuyIns(response.data);
+      auctionDispatch({ type: 'update', key: 'auctionBuyInsDownloadedDate', value: new Date().valueOf() });
     }).catch(error => {
       console.log(error);
     });
@@ -121,6 +124,8 @@ function LeagueAuction(props) {
         auctionDispatch({ type: 'update', key: key, value: statusObj[key] });
       }
     }
+
+    auctionDispatch({ type: 'update', key: 'auctionStatusDownloadedDate', value: new Date().valueOf() });
   }
 
   const updateUserSummaries = (userBuyIns) => {
@@ -162,6 +167,7 @@ function LeagueAuction(props) {
         <MemberList users={leagueUsers} />
       </Col>
       <AuctionModal title='Connection to Auction Service Closed' />
+      <AuctionLoadingModal errorTimer={10} />
     </Row>
   );
 }
