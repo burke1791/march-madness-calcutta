@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import './auctionChat.css';
 
 import { formatTimestamp } from '../../utilities/helper';
@@ -83,7 +83,7 @@ function AuctionChat(props) {
               <div className='chat-message'>
                 <span className='author'>{message.alias}</span>
                 <span className='timestamp'>{formatTimestamp(message.timestamp)}</span>
-                <span className='content'>{message.content}</span>
+                <MessageContent>{message.content}</MessageContent>
               </div>
             )}
           />
@@ -102,5 +102,25 @@ function AuctionChat(props) {
     </Row>
   );
 }
+
+const MessageContent = memo(function MessageContent(props) {
+
+  const parseContent = (content) => {
+    const regex = /(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])/;
+
+    return content.split(' ').map((text, index, arr) => {
+      if (arr.length - 1 == index) {
+        // do not return a trailing space for the last chunk of text
+        return regex.test(text) ? <a href={text}>{text}</a> : text;
+      }
+
+      return regex.test(text) ? <a href={text}>{text} </a> : text + ' ';
+    });
+  }
+
+  return (
+    <span className='content'>{parseContent(props.children)}</span>
+  );
+});
 
 export default AuctionChat;
