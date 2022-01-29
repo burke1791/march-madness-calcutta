@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Table, Typography } from 'antd';
+import { message, Table, Typography } from 'antd';
 import 'antd/dist/antd.css';
 
 import AlivePie from '../alivePie/alivePie';
@@ -35,6 +35,8 @@ function LeagueHomeStandings(props) {
       let leagueUsers = leagueServiceHelper.packageLeagueUserInfo(response.data, true);
       populateStandings(leagueUsers);
     }).catch(error => {
+      message.error('Error downloading league standings, please try again later');
+      setLoading(false);
       console.log(error);
     });
   }

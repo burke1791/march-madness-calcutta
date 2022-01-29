@@ -12,6 +12,8 @@ import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
 import { useAuctionState } from '../../context/auctionContext';
 
+const urlRegex = /(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])/;
+
 const { Search } = Input;
 
 function AuctionChat(props) {
@@ -105,22 +107,37 @@ function AuctionChat(props) {
 
 const MessageContent = memo(function MessageContent(props) {
 
-  const parseContent = (content) => {
-    const regex = /(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])/;
+  const parseContent = (children) => {
 
-    return content.split(' ').map((text, index, arr) => {
+    if (typeof children !== 'string') return children;
+
+    return children.split(' ').map((text, index, arr) => {
       if (arr.length - 1 == index) {
         // do not return a trailing space for the last chunk of text
-        return regex.test(text) ? <a href={text}>{text}</a> : text;
+        return (
+          <MessageContentNode key={index}>
+            {urlRegex.test(text) ? <a href={text}>{text}</a> : text}
+          </MessageContentNode>
+        );
       }
 
-      return regex.test(text) ? <a href={text}>{text} </a> : text + ' ';
+      return (
+        <MessageContentNode key={index}>
+          {urlRegex.test(text) ? <a href={text}>{text} </a> : text + ' '}
+        </MessageContentNode>
+      );
     });
   }
 
   return (
     <span className='content'>{parseContent(props.children)}</span>
   );
+});
+
+// this is a temporary hack to prevent the missing key in a list error
+// rewrite these two components into something more elegant (I don't want a fuckton of individual text nodes on the dom)
+const MessageContentNode = memo(function MessageContentNode(props) {
+  return props.children;
 });
 
 export default AuctionChat;
