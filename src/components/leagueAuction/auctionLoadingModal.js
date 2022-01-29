@@ -13,8 +13,6 @@ function AuctionLoadingModal(props) {
   const [loadingPercent, setLoadingPercent] = useState(0);
   const [loadingStatus, setLoadingStatus] = useState('active');
 
-  const downloadItemsStatus = useRef([]);
-
   const { connected, teamsDownloadedDate, auctionBuyInsDownloadedDate, auctionStatusDownloadedDate } = useAuctionState();
 
   useEffect(() => {
@@ -41,6 +39,8 @@ function AuctionLoadingModal(props) {
       { name: 'Downloading user buy-ins', status: !!auctionBuyInsDownloadedDate ? 'success' : 'pending' }
     ];
   }
+
+  const downloadItemsStatus = useRef(getDownloadItems());
 
   const calculateProgress = () => {
     const totalItems = downloadItemsStatus.current.length;

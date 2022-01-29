@@ -167,7 +167,7 @@ function LeagueAuction(props) {
         <MemberList users={leagueUsers} />
       </Col>
       <AuctionModal title='Connection to Auction Service Closed' />
-      <AuctionLoadingModal errorTimer={10} />
+      <AuctionLoadingModal errorTimer={15} />
     </Row>
   );
 }
