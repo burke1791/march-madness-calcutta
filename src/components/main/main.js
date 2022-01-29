@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Button, Table } from 'antd';
+import { Row, Button, Table, message } from 'antd';
 import 'antd/dist/antd.css';
 
 import LeagueModal from '../leagueModal/leagueModal';
@@ -66,6 +66,8 @@ function Main() {
       }
       setLoading(false);
     }).catch(error => {
+      message.error('Error downloading league data, please try again later');
+      setLoading(false);
       console.log(error);
     })
   }
@@ -80,7 +82,7 @@ function Main() {
 
   const newLeague = () => {
     console.log('new league clicked');
-    if (User.authenticated) {
+    if (authenticated) {
       Pubsub.publish(NOTIF.LEAGUE_MODAL_SHOW, LEAGUE_FORM_TYPE.CREATE);
     } else {
       alert('Please sign in to create a league');
@@ -89,14 +91,14 @@ function Main() {
 
   const joinLeague = () => {
     console.log('join league clicked');
-    if (User.authenticated) {
+    if (authenticated) {
       Pubsub.publish(NOTIF.LEAGUE_MODAL_SHOW, LEAGUE_FORM_TYPE.JOIN);
     } else {
       alert('Please sign in to join a league');
     }
   }
 
-  if (User.authenticated == undefined || User.authenticated) {
+  if (authenticated == undefined || authenticated) {
     return (
       <div>
         <Row type='flex' justify='center'>
