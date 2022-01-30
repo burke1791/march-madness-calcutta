@@ -158,6 +158,10 @@ function AuctionActions(props) {
 
     return interval * 1000;
   }
+
+  const undoBid = () => {
+    // call undo lambda
+  }
   
   return (
     <Row>
@@ -174,6 +178,7 @@ function AuctionActions(props) {
           <Col span={12} className='flex-growVert-parent'>
             <Card size='small' bodyStyle={{ textAlign: 'center' }} className='flex-growVert-child'>
               <Countdown title='Time Remaining' value={endTime} onFinish={itemComplete} format={'mm:ss'} />
+              <UndoBidButton visible={true} loading={true} undoBid={undoBid} style={{ marginTop: 8 }}>Undo</UndoBidButton>
             </Card>
           </Col>
         </Row>
@@ -209,6 +214,25 @@ function AuctionActions(props) {
       </Card>
     </Row>
   );
+}
+
+function UndoBidButton(props) {
+
+  if (props.visible) {
+    return (
+      <Button
+        type='default'
+        danger
+        loading={props.loading}
+        onClick={props.undoBid}
+        style={props.style}
+      >
+        {props.children}
+      </Button>
+    );
+  }
+
+  return null;
 }
 
 export default AuctionActions;
