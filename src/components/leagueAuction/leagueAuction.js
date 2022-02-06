@@ -39,7 +39,7 @@ function LeagueAuction(props) {
     if (errorMessage !== null && errorMessage !== undefined) {
       handleAuctionError(errorMessage);
     }
-  }, [prevUpdate]);
+  }, [errorMessage]);
 
   useEffect(() => {
     if (leagueId && authenticated && connected) {
@@ -146,10 +146,10 @@ function LeagueAuction(props) {
     setPrizepool(prizepool);
   }
 
-  const handleAuctionError = (errorObj) => {
+  const handleAuctionError = (errorMessage) => {
     // setBiddingDisabled(true);
-    console.log(errorObj);
-    message.error(errorObj);
+    console.log(errorMessage);
+    message.error(errorMessage);
   }
 
   return (

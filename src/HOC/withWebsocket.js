@@ -110,7 +110,7 @@ function withAuctionWebsocket(WrappedComponent, config) {
         Pubsub.publish(NOTIF.NEW_AUCTION_DATA, null);
       } else if (msgType === 'auction_error') {
         // Pubsub.publish(NOTIF.AUCTION_ERROR, errorMessage);
-        processAuctionError(errorMessage)
+        processAuctionError(errorMessage);
       }
     }
 
