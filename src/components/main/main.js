@@ -240,13 +240,13 @@ function LifetimeStats() {
   const { lifetimeBuyIn, lifetimePayout, lifetimeTax } = useAuthState();
 
   const getRoi = () => {
-    if (lifetimeBuyIn == undefined || lifetimePayout == undefined) return null;
+    if (lifetimeBuyIn == undefined || lifetimePayout == undefined) return 0;
 
     return (lifetimePayout - lifetimeBuyIn) / lifetimeBuyIn * 100;
   }
 
   const getRoiStyle = () => {
-    if (getRoi() > 0) {
+    if (getRoi() >= 0) {
       return { color: '#3f8600' };
     }
 
@@ -254,7 +254,7 @@ function LifetimeStats() {
   }
 
   const getRoiPrefix = () => {
-    if (getRoi() > 0) {
+    if (getRoi() >= 0) {
       return <ArrowUpOutlined />;
     }
 
