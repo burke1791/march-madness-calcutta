@@ -44,7 +44,8 @@ export const AUCTION_SERVICE_ENDPOINTS = {
 }
 
 export const USER_SERVICE_ENDPOINTS = {
-  GET_USER_METADATA: '/getUserMetadata'
+  GET_USER_METADATA: '/getUserMetadata',
+  GET_USER_UPCOMING_GAMES: '/getUserUpcomingGames'
 }
 
 export const TOURNAMENT_SERVICE_ENDPOINTS = {

@@ -1,11 +1,11 @@
-import React, { Fragment, useEffect, useState } from 'react';
-import { Row, Col, Button, Table, message, Typography, List, Card, Statistic } from 'antd';
+import React, { Fragment, useEffect, useState, memo } from 'react';
+import { Row, Col, Button, Table, message, Typography, List, Card, Statistic, Divider } from 'antd';
 import 'antd/dist/antd.css';
 import './main.css';
 
 import LeagueModal from '../leagueModal/leagueModal';
 
-import { NOTIF, LEAGUE_FORM_TYPE, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { NOTIF, LEAGUE_FORM_TYPE, LEAGUE_SERVICE_ENDPOINTS, USER_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';
 import { User } from '../../utilities/authService';
 import { Redirect, navigate } from '@reach/router';
@@ -15,13 +15,14 @@ import { useAuthState, useAuthDispatch } from '../../context/authContext';
 import { leagueServiceHelper } from '../../services/league/helper';
 import { genericContextUpdate } from '../../context/helper';
 import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
+import UserService from '../../services/user/user.service';
 
 const { Title, Text } = Typography;
 
 function Main() {
 
   const [loading, setLoading] = useState(true);
-  const [leagueSummaries, setLeagueSummaries] = useState([
+  const [activeLeagueSummaries, setActiveLeagueSummaries] = useState([
     {
       id: 0,
       name: 'You haven\'t joined any leagues yet',
@@ -30,8 +31,7 @@ function Main() {
       netReturn: null
     }
   ]);
-
-  const authDispatch = useAuthDispatch();
+  const [inactiveLeagueSummaries, setInactiveLeagueSummaries] = useState([]);
 
   const { authenticated, alias } = useAuthState();  
 
@@ -48,7 +48,7 @@ function Main() {
   useEffect(() => {
     if (authenticated) {
       fetchLeagueSummaries();
-    } else {
+    } else if (authenticated === false) {
       setLoading(false);
     }
   }, [authenticated]);
@@ -59,15 +59,17 @@ function Main() {
 
   const fetchLeagueSummaries = () => {
     LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_SUMMARIES).then(response => {
-      let userId = {
-        userId: leagueServiceHelper.extractUserId(response.data)
-      }
-      genericContextUpdate(userId, authDispatch);
+      const activeLeagues = leagueServiceHelper.packageLeagueSummaries(response.data.active);
+      const inactiveLeagues = leagueServiceHelper.packageLeagueSummaries(response.data.inactive);
 
-      let leagueArr = leagueServiceHelper.packageLeagueSummaries(response.data);
-      if (leagueArr.length) {
-        setLeagueSummaries(leagueArr);
+      if (activeLeagues.length) {
+        setActiveLeagueSummaries(activeLeagues);
       }
+
+      if (inactiveLeagues.length) {
+        setInactiveLeagueSummaries(inactiveLeagues);
+      }
+
       setLoading(false);
     }).catch(error => {
       message.error('Error downloading league data, please try again later');
@@ -79,7 +81,8 @@ function Main() {
   // empties league summaries info on signout,
   // which triggers a rerender to show the default table on the main page
   const handleSignout = () => {
-    setLeagueSummaries([]);
+    setActiveLeagueSummaries([]);
+    setInactiveLeagueSummaries([]);
     setLoading(false);
     // navigate('/');
   }
@@ -113,35 +116,18 @@ function Main() {
           <Button type='primary' onClick={joinLeague} style={{ margin: '20px 12px' }}>Join a League</Button>
         </Row>
         <Row type='flex' justify='center' gutter={[12, 8]}>
-          <Col span={6}>
+          {/* <Col span={6}>
             <UpcomingGamesList />
+          </Col> */}
+          <Col md={24} lg={20} xl={18} xxl={12}>
+            <Divider orientation='left'>Active Leagues</Divider>
+            <LeagueSummaries leagueSummaries={activeLeagueSummaries} loading={loading} />
+            <Divider orientation='left'>Past Leagues</Divider>
+            <LeagueSummaries leagueSummaries={inactiveLeagueSummaries} loading={loading} />
           </Col>
-          <Col span={12}>
-            <Table
-              columns={leagueTableColumns} 
-              dataSource={leagueSummaries} 
-              size='small'
-              pagination={false}
-              loading={loading}
-              rowKey='id'
-              rowClassName='pointer'
-              onRow={
-                (record) => {
-                  return {
-                    onClick: (event) => {
-                      // utilize the router to go to the league page
-                      if (record.id > 0) {
-                        navigate(`/leagues/${record.id}`, { state: { roleId: record.roleId, tournamentId: record.tournamentId }});
-                      }
-                    }
-                  };
-                }
-              }
-            />
-          </Col>
-          <Col span={6}>
+          {/* <Col span={6}>
             <LifetimeStats />
-          </Col>
+          </Col> */}
         </Row>
         <LeagueModal />
       </div>
@@ -154,16 +140,33 @@ function Main() {
   
 }
 
+
 function UpcomingGamesList() {
 
   const [loading, setLoading] = useState(true);
   const [upcomingGames, setUpcomingGames] = useState([]);
 
-  useEffect(() => {
+  const { authenticated } = useAuthState();
 
-  }, []);
+  useEffect(() => {
+    if (authenticated) {
+      getUserUpcomingGames();
+    }
+  }, [authenticated]);
 
   // call upcoming games user service endpoint
+  const getUserUpcomingGames = () => {
+    setLoading(true);
+
+    UserService.callApiWithPromise(USER_SERVICE_ENDPOINTS.GET_USER_UPCOMING_GAMES).then(response => {
+      console.log(response);
+      setLoading(false);
+    }).catch(error => {
+      console.log(error);
+      setLoading(false);
+      message.error('Unable to load upcoming games');
+    });
+  }
 
   return (
     <List 
@@ -225,15 +228,34 @@ function UpcomingGameListItemTeam(props) {
   );
 }
 
-function ActiveLeagues(props) {
 
-  return null;
-}
+const LeagueSummaries = memo(function LeagueSummaries(props) {
 
-function PreviousLeagues(props) {
+  return (
+    <Table
+      columns={leagueTableColumns} 
+      dataSource={props.leagueSummaries} 
+      size='small'
+      pagination={false}
+      loading={props.loading}
+      rowKey='id'
+      rowClassName='pointer'
+      onRow={
+        (record) => {
+          return {
+            onClick: (event) => {
+              // utilize the router to go to the league page
+              if (record.id > 0) {
+                navigate(`/leagues/${record.id}`, { state: { roleId: record.roleId, tournamentId: record.tournamentId }});
+              }
+            }
+          };
+        }
+      }
+    />
+  );
+});
 
-  return null;
-}
 
 function LifetimeStats() {
 
