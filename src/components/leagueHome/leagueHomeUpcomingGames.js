@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Table, Typography } from 'antd';
+import { message, Table, Typography } from 'antd';
 import 'antd/dist/antd.css';
 import { useAuthState } from '../../context/authContext';
 import { teamDisplayName } from '../../utilities/helper';
@@ -30,6 +30,8 @@ function LeagueHomeUpcomingGames(props) {
       let games = leagueServiceHelper.packageUpcomingGames(response.data);
       populateUpcomingGames(games);
     }).catch(error => {
+      message.error('Unable to get upcoming games, please try again later.');
+      setLoading(false);
       console.log(error);
     });
   }

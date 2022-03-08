@@ -16,10 +16,12 @@ import withAuctionWebsocket from '../../HOC/withWebsocket';
 import { auctionServiceHelper } from '../../services/autction/helper';
 import { useAuctionDispatch, useAuctionState } from '../../context/auctionContext';
 import AuctionModal from './auctionModal';
+import AuctionLoadingModal from './auctionLoadingModal';
 
 function LeagueAuction(props) {
 
   const [teams, setTeams] = useState([]);
+  const [auctionTeamsLoading, setAuctionTeamsLoading] = useState(true);
   const [prizepool, setPrizepool] = useState(0);
   const [myTeams, setMyTeams] = useState([]);
   const [myTax, setMyTax] = useState(0);
@@ -37,10 +39,10 @@ function LeagueAuction(props) {
     if (errorMessage !== null && errorMessage !== undefined) {
       handleAuctionError(errorMessage);
     }
-  }, [prevUpdate]);
+  }, [errorMessage]);
 
   useEffect(() => {
-    if (leagueId && authenticated) {
+    if (leagueId && authenticated && connected) {
       fetchAllAuctionData();
     }
 
@@ -65,6 +67,7 @@ function LeagueAuction(props) {
   const fetchAuctionTeams = () => {
     AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_TEAMS, { leagueId }).then(response => {
       processAuctionTeams(response.data);
+      auctionDispatch({ type: 'update', key: 'teamsDownloadedDate', value: new Date().valueOf() });
     }).catch(error => {
       console.log(error);
     });
@@ -73,6 +76,7 @@ function LeagueAuction(props) {
   const fetchAuctionBuyIns = () => {
     AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_BUYINS, { leagueId }).then(response => {
       processAuctionBuyIns(response.data);
+      auctionDispatch({ type: 'update', key: 'auctionBuyInsDownloadedDate', value: new Date().valueOf() });
     }).catch(error => {
       console.log(error);
     });
@@ -80,7 +84,7 @@ function LeagueAuction(props) {
 
   const fetchAuctionStatus = () => {
     AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_STATUS, { leagueId }).then(response => {
-      let itemSoldFlag = response.data[0].Status === AUCTION_STATUS.SOLD;
+      let itemSoldFlag = response.data[0]?.Status === AUCTION_STATUS.SOLD;
 
       // indicate to listeners that an item was sold
       if (itemSoldFlag) {
@@ -88,6 +92,7 @@ function LeagueAuction(props) {
       }
 
       let statusObj = auctionServiceHelper.updateAuctionStatus(response.data[0]);
+      console.log(statusObj);
       updateAuctionStatusInContext(statusObj);
     });
   }
@@ -95,6 +100,7 @@ function LeagueAuction(props) {
   const processAuctionTeams = (data) => {
     let auctionTeams = auctionServiceHelper.packageAuctionTeams(data);
     setTeams(auctionTeams);
+    setAuctionTeamsLoading(false);
     
     const myTeamsArr = auctionTeams.filter(team => {
       if (team.owner == userId) {
@@ -114,8 +120,12 @@ function LeagueAuction(props) {
     let keys = Object.keys(statusObj);
 
     for (var key of keys) {
-      auctionDispatch({ type: 'update', key: key, value: statusObj[key] });
+      if (statusObj[key] !== undefined) {
+        auctionDispatch({ type: 'update', key: key, value: statusObj[key] });
+      }
     }
+
+    auctionDispatch({ type: 'update', key: 'auctionStatusDownloadedDate', value: new Date().valueOf() });
   }
 
   const updateUserSummaries = (userBuyIns) => {
@@ -136,17 +146,17 @@ function LeagueAuction(props) {
     setPrizepool(prizepool);
   }
 
-  const handleAuctionError = (errorObj) => {
+  const handleAuctionError = (errorMessage) => {
     // setBiddingDisabled(true);
-    console.log(errorObj);
-    message.error(errorObj);
+    console.log(errorMessage);
+    message.error(errorMessage);
   }
 
   return (
     // @TODO refactor this styling after implementing a toggle functionality for the league navigation
     <Row style={sidebarInUse ? { height: 'calc(100vh - 64px)' } : { height: 'calc(100vh - 114px)' }}>
       <Col span={8}>
-        <AuctionTeams teams={teams} prizepool={prizepool} />
+        <AuctionTeams teams={teams} prizepool={prizepool} loading={auctionTeamsLoading} />
       </Col>
       <Col span={10} className='flex-growVert-parent'>
         <AuctionActions totalSpent={myTotalBuyIn} sendSocketMessage={props.sendSocketMessage} />
@@ -157,6 +167,7 @@ function LeagueAuction(props) {
         <MemberList users={leagueUsers} />
       </Col>
       <AuctionModal title='Connection to Auction Service Closed' />
+      <AuctionLoadingModal errorTimer={15} />
     </Row>
   );
 }

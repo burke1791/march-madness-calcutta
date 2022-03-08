@@ -28,14 +28,17 @@ function AuctionActions(props) {
   const [bidVal, setBidVal] = useState(0);
   const [endTime, setEndTime] = useState(0);
   const [offset, setOffset] = useState(0);
+  const [undoVisible, setUndoVisible] = useState(false);
+  const [undoLoading, setUndoLoading] = useState(false);
 
   const { roleId, leagueId } = useLeagueState();
   const { userId, authenticated } = useAuthState();
-  const { status, displayName, price, winnerAlias, lastBid, prevUpdate, teamLogoUrl, connected } = useAuctionState();
+  const { status, displayName, currentItemId, itemTypeId, price, winnerId, winnerAlias, lastBid, prevUpdate, teamLogoUrl, connected } = useAuctionState();
   const { settingsList } = useSettingsState();
 
   useEffect(() => {
     updateBidButtonState();
+    updateUndoButtonState();
   }, [prevUpdate, connected]);
 
   useEffect(() => {
@@ -76,6 +79,7 @@ function AuctionActions(props) {
 
   const getServerOffset = () => {
     AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.SERVER_TIMESTAMP, {}).then(response => {
+      console.log(response);
       let clockOffset = auctionServiceHelper.updateServerPing(response.data[0].ServerTimestamp);
       updateOffset(clockOffset);
     });
@@ -101,6 +105,23 @@ function AuctionActions(props) {
     }
   }
 
+  const updateUndoButtonState = () => {
+    setUndoLoading(false);
+    let visible = false;
+
+    // bidding must be open and the user must have the current high bid
+    if (status === AUCTION_STATUS.BIDDING && winnerId == userId) {
+      visible = true;
+    }
+
+    // Admins can always undo bids
+    if (status === AUCTION_STATUS.BIDDING && roleId <= 2) {
+      visible = true;
+    }
+
+    setUndoVisible(visible);
+  }
+
   const itemComplete = () => {
     if (roleId == 1 || roleId == 2) {
       // setItemComplete(leagueId);
@@ -124,7 +145,7 @@ function AuctionActions(props) {
     setBiddingDisabled(true);
 
     // placeAuctionBid(leagueId, value);
-    props.sendSocketMessage('PLACE_BID', { leagueId: leagueId, amount: value });
+    props.sendSocketMessage('PLACE_BID', { leagueId: leagueId, amount: value, itemId: currentItemId, itemTypeId: itemTypeId });
   }
 
   // when settings are implemented client-side, reset it to the league's minimum bid
@@ -157,6 +178,11 @@ function AuctionActions(props) {
 
     return interval * 1000;
   }
+
+  const undoBid = () => {
+    setUndoLoading(true);
+    props.sendSocketMessage('UNDO_BID', { leagueId: leagueId, itemId: currentItemId, itemTypeId: itemTypeId });
+  }
   
   return (
     <Row>
@@ -173,6 +199,7 @@ function AuctionActions(props) {
           <Col span={12} className='flex-growVert-parent'>
             <Card size='small' bodyStyle={{ textAlign: 'center' }} className='flex-growVert-child'>
               <Countdown title='Time Remaining' value={endTime} onFinish={itemComplete} format={'mm:ss'} />
+              <UndoBidButton visible={undoVisible} loading={undoLoading} undoBid={undoBid} style={{ marginTop: 8 }}>Undo Bid</UndoBidButton>
             </Card>
           </Col>
         </Row>
@@ -208,6 +235,25 @@ function AuctionActions(props) {
       </Card>
     </Row>
   );
+}
+
+function UndoBidButton(props) {
+
+  if (props.visible) {
+    return (
+      <Button
+        type='default'
+        danger
+        loading={props.loading}
+        onClick={props.undoBid}
+        style={props.style}
+      >
+        {props.children}
+      </Button>
+    );
+  }
+
+  return null;
 }
 
 export default AuctionActions;

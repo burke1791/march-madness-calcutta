@@ -110,7 +110,7 @@ function withAuctionWebsocket(WrappedComponent, config) {
         Pubsub.publish(NOTIF.NEW_AUCTION_DATA, null);
       } else if (msgType === 'auction_error') {
         // Pubsub.publish(NOTIF.AUCTION_ERROR, errorMessage);
-        processAuctionError(errorMessage)
+        processAuctionError(errorMessage);
       }
     }
 
@@ -138,7 +138,9 @@ function withAuctionWebsocket(WrappedComponent, config) {
       let keys = Object.keys(statusObj);
 
       for (var key of keys) {
-        auctionDispatch({ type: 'update', key: key, value: statusObj[key] });
+        if (statusObj[key] !== undefined) {
+          auctionDispatch({ type: 'update', key: key, value: statusObj[key] });
+        }
       }
 
       auctionDispatch({ type: 'update', key: 'prevUpdate', value: new Date().valueOf() });

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import './auctionChat.css';
 
 import { formatTimestamp } from '../../utilities/helper';
@@ -11,6 +11,8 @@ import AuctionService from '../../services/autction/auction.service';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
 import { useAuctionState } from '../../context/auctionContext';
+
+const urlRegex = /(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])/;
 
 const { Search } = Input;
 
@@ -83,7 +85,7 @@ function AuctionChat(props) {
               <div className='chat-message'>
                 <span className='author'>{message.alias}</span>
                 <span className='timestamp'>{formatTimestamp(message.timestamp)}</span>
-                <span className='content'>{message.content}</span>
+                <MessageContent>{message.content}</MessageContent>
               </div>
             )}
           />
@@ -102,5 +104,40 @@ function AuctionChat(props) {
     </Row>
   );
 }
+
+const MessageContent = memo(function MessageContent(props) {
+
+  const parseContent = (children) => {
+
+    if (typeof children !== 'string') return children;
+
+    return children.split(' ').map((text, index, arr) => {
+      if (arr.length - 1 == index) {
+        // do not return a trailing space for the last chunk of text
+        return (
+          <MessageContentNode key={index}>
+            {urlRegex.test(text) ? <a href={text}>{text}</a> : text}
+          </MessageContentNode>
+        );
+      }
+
+      return (
+        <MessageContentNode key={index}>
+          {urlRegex.test(text) ? <a href={text}>{text} </a> : text + ' '}
+        </MessageContentNode>
+      );
+    });
+  }
+
+  return (
+    <span className='content'>{parseContent(props.children)}</span>
+  );
+});
+
+// this is a temporary hack to prevent the missing key in a list error
+// rewrite these two components into something more elegant (I don't want a fuckton of individual text nodes on the dom)
+const MessageContentNode = memo(function MessageContentNode(props) {
+  return props.children;
+});
 
 export default AuctionChat;

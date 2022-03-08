@@ -21,6 +21,7 @@ function AuctionTeams(props) {
           bordered={true}
           itemLayout='horizontal'
           dataSource={props.teams}
+          loading={props.loading}
           size='small'
           style={{ padding: '6px 10px', maxHeight: 'calc(100vh - 160px)', overflow: 'auto', width: '100%' }}
           renderItem={team => (

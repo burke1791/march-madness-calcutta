@@ -80,9 +80,9 @@ function LeagueNav() {
           <Menu.Item key='auction'>
             Auction Room
           </Menu.Item>
-          <Menu.Item key='tournament'>
+          {/* <Menu.Item key='tournament'>
             Tournament
-          </Menu.Item>
+          </Menu.Item> */}
           {/* <Menu.Item key='myTeams' disabled>
             My Teams
           </Menu.Item>

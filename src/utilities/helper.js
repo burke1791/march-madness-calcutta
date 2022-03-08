@@ -14,7 +14,7 @@ const formatMoney = (value) => {
 }
 
 const formatTimestamp = (value) => {
-  let date = new Date(value);
+  let date = new Date(+value);
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 

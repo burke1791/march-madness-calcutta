@@ -25,5 +25,6 @@ var UserService = (function() {
  * Adding each user service endpoint to the UserService instance
  */
 UserService.newEndpoint(USER_SERVICE_ENDPOINTS.GET_USER_METADATA, userEndpoints.getUserMetadata);
+UserService.newEndpoint(USER_SERVICE_ENDPOINTS.GET_USER_UPCOMING_GAMES, userEndpoints.getUserUpcomingGames);
 
 export default UserService
