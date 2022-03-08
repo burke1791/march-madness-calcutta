@@ -120,7 +120,7 @@ function handleNewMessage(msgObj) {
 }
 
 function updateAuctionStatus(status) {
-  let updatedTeams = status.status === AUCTION_STATUS.SOLD;
+  let updatedTeams = status.status === AUCTION_STATUS.CONFIRMED_SOLD;
   
   Auction.status = status.status;
   Auction.current = {

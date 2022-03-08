@@ -84,12 +84,12 @@ function LeagueAuction(props) {
 
   const fetchAuctionStatus = () => {
     AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_STATUS, { leagueId }).then(response => {
-      let itemSoldFlag = response.data[0]?.Status === AUCTION_STATUS.SOLD;
+      // let itemSoldFlag = response.data[0]?.Status === AUCTION_STATUS.CONFIRMED_SOLD;
 
-      // indicate to listeners that an item was sold
-      if (itemSoldFlag) {
-        auctionDispatch({ type: 'update', key: 'newItemTimestamp', value: new Date().valueOf() });
-      }
+      // // indicate to listeners that an item was sold
+      // if (itemSoldFlag) {
+      //   auctionDispatch({ type: 'update', key: 'newItemTimestamp', value: new Date().valueOf() });
+      // }
 
       let statusObj = auctionServiceHelper.updateAuctionStatus(response.data[0]);
       console.log(statusObj);

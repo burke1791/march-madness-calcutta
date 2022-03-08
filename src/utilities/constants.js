@@ -83,6 +83,7 @@ export const AUCTION_STATUS = {
   INITIAL: 'initial',
   BIDDING: 'bidding',
   SOLD: 'sold',
+  CONFIRMED_SOLD: 'confirmed-sold',
   END: 'end'
 }
 
