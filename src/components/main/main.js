@@ -62,11 +62,11 @@ function Main() {
       const activeLeagues = leagueServiceHelper.packageLeagueSummaries(response.data.active);
       const inactiveLeagues = leagueServiceHelper.packageLeagueSummaries(response.data.inactive);
 
-      if (activeLeagues.length) {
+      if (activeLeagues && activeLeagues.length) {
         setActiveLeagueSummaries(activeLeagues);
       }
 
-      if (inactiveLeagues.length) {
+      if (inactiveLeagues && inactiveLeagues.length) {
         setInactiveLeagueSummaries(inactiveLeagues);
       }
 
