@@ -9,5 +9,14 @@ export const userEndpoints = {
     };
 
     return apiService(options);
+  },
+
+  getUserUpcomingGames: function(apiService) {
+    const options = {
+      method: 'GET',
+      url: USER_SERVICE_ENDPOINTS.GET_USER_UPCOMING_GAMES
+    };
+
+    return apiService(options);
   }
 }
