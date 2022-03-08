@@ -42,7 +42,7 @@ function AuctionAdmin(props) {
     let name = 'start';
     let action = openAuction;
 
-    if (status === AUCTION_STATUS.BIDDING || status === AUCTION_STATUS.SOLD) {
+    if (status === AUCTION_STATUS.BIDDING || status === AUCTION_STATUS.SOLD || status === AUCTION_STATUS.CONFIRMED_SOLD) {
       btnText = 'Close Auction';
       btnType = 'danger';
       name = 'stop';
@@ -79,7 +79,7 @@ function AuctionAdmin(props) {
   }
 
   const endAuction = (event) => {
-    if (status === AUCTION_STATUS.BIDDING || status === AUCTION_STATUS.SOLD) {
+    if (status === AUCTION_STATUS.BIDDING || status === AUCTION_STATUS.SOLD || AUCTION_STATUS.CONFIRMED_SOLD) {
       setStartLoading(true);
 
       // closeAuction(leagueId);
@@ -88,7 +88,7 @@ function AuctionAdmin(props) {
   }
 
   const nextAuctionItem = (event) => {
-    if (status === AUCTION_STATUS.SOLD) {
+    if (status === AUCTION_STATUS.CONFIRMED_SOLD) {
       setNextLoading(true);
       
       // nextItem(leagueId);
@@ -97,7 +97,7 @@ function AuctionAdmin(props) {
   }
 
   const resetAuctionClock = (event) => {
-    if (status === AUCTION_STATUS.SOLD || status === AUCTION_STATUS.BIDDING) {
+    if (status === AUCTION_STATUS.SOLD || status === AUCTION_STATUS.BIDDING || AUCTION_STATUS.CONFIRMED_SOLD) {
       setResetClockLoading(true);
 
       // resetClock(leagueId);

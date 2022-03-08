@@ -115,7 +115,7 @@ function withAuctionWebsocket(WrappedComponent, config) {
     }
 
     const processAuctionStatus = (data) => {
-      let itemSoldFlag = data.Status === AUCTION_STATUS.SOLD;
+      let itemSoldFlag = data.Status === AUCTION_STATUS.CONFIRMED_SOLD;
 
       // indicate to listeners that an item was sold
       if (itemSoldFlag) {
