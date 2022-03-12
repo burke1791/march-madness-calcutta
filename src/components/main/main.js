@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState, memo } from 'react';
-import { Row, Col, Button, Table, message, Typography, List, Card, Statistic, Divider } from 'antd';
+import { Row, Col, Button, Table, message, Typography, List, Card, Statistic, Divider, Layout, Popover } from 'antd';
 import 'antd/dist/antd.css';
 import './main.css';
 
@@ -16,8 +16,11 @@ import { leagueServiceHelper } from '../../services/league/helper';
 import { genericContextUpdate } from '../../context/helper';
 import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
 import UserService from '../../services/user/user.service';
+import { formatDatestamp } from '../../utilities/helper';
+import Team from '../team/team';
 
 const { Title, Text } = Typography;
+const { Content } = Layout;
 
 function Main() {
 
@@ -116,18 +119,18 @@ function Main() {
           <Button type='primary' onClick={joinLeague} style={{ margin: '20px 12px' }}>Join a League</Button>
         </Row>
         <Row type='flex' justify='center' gutter={[12, 8]}>
-          {/* <Col span={6}>
+          <Col xs={0} sm={0} md={0} lg={0} xl={0} xxl={6}>
             <UpcomingGamesList />
-          </Col> */}
+          </Col>
           <Col md={24} lg={20} xl={18} xxl={12}>
             <Divider orientation='left'>Active Leagues</Divider>
             <LeagueSummaries leagueSummaries={activeLeagueSummaries} loading={loading} />
             <Divider orientation='left'>Past Leagues</Divider>
             <LeagueSummaries leagueSummaries={inactiveLeagueSummaries} loading={loading} />
           </Col>
-          {/* <Col span={6}>
+          <Col xs={0} sm={0} md={0} lg={0} xl={0} xxl={6}>
             <LifetimeStats />
-          </Col> */}
+          </Col>
         </Row>
         <LeagueModal />
       </div>
@@ -160,6 +163,7 @@ function UpcomingGamesList() {
 
     UserService.callApiWithPromise(USER_SERVICE_ENDPOINTS.GET_USER_UPCOMING_GAMES).then(response => {
       console.log(response);
+      setUpcomingGames(response.data);
       setLoading(false);
     }).catch(error => {
       console.log(error);
@@ -175,9 +179,39 @@ function UpcomingGamesList() {
       bordered
       dataSource={upcomingGames}
       loading={loading}
-      renderItem={game => <UpcomingGameListItem eventDate={game.eventDate} teams={game.teams} />}
+      renderItem={game => {
+        return (
+          <Popover content={<UpcomingGamePopover />}>
+            <UpcomingGameListItem eventDate={game.eventDate} teams={game.teams} />
+          </Popover>
+        );
+      }}
     />
   );
+}
+
+function UpcomingGamePopover(props) {
+
+  return (
+    <Fragment>
+      <Row justify='center'>
+        <Col>
+          <Text strong>{props.eventDate}</Text>
+        </Col>
+      </Row>
+      <Row justify='center'>
+        <Col span={11}>
+          <Team imageSrc={props.team1LogoUrl} name={props.team1DisplayName} imgStyle={{ maxWidth: 50 }} />
+        </Col>
+        <Col span={2}>
+          <Text style={{ textAlign: 'center' }}>vs.</Text>
+        </Col>
+        <Col span={11}>
+          <Team imageSrc={props.team2LogoUrl} name={props.team2DisplayName} imgStyle={{ maxWidth: 50 }} />
+        </Col>
+      </Row>
+    </Fragment>
+  )
 }
 
 function UpcomingGameListItem(props) {
@@ -186,26 +220,24 @@ function UpcomingGameListItem(props) {
 
   return (
     <List.Item>
-      <div className='upcoming-header'>
-        <Row type='flex'>
+      <Content>
+        <Row justify='center'>
           <Col>
-            <Text>{props.eventDate}</Text>
+            <Text strong>{props.eventDate}</Text>
           </Col>
         </Row>
-      </div>
-      <div className='upcoming-main'>
-        <Row type='flex'>
+        <Row justify='center' align='bottom'>
           <Col span={11}>
-            <UpcomingGameListItemTeam team={props.teams[0]} isOwner={props.teams[0].owner == userId} />
+            <UpcomingGameListItemTeam team={props.teams[0]} isOwner={props.teams[0].ownerId == userId} />
           </Col>
           <Col span={2}>
-            <Text>vs.</Text>
+            <Text style={{ textAlign: 'center' }}>vs.</Text>
           </Col>
           <Col span={11}>
-            <UpcomingGameListItemTeam team={props.teams[1]} isOwner={props.teams[1].owner == userId} />
+            <UpcomingGameListItemTeam team={props.teams[1]} isOwner={props.teams[1].ownerId == userId} />
           </Col>
         </Row>
-      </div>
+      </Content>
     </List.Item>
   );
 }
@@ -219,7 +251,7 @@ function UpcomingGameListItemTeam(props) {
   return (
     <div className={getClassName()}>
       <Row type='flex' justify='center'>
-        <img src={props.team.logoUrl}></img>
+        <img style={{ maxWidth: 50 }} className='upcoming-logo' src={props.team.logoUrl}></img>
       </Row>
       <Row type='flex' justify='center'>
         {props.team.displayName}
