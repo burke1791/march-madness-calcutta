@@ -115,8 +115,8 @@ function Tournament() {
           </Button>
         </Row>
         <Row justify='center'>
-          <Col style={{ overflow: 'auto' }}>
-            {gamesLoading ? <Skeleton active style={{ marginLeft: 12, marginRight: 12 }} /> : <BracketFactory games={games} />}
+          <Col span={24} style={{ overflow: 'auto' }}>
+            {gamesLoading ? <Skeleton active /> : <BracketFactory games={games} />}
           </Col>
         </Row>
       </Content>
