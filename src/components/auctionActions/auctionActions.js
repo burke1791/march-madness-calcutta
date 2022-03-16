@@ -3,7 +3,7 @@ import './auctionActions.css';
 
 import AuctionAdmin from '../auctionAdmin/auctionAdmin';
 
-import { Button, Card, Statistic, Row, Col, InputNumber } from 'antd';
+import { Button, Card, Statistic, Row, Col, InputNumber, message } from 'antd';
 import 'antd/dist/antd.css';
 
 import { formatMoney } from '../../utilities/helper';
@@ -28,7 +28,7 @@ function AuctionActions(props) {
   const [bidVal, setBidVal] = useState(0);
   const [endTime, setEndTime] = useState(0);
   const [offset, setOffset] = useState(0);
-  const [undoVisible, setUndoVisible] = useState(false);
+  const [undoDisable, setUndoDisable] = useState(true);
   const [undoLoading, setUndoLoading] = useState(false);
 
   const { roleId, leagueId } = useLeagueState();
@@ -107,19 +107,19 @@ function AuctionActions(props) {
 
   const updateUndoButtonState = () => {
     setUndoLoading(false);
-    let visible = false;
+    let disabled = true;
 
     // bidding must be open and the user must have the current high bid
     if (status === AUCTION_STATUS.BIDDING && winnerId == userId) {
-      visible = true;
+      disabled = false;
     }
 
     // Admins can always undo bids
-    if (status === AUCTION_STATUS.BIDDING && roleId <= 2) {
-      visible = true;
-    }
+    // if (status === AUCTION_STATUS.BIDDING && roleId <= 2) {
+    //   disabled = false;
+    // }
 
-    setUndoVisible(visible);
+    setUndoDisable(disabled);
   }
 
   const itemComplete = () => {
@@ -180,8 +180,12 @@ function AuctionActions(props) {
   }
 
   const undoBid = () => {
-    setUndoLoading(true);
-    props.sendSocketMessage('UNDO_BID', { leagueId: leagueId, itemId: currentItemId, itemTypeId: itemTypeId });
+    if (highBid > 0) {
+      setUndoLoading(true);
+      props.sendSocketMessage('UNDO_BID', { leagueId: leagueId, itemId: currentItemId, itemTypeId: itemTypeId });
+    } else {
+      message.error('Cannot undo bid');
+    }
   }
   
   return (
@@ -199,7 +203,7 @@ function AuctionActions(props) {
           <Col span={12} className='flex-growVert-parent'>
             <Card size='small' bodyStyle={{ textAlign: 'center' }} className='flex-growVert-child'>
               <Countdown title='Time Remaining' value={endTime} onFinish={itemComplete} format={'mm:ss'} />
-              <UndoBidButton visible={undoVisible} loading={undoLoading} undoBid={undoBid} style={{ marginTop: 8 }}>Undo Bid</UndoBidButton>
+              <UndoBidButton disable={undoDisable} loading={undoLoading} undoBid={undoBid} style={{ marginTop: 8 }}>Undo Bid</UndoBidButton>
             </Card>
           </Col>
         </Row>
@@ -239,21 +243,18 @@ function AuctionActions(props) {
 
 function UndoBidButton(props) {
 
-  if (props.visible) {
-    return (
-      <Button
-        type='default'
-        danger
-        loading={props.loading}
-        onClick={props.undoBid}
-        style={props.style}
-      >
-        {props.children}
-      </Button>
-    );
-  }
-
-  return null;
+  return (
+    <Button
+      type='default'
+      danger
+      disabled={props.disable}
+      loading={props.loading}
+      onClick={props.undoBid}
+      style={props.style}
+    >
+      {props.children}
+    </Button>
+  );
 }
 
 export default AuctionActions;

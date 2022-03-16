@@ -9,7 +9,7 @@ import BracketTeamPopover from './bracketTeam';
 const messenger = new NotificationCenter();
 
 const bracketWrapperStyle = {
-  margin: '0 12px',
+  // margin: '0 12px',
   height: '100%'
 }
 
@@ -24,8 +24,8 @@ function BracketFactory(props) {
   const getSubBracketGames = (anchor) => {
     if (props.games && props.games.length) {
       let root = findRootGame();
-      let leftRootMatchupId = root.parentMatchupIds[0];
-      let rightRootMatchupId = root.parentMatchupIds[1];
+      let leftRootMatchupId = root.parentMatchupIds[0].parentMatchupId;
+      let rightRootMatchupId = root.parentMatchupIds[1].parentMatchupId;
 
       let subTree = [];
 
@@ -94,7 +94,7 @@ function BracketFactory(props) {
 
   return (
     <div style={bracketWrapperStyle}>
-      <svg height={getVerticalSize(props.games, true)} width={getHorizontalSize(props.games, true)}>
+      <svg height={getVerticalSize(props.games, true)} width={getHorizontalSize(props.games, true)} style={{ margin: '0 36px' }}>
         <RootGame game={findRootGame()} verticalSplit={true} maxX={getHorizontalSize(props.games, true)} maxY={getVerticalSize(props.games, true)} />
         <Bracket anchor='left' games={getSubBracketGames('left')} maxX={getHorizontalSize(props.games, true)} maxY={getVerticalSize(props.games, true)} />
         <Bracket anchor='right' games={getSubBracketGames('right')} maxX={getHorizontalSize(props.games, true)} maxY={getVerticalSize(props.games, true)} />
@@ -229,8 +229,8 @@ function Bracket(props) {
     if (game.roundNum == 1) {
       return game.teams[0].seed < game.teams[1].seed ? [game.teams[0], game.teams[1]] : [game.teams[1], game.teams[0]];
     } else if (game.parentMatchupIds.length == 2) {
-      let parentGame1 = props.games.find(gameObj => gameObj.matchupId == game.parentMatchupIds[0]);
-      let parentGame2 = props.games.find(gameObj => gameObj.matchupId == game.parentMatchupIds[1]);
+      let parentGame1 = props.games.find(gameObj => gameObj.matchupId == game.parentMatchupIds[0].parentMatchupId);
+      let parentGame2 = props.games.find(gameObj => gameObj.matchupId == game.parentMatchupIds[1].parentMatchupId);
       let parentGame1GameNum = getGameNum(parentGame1.matchupId);
       let parentGame2GameNum = getGameNum(parentGame2.matchupId);
 

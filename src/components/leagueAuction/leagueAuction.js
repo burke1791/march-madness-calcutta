@@ -25,6 +25,7 @@ function LeagueAuction(props) {
   const [prizepool, setPrizepool] = useState(0);
   const [myTeams, setMyTeams] = useState([]);
   const [myTax, setMyTax] = useState(0);
+  const [myTaxBrackets, setMyTaxBrackets] = useState([]);
   const [myTotalBuyIn, setMyTotalBuyIn] = useState(0);
   const [leagueUsers, setLeagueUsers] = useState([]);
   const [sidebarInUse, setSidebarInUse] = useState(true);
@@ -76,6 +77,8 @@ function LeagueAuction(props) {
   const fetchAuctionBuyIns = () => {
     AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_BUYINS, { leagueId }).then(response => {
       processAuctionBuyIns(response.data);
+      // processAuctionBuyIns(response.data?.buyIns);
+      // processMyTaxBrackets(response.data?.tax);
       auctionDispatch({ type: 'update', key: 'auctionBuyInsDownloadedDate', value: new Date().valueOf() });
     }).catch(error => {
       console.log(error);
@@ -84,13 +87,6 @@ function LeagueAuction(props) {
 
   const fetchAuctionStatus = () => {
     AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_STATUS, { leagueId }).then(response => {
-      // let itemSoldFlag = response.data[0]?.Status === AUCTION_STATUS.CONFIRMED_SOLD;
-
-      // // indicate to listeners that an item was sold
-      // if (itemSoldFlag) {
-      //   auctionDispatch({ type: 'update', key: 'newItemTimestamp', value: new Date().valueOf() });
-      // }
-
       let statusObj = auctionServiceHelper.updateAuctionStatus(response.data[0]);
       console.log(statusObj);
       updateAuctionStatusInContext(statusObj);
@@ -114,6 +110,12 @@ function LeagueAuction(props) {
     let userBuyIns = auctionServiceHelper.packageUserBuyIns(buyIns);
 
     updateUserSummaries(userBuyIns);
+  }
+
+  const processMyTaxBrackets = (taxBrackets) => {
+    if (taxBrackets != undefined) {
+      setMyTaxBrackets(taxBrackets);
+    }
   }
 
   const updateAuctionStatusInContext = (statusObj) => {

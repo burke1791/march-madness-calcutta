@@ -217,7 +217,7 @@ function League(props) {
               <AuctionProvider path='auction'>
                 <LeagueAuction path='/' />
               </AuctionProvider>
-              <Tournament path='tournament' />
+              <Tournament path='bracket' />
               {/* <MessageBoard path='message_board' leagueId={props.leagueId} role={role} /> */}
               {/* <MessageThread path='message_board/:topicId' leagueId={props.leagueId} role={role} /> */}
               <MemberPage path='member/:userId' />

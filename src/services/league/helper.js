@@ -48,7 +48,8 @@ export const leagueServiceHelper = {
       roleId: metadata.RoleId,
       roleName: metadata.RoleName,
       inviteCode: metadata.InviteCode,
-      inviteUrl: metadata.InviteUrl
+      inviteUrl: metadata.InviteUrl,
+      hasBracketPage: !!metadata.HasBracketPage
     };
 
     return data;

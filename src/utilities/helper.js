@@ -18,8 +18,20 @@ const formatTimestamp = (value) => {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
+/**
+ * @function formatDatestamp
+ * @param {Date} value 
+ * @returns a string representing the passed in date
+ */
 const formatDatestamp = (value) => {
-  let date = new Date(value);
+  if (!value) return null;
+
+  let date = value;
+
+  if (!value instanceof Date && typeof date.toLocaleString == 'function') {
+    date = new Date(value);
+  }
+
   return date.toLocaleString();
 }
 
