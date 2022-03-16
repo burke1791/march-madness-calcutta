@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Button, Layout, message, Row, Select } from 'antd'
+import { Button, Col, Layout, message, Row, Select, Skeleton } from 'antd'
 import 'antd/dist/antd.css';
 
 import LeagueHeader from '../league/leagueHeader';
@@ -20,17 +20,18 @@ function Tournament() {
 
   const [games, setGames] = useState([]);
   const [users, setUsers] = useState();
+  const [gamesLoading, setGamesLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState(null);
 
   const { leagueId, leagueName, tournamentName, tournamentRegimeName } = useLeagueState();
   const tournamentDispatch = useTournamentDispatch();
 
   useEffect(() => {
-    if (leagueId && tournamentName == '2021 March Madness') {
+    if (leagueId) {
       fetchTournamentTree();
       fetchLeagueUsers();
     }
-  }, [leagueId, tournamentName]);
+  }, [leagueId]);
 
   const secondaryHeaderText = () => {
     let text = tournamentName;
@@ -66,8 +67,11 @@ function Tournament() {
 
   const fetchTournamentTree = () => {
     TournamentService.callApiWithPromise(TOURNAMENT_SERVICE_ENDPOINTS.GET_TOURNAMENT_TREE, { leagueId }).then(response => {
-      let games = tournamentServiceHelper.packageTournamentTree(response.data);
-      setGames(games);
+      console.log(response.data);
+      setGames(response.data.bracket);
+      setGamesLoading(false);
+      // let games = tournamentServiceHelper.packageTournamentTree(response.data);
+      // setGames(games);
     }).catch(error => {
       console.log(error);
       message.error('Error downloading bracket');
@@ -93,7 +97,7 @@ function Tournament() {
     <Layout>
       <LeagueHeader class='primary' text={leagueName} />
       <LeagueHeader class='secondary' text={secondaryHeaderText()} />
-      <Content style={{ textAlign: 'center', minHeight: 'calc(100vh - 192px)', height: '100%', overflow: 'auto' }}>
+      <Content style={{ textAlign: 'center', minHeight: 'calc(100vh - 192px)', height: '100%' }}>
         <Row justify='center'>
           <Select
             style={{ width: 200 }}
@@ -110,7 +114,11 @@ function Tournament() {
             Clear
           </Button>
         </Row>
-        <BracketFactory games={games} />
+        <Row justify='center'>
+          <Col style={{ overflow: 'auto' }}>
+            {gamesLoading ? <Skeleton active style={{ marginLeft: 12, marginRight: 12 }} /> : <BracketFactory games={games} />}
+          </Col>
+        </Row>
       </Content>
     </Layout>
   );

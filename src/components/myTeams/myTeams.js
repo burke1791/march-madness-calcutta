@@ -14,11 +14,12 @@ const columns = [
     width: '70%',
     render: (text, record) => {
       if (record.itemId == -1) {
-        return (
-          <Popover content={record.popover}>
-            <span style={{ fontWeight: 'bold', color: 'red' }}>{text}</span>
-          </Popover>
-        );
+        return <span style={{ fontWeight: 'bold', color: 'red' }}>{text}</span>;
+        // return (
+        //   <Popover content={record.popover}>
+        //     <span style={{ fontWeight: 'bold', color: 'red' }}>{text}</span>
+        //   </Popover>
+        // );
       } else {
         return text;
       }
@@ -32,11 +33,12 @@ const columns = [
     width: '30%',
     render: (text, record) => {
       if (record.itemId == -1) {
-        return (
-          <Popover content={record.popover}>
-            <span style={{ fontWeight: 'bold', color: 'red' }}>{formatMoney(text)}</span>
-          </Popover>
-        );
+        return <span style={{ fontWeight: 'bold', color: 'red' }}>{formatMoney(text)}</span>;
+        // return (
+        //   <Popover content={record.popover}>
+        //     <span style={{ fontWeight: 'bold', color: 'red' }}>{formatMoney(text)}</span>
+        //   </Popover>
+        // );
       } else {
         return formatMoney(text);
       }

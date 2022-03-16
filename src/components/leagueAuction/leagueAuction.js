@@ -76,8 +76,9 @@ function LeagueAuction(props) {
 
   const fetchAuctionBuyIns = () => {
     AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_BUYINS, { leagueId }).then(response => {
-      processAuctionBuyIns(response.data?.buyIns);
-      processMyTaxBrackets(response.data?.tax);
+      processAuctionBuyIns(response.data);
+      // processAuctionBuyIns(response.data?.buyIns);
+      // processMyTaxBrackets(response.data?.tax);
       auctionDispatch({ type: 'update', key: 'auctionBuyInsDownloadedDate', value: new Date().valueOf() });
     }).catch(error => {
       console.log(error);
@@ -164,7 +165,7 @@ function LeagueAuction(props) {
         <AuctionChat sendSocketMessage={props.sendSocketMessage} />
       </Col>
       <Col span={6}>
-        <MyTeams myTeams={myTeams} myTax={myTax} myTaxBrackets={myTaxBrackets} />
+        <MyTeams myTeams={myTeams} myTax={myTax} />
         <MemberList users={leagueUsers} />
       </Col>
       <AuctionModal title='Connection to Auction Service Closed' />

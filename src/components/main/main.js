@@ -119,18 +119,18 @@ function Main() {
           <Button type='primary' onClick={joinLeague} style={{ margin: '20px 12px' }}>Join a League</Button>
         </Row>
         <Row type='flex' justify='center' gutter={[12, 8]}>
-          <Col xs={0} sm={0} md={0} lg={0} xl={0} xxl={6}>
+          {/* <Col xs={0} sm={0} md={0} lg={0} xl={0} xxl={6}>
             <UpcomingGamesList />
-          </Col>
+          </Col> */}
           <Col md={24} lg={20} xl={18} xxl={12}>
             <Divider orientation='left'>Active Leagues</Divider>
             <LeagueSummaries leagueSummaries={activeLeagueSummaries} loading={loading} />
             <Divider orientation='left'>Past Leagues</Divider>
             <LeagueSummaries leagueSummaries={inactiveLeagueSummaries} loading={loading} />
           </Col>
-          <Col xs={0} sm={0} md={0} lg={0} xl={0} xxl={6}>
+          {/* <Col xs={0} sm={0} md={0} lg={0} xl={0} xxl={6}>
             <LifetimeStats />
-          </Col>
+          </Col> */}
         </Row>
         <LeagueModal />
       </div>
