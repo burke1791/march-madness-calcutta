@@ -5,9 +5,14 @@
 }
 
 .ant-col:first-child {
-    padding-left: 0 !important;
+  padding-left: 0 !important;
 }
 
 .ant-col:last-child {
   padding-right: 0 !important;
+}
+
+.upcoming-team-owner {
+  font-weight: bold;
+  text-decoration: underline;
 }

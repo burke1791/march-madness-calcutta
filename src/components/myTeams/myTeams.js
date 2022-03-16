@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Row, Col, Card, Table } from 'antd';
+import { Row, Col, Card, Table, Popover } from 'antd';
 import 'antd/dist/antd.css';
 
 import { formatMoney } from '../../utilities/helper';
@@ -15,6 +15,11 @@ const columns = [
     render: (text, record) => {
       if (record.itemId == -1) {
         return <span style={{ fontWeight: 'bold', color: 'red' }}>{text}</span>;
+        // return (
+        //   <Popover content={record.popover}>
+        //     <span style={{ fontWeight: 'bold', color: 'red' }}>{text}</span>
+        //   </Popover>
+        // );
       } else {
         return text;
       }
@@ -29,6 +34,11 @@ const columns = [
     render: (text, record) => {
       if (record.itemId == -1) {
         return <span style={{ fontWeight: 'bold', color: 'red' }}>{formatMoney(text)}</span>;
+        // return (
+        //   <Popover content={record.popover}>
+        //     <span style={{ fontWeight: 'bold', color: 'red' }}>{formatMoney(text)}</span>
+        //   </Popover>
+        // );
       } else {
         return formatMoney(text);
       }
@@ -46,13 +56,14 @@ function MyTeams(props) {
       let taxArray = [{
         displayName: 'Tax',
         price: props.myTax,
-        itemId: -1
+        itemId: -1,
+        popover: <AuctionTaxPopoverContent brackets={props.myTaxBrackets} />
       }];
       setTeamsArr([...props.myTeams, ...taxArray]);
     } else {
       setTeamsArr(props.myTeams);
     }
-  }, [props.myTeams, props.myTax]);
+  }, [props.myTeams, props.myTax, props.myTaxBrackets]);
 
   return (
     <Row style={{ height: 'calc(50vh - 70px)' }}>
@@ -72,6 +83,11 @@ function MyTeams(props) {
       </Col>
     </Row>
   );
+}
+
+function AuctionTaxPopoverContent(props) {
+
+  return 'TEST'
 }
 
 export default MyTeams;

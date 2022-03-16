@@ -100,7 +100,7 @@ function withAuctionWebsocket(WrappedComponent, config) {
       return JSON.stringify(obj);
     }
 
-    const emit = (msgType, msgObj, errorMessage) => {
+    const emit = (msgType, msgObj, messageText) => {
       if (msgType === 'chat') {
         console.log(msgObj);
         Pubsub.publish(NOTIF.NEW_CHAT_MESSAGE, parseChatMessage(msgObj));
@@ -108,9 +108,12 @@ function withAuctionWebsocket(WrappedComponent, config) {
         // parse auction obj then publish
         processAuctionStatus(msgObj);
         Pubsub.publish(NOTIF.NEW_AUCTION_DATA, null);
+      } else if (msgType === 'auction_close') {
+        message.info(messageText);
+        auctionDispatch({ type: 'update', key: 'auctionClosed', value: true });
       } else if (msgType === 'auction_error') {
-        // Pubsub.publish(NOTIF.AUCTION_ERROR, errorMessage);
-        processAuctionError(errorMessage);
+        // Pubsub.publish(NOTIF.AUCTION_ERROR, messageText);
+        processAuctionError(messageText);
       }
     }
 

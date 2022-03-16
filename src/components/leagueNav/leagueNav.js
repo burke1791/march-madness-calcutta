@@ -14,7 +14,7 @@ function LeagueNav() {
   const [displaySider, setDisplaySider] = useState(true);
   const [collapsed, setCollapsed] = useState(false);
 
-  const { leagueId } = useLeagueState();
+  const { leagueId, hasBracketPage } = useLeagueState();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.LEAGUE_MENU_TOGGLE, LeagueNav, handleMenuToggle);
@@ -45,8 +45,8 @@ function LeagueNav() {
         navigate(`/leagues/${leagueId}`);
       } else if (event.key == 'auction') {
         navigate(`/leagues/${leagueId}/auction`);
-      } else if (event.key == 'tournament') {
-        navigate(`/leagues/${leagueId}/tournament`);
+      } else if (event.key == 'bracket') {
+        navigate(`/leagues/${leagueId}/bracket`);
       } else if (event.key == 'messageBoard') {
         // navigate(`/leagues/${leagueId}/message_board`)
       } else if (event.keyPath[1] == 'settingSub') {
@@ -55,6 +55,18 @@ function LeagueNav() {
     } else {
       console.debug('LeagueNav: leagueId is falsy');
     }
+  }
+
+  const generateBracketMenuItem = () => {
+    if (hasBracketPage) {
+      return (
+        <Menu.Item key='bracket'>
+          Bracket
+        </Menu.Item>
+      );
+    }
+
+    return null;
   }
 
   if (displaySider) {
@@ -80,9 +92,7 @@ function LeagueNav() {
           <Menu.Item key='auction'>
             Auction Room
           </Menu.Item>
-          {/* <Menu.Item key='tournament'>
-            Tournament
-          </Menu.Item> */}
+          {generateBracketMenuItem()}
           {/* <Menu.Item key='myTeams' disabled>
             My Teams
           </Menu.Item>
