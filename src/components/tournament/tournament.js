@@ -33,7 +33,15 @@ function Tournament() {
       fetchTournamentTree();
       fetchLeagueUsers();
     }
+
+    return (() => {
+      cleanupContext();
+    });
   }, [leagueId, authenticated]);
+
+  const cleanupContext = () => {
+    tournamentDispatch({ type: 'clear' });
+  }
 
   const secondaryHeaderText = () => {
     let text = tournamentName;
