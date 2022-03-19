@@ -12,6 +12,7 @@ import { tournamentServiceHelper } from '../../services/tournament/helper';
 import BracketFactory from '../bracket/bracket';
 import { leagueServiceHelper } from '../../services/league/helper';
 import { useTournamentDispatch } from '../../context/tournamentContext';
+import { useAuthState } from '../../context/authContext';
 
 const { Content } = Layout;
 const { Option } = Select;
@@ -24,14 +25,15 @@ function Tournament() {
   const [selectedUser, setSelectedUser] = useState(null);
 
   const { leagueId, leagueName, tournamentName, tournamentRegimeName } = useLeagueState();
+  const { authenticated } = useAuthState();
   const tournamentDispatch = useTournamentDispatch();
 
   useEffect(() => {
-    if (leagueId) {
+    if (leagueId && authenticated) {
       fetchTournamentTree();
       fetchLeagueUsers();
     }
-  }, [leagueId]);
+  }, [leagueId, authenticated]);
 
   const secondaryHeaderText = () => {
     let text = tournamentName;
