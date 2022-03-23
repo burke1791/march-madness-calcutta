@@ -92,11 +92,37 @@ const teamDisplayName = (name, seed, params) => {
   return displayName;
 }
 
+
+/**
+ * @typedef {Object} LeaguePathMetadata
+ * @property {Number} leagueId - league's unique Id
+ * @property {String} menuItem - the top-level menu item key in the leagueNav menu
+ * @property {String} subMenuItem - the sub-menu item key (if any)
+ */
+
+/**
+ * @function parseLeaguePathName
+ * @param {String} pathName - the pathName provided by reach router's useLocation hook
+ * @returns {LeaguePathMetadata} - an object containing which path, subpath, etc. the user is at
+ */
+const parseLeaguePathName = (pathName) => {
+  // the league path always follows the form: /leagues/{leagueId}/{menuItem}/{subMenuItem}
+  // because of the leading forward slash, the 0th entry in the split array will be an empty string
+  const components = pathName.replace(/\/{2,}/g, '/').split('/');
+
+  return {
+    leagueId: +components[2],
+    menuItem: components[3], // will be undefined if at leagueHome
+    subMenuItem: components[4] // will be undefined if there is no submenu
+  };
+}
+
 export {
   formatMoney,
   formatTimestamp,
   formatDatestamp,
   formatDateTime,
   calcuttaStore,
-  teamDisplayName
+  teamDisplayName,
+  parseLeaguePathName
 };
