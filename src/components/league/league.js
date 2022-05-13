@@ -88,6 +88,7 @@ function League(props) {
   }
 
   const setSettingsInContext = (settings) => {
+    console.log(settings);
     if (settings.length && settings[0].LeagueId !== props.leagueId) {
       // something ain't right
       console.log('settings may not be correct');
