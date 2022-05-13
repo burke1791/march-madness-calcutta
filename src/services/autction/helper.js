@@ -67,7 +67,8 @@ export const auctionServiceHelper = {
         displayName: teamObj.DisplayName,
         seed: teamObj.Seed,
         owner: Number(teamObj.UserId),
-        price: teamObj.Price
+        price: teamObj.Price,
+        isComplete: teamObj.IsComplete
       };
   
       return team;

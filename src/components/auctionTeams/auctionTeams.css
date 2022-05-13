@@ -1,3 +1,7 @@
 .purchased {
-  background-color: red;
+  background-color: #53C418;
+}
+
+.no-sell {
+  background-color: darkgray;
 }
