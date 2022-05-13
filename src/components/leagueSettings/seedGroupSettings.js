@@ -43,10 +43,10 @@ function SeedGroupSettings(props) {
           <Button
             type='primary'
             danger
-            onClick={() => deleteSeedGroup(record.groupName)}
+            onClick={() => deleteSeedGroup(record.groupId)}
             loading={deleteLoading}
           >
-            {`Delete ${record.groupName}`}
+            Delete
           </Button>
         )
       }
@@ -69,6 +69,7 @@ function SeedGroupSettings(props) {
   const fetchSeedGroups = () => {
     LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SEED_GROUPS, { leagueId }).then(response => {
       let groups = leagueServiceHelper.packageLeagueSeedGroups(response.data);
+      console.log(groups);
       setGroups(groups);
       setLoading(false);
     }).catch(error => {
@@ -77,12 +78,12 @@ function SeedGroupSettings(props) {
     });
   }
 
-  const deleteSeedGroup = (groupName) => {
+  const deleteSeedGroup = (groupId) => {
     setDeleteLoading(true);
 
     let payload = {
       leagueId: leagueId,
-      groupName: groupName
+      groupId: groupId
     };
 
     LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.DELETE_LEAGUE_SEED_GROUP, { payload }).then(response => {
