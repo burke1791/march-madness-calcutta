@@ -15,7 +15,7 @@ const defaultImgStyle = {
  * @typedef TeamProps
  * @property {Object} style - React style prop; for the top-level div
  * @property {Object} imgStyle - React style prop; for the logo div
- * @property {String} imgSrc - url for the team logo
+ * @property {String} imageSrc - url for the team logo
  * @property {String} name - team name
  */
 
@@ -29,7 +29,7 @@ function Team(props) {
     <div style={{...defaultStyle, ...props.style}}>
       <div
         style={{ width: props.imgStyle?.maxWidth ? props.imgStyle.maxWidth + 10 : '100%', textAlign: 'center', display: 'inline-block' }}
-        hidden={!props.imgSrc}
+        hidden={!props.imageSrc}
       >
         <img src={props.imageSrc} style={{...defaultImgStyle, ...props.imgStyle}} />
       </div>
