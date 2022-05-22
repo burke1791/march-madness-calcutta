@@ -78,10 +78,6 @@ function LeagueHome() {
             <LeagueHomeUpcomingGames />
           </Col>
         </Row>
-        {/* <Row type='flex' justify='center' gutter={[12, 8]}>
-          @TODO move this to the auction results page
-          <AuctionChart status={status} />
-        </Row> */}
       </Content>
     </Layout>
   );
