@@ -3,9 +3,9 @@ import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
 import { Menu, Layout } from 'antd';
 import 'antd/dist/antd.css';
-import { navigate, useLocation } from '@reach/router';
 import { useLeagueState } from '../../context/leagueContext';
 import { parseLeaguePathName } from '../../utilities/helper';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const { Sider } = Layout;
 const { SubMenu } = Menu;
@@ -34,6 +34,7 @@ function LeagueNav() {
   const { leagueId, hasBracketPage } = useLeagueState();
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.LEAGUE_MENU_TOGGLE, LeagueNav, handleMenuToggle);

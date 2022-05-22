@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Link, navigate, Redirect, useLocation } from '@reach/router';
 import { useAuthState } from '../../context/authContext';
 import { Button, message, Result } from 'antd';
 import 'antd/dist/antd.css';
 import Pubsub from '../../utilities/pubsub';
 import { AUTH_FORM_TYPE, LEAGUE_SERVICE_ENDPOINTS, NOTIF } from '../../utilities/constants';
 import LeagueService from '../../services/league/league.service';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 
 function JoinLeague(props) {
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [title, setTitle] = useState('Attempting to Join League');
   const [feedback, setFeedback] = useState('Verifying Credentials');
@@ -106,7 +107,7 @@ function JoinLeague(props) {
 
   const generateDisplay = () => {
     if (joinSuccess) {
-      return <Redirect noThrow to={leaguePath} />
+      return navigate(leaguePath, { replace: true });
     }
 
     return (

@@ -15,32 +15,39 @@ import SettingsUpdateButton from './settingsUpdateButton';
 import Pubsub from '../../utilities/pubsub';
 import SeedGroupModal from './seedGroupModal';
 import GeneralSettings from './generalSettings';
+import { useLocation } from 'react-router-dom';
 
 const { Content } = Layout;
 
-function LeagueSettings(props) {
+function LeagueSettings() {
 
   const [loading, setLoading] = useState(false);
-  // const []
+  const [settingsGroup, setSettingsGroup] = useState('');
 
   const { leagueId, leagueName } = useLeagueState();
 
   const { settingsList, payoutSettings, newSettings } = useSettingsState();
   const settingsDispatch = useSettingsDispatch();
+  const location = useLocation();
+
+  useEffect(() => {
+    const parsedSettingsGroup = location.pathname.match(/(?<=\/leagues\/\d{1,}\/settings\/)\w{1,}($|(?=\/))/ig)[0];
+    setSettingsGroup(parsedSettingsGroup);
+  }, [location]);
 
   useEffect(() => {
     // just forcing a rerender
   }, [leagueId, JSON.stringify(settingsList)]);
 
   const updateSettings = () => {
-    if (props.settingsGroup == 'seed_groups') {
+    if (settingsGroup == 'seed_groups') {
       Pubsub.publish(NOTIF.SEED_GROUP_MODAL_SHOW, null);
     } else {
       setLoading(true);
 
       if (newSettings?.length) {
-        let settingsUpdate = constructUpdatedSettingsArray(props.settingsGroup, newSettings);
-        let endpoint = getUpdateSettingsEndpoint(props.settingsGroup);
+        let settingsUpdate = constructUpdatedSettingsArray(settingsGroup, newSettings);
+        let endpoint = getUpdateSettingsEndpoint(settingsGroup);
 
         LeagueService.callApiWithPromise(endpoint, { 
           leagueId: leagueId,
@@ -71,13 +78,13 @@ function LeagueSettings(props) {
   }
 
   const generateSettings = () => {
-    if (props.settingsGroup == 'league') {
+    if (settingsGroup == 'league') {
       return <GeneralSettings />;
-    } else if (props.settingsGroup == 'auction') {
+    } else if (settingsGroup == 'auction') {
       return generateSettingsView(settingsList);
-    } else if (props.settingsGroup == 'payout') {
+    } else if (settingsGroup == 'payout') {
       return generateSettingsView(payoutSettings);
-    } else if (props.settingsGroup == 'seed_groups') {
+    } else if (settingsGroup == 'seed_groups') {
       return (
         <SeedGroupSettings />
       );
@@ -109,7 +116,7 @@ function LeagueSettings(props) {
                 <Setting
                   key={`${setting.settingId}_${index}`}
                   settingId={setting.settingId}
-                  settingGroup={props.settingsGroup}
+                  settingGroup={settingsGroup}
                   settingIndex={index}
                   type={input.type}
                   precision={input.precision}
@@ -149,13 +156,13 @@ function LeagueSettings(props) {
   const generateSettingsGroupText = () => {
     let name = '';
 
-    if (props.settingsGroup == 'league') {
+    if (settingsGroup == 'league') {
       name = 'League Settings';
-    } else if (props.settingsGroup == 'auction') {
+    } else if (settingsGroup == 'auction') {
       name = 'Auction Settings';
-    } else if (props.settingsGroup == 'payout') {
+    } else if (settingsGroup == 'payout') {
       name = 'Payout Settings'
-    } else if (props.settingsGroup == 'seed_groups') {
+    } else if (settingsGroup == 'seed_groups') {
       name = 'Seed Group Settings'
     } else {
       name = 'Settings';
@@ -167,7 +174,7 @@ function LeagueSettings(props) {
   const getSettingsTooltipText = () => {
     let tooltip = null;
 
-    if (props.settingsGroup == 'seed_groups') {
+    if (settingsGroup == 'seed_groups') {
       tooltip = SETTINGS_TOOLTIPS.GROUPS_HEADER;
     }
 
@@ -175,7 +182,7 @@ function LeagueSettings(props) {
   }
 
   const getSettingsTooltipIcon = () => {
-    if (props.settingsGroup == 'seed_groups') {
+    if (settingsGroup == 'seed_groups') {
       return <QuestionCircleTwoTone />;
     }
 
@@ -185,13 +192,13 @@ function LeagueSettings(props) {
   const getUpdateButtonText = () => {
     let text = '';
 
-    if (props.settingsGroup == 'league') {
+    if (settingsGroup == 'league') {
       text = null
-    } else if (props.settingsGroup == 'auction') {
+    } else if (settingsGroup == 'auction') {
       text = 'Update Auction Settings';
-    } else if (props.settingsGroup == 'payout') {
+    } else if (settingsGroup == 'payout') {
       text = 'Update Payout Settings'
-    } else if (props.settingsGroup == 'seed_groups') {
+    } else if (settingsGroup == 'seed_groups') {
       text = 'New Group'
     } else {
       text = 'Update Settings';

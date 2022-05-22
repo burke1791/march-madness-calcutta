@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './messageBoard.css';
 
-import { navigate } from '@reach/router';
-
-import { Layout, Table, Row, Button } from 'antd';
+import { Layout, Table, Button } from 'antd';
 import 'antd/dist/antd.css';
 import DataService, { Data } from '../../utilities/data';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
 import MessageBoardModal from '../messageBoardModal/messageBoardModal';
+import { useNavigate } from 'react-router-dom';
 
 
 const { Header, Content } = Layout;
@@ -17,6 +16,8 @@ function MessageBoard(props) {
 
   const [leagueName, setLeagueName] = useState(Data.leagueInfo.name || '');
   const [topicList, setTopicList] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.MESSAGE_BOARD_TOPICS_DOWNLOADED, MessageBoard, topicsDownloaded);
