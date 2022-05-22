@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import './messageThread.css';
 
-import { navigate } from '@reach/router';
-
 import { Layout, Row, Button, Comment, List, Form, Input, Avatar } from 'antd';
 import { LeftOutlined, UserOutlined } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 import DataService, { Data } from '../../utilities/data';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
+import { useNavigate } from 'react-router-dom';
 
 const { Header, Content } = Layout;
 const { TextArea } = Input;
@@ -18,6 +17,8 @@ function MessageThread(props) {
   const [messages, setMessages] = useState([]);
   const [newMessageContent, setNewMessageContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.MESSAGE_THREAD_DOWNLOADED, MessageThread, messagesDownloaded);

@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { Router, Redirect } from '@reach/router';
 
 import LeagueNav from '../leagueNav/leagueNav';
 import LeagueHome from '../leagueHome/leagueHome';
@@ -22,6 +21,7 @@ import { useAuthState } from '../../context/authContext';
 import { AuctionProvider } from '../../context/auctionContext';
 import { leagueServiceHelper } from '../../services/league/helper';
 import { genericContextUpdate } from '../../context/helper';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 
 const { Content } = Layout;
 
@@ -29,13 +29,16 @@ function League(props) {
 
   const dispatch = useLeagueDispatch();
   const settingsDispatch = useSettingsDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const { leagueId, leagueMetadataRefresh } = useLeagueState();
   const { settingsRefreshTrigger } = useSettingsState();
   const { authenticated } = useAuthState();
 
   useEffect(() => {
-    genericContextUpdate({ leagueId: props.leagueId }, dispatch);
+    const parsedLeagueId = +location.pathname.match(/(?<=\/leagues\/)\d{1,}($|(?=\/))/ig)[0];
+    genericContextUpdate({ leagueId: parsedLeagueId }, dispatch);
 
     return (() => {
       cleanupContext();
@@ -89,7 +92,7 @@ function League(props) {
 
   const setSettingsInContext = (settings) => {
     console.log(settings);
-    if (settings.length && settings[0].LeagueId !== props.leagueId) {
+    if (settings.length && settings[0].LeagueId != leagueId) {
       // something ain't right
       console.log('settings may not be correct');
     }
@@ -134,7 +137,7 @@ function League(props) {
   }
 
   const setPayoutSettingsInContext = (settings) => {
-    if (settings.length && settings[0].LeagueId !== props.leagueId) {
+    if (settings.length && settings[0].LeagueId != leagueId) {
       // something ain't right
       console.log('payout settings may not be correct');
     }
@@ -213,25 +216,26 @@ function League(props) {
         <LeagueNav />
         <Layout>
           <Content>
-            <Router>
-              <LeagueHome path='/' />
-              <AuctionProvider path='auction'>
-                <LeagueAuction path='/' />
-              </AuctionProvider>
-              <Tournament path='bracket' />
-              {/* <MessageBoard path='message_board' leagueId={props.leagueId} role={role} /> */}
-              {/* <MessageThread path='message_board/:topicId' leagueId={props.leagueId} role={role} /> */}
-              <MemberPage path='member/:userId' />
-              <LeagueSettings path='settings/:settingsGroup' />
-            </Router>
+            <Routes>
+              <Route path='/' element={<LeagueHome />} />
+              <Route path='auction' element={
+                  <AuctionProvider>
+                    <LeagueAuction path='/' />
+                  </AuctionProvider>
+                } 
+              />
+              <Route path='bracket' element={<Tournament />} />
+              {/* <Route path='message_board' element={<MessageBoard leagueId={leagueId} role={role} />} /> */}
+              {/* <Route path='message_board/:topicId' element={<MessageThread leagueId={leagueId} role={role} />} /> */}
+              <Route path='member/:userId' element={<MemberPage />} />
+              <Route path='settings/:settingsGroup' element={<LeagueSettings />} />
+            </Routes>
           </Content>
         </Layout>
       </Layout>
     );
   } else {
-    return (
-      <Redirect to='/' noThrow />
-    );
+    return navigate('/');
   }
   
 }

@@ -4,13 +4,15 @@ import bg from '../images/basketball_court_blur_large.png';
 import auction from '../images/auction_icon.png';
 import money from '../images/cash_icon.png';
 import basketball from '../images/basketball_icon.jpg';
-import { navigate } from '@reach/router';
 import Pubsub from '../utilities/pubsub';
 import { NOTIF, AUTH_FORM_TYPE } from '../utilities/constants';
 import { User } from '../utilities/authService';
 import { Button } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 function LandingPage() {
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.SIGN_IN, LandingPage, handleSignin);

@@ -1,6 +1,5 @@
 import React from 'react';
 import './App.css';
-import { Router } from '@reach/router';
 
 import Topnav from './components/topnav/topnav';
 import Main from './components/main/main';
@@ -13,6 +12,7 @@ import { AuthProvider } from './context/authContext';
 import { SettingsProvider } from './context/leagueSettingsContext';
 import { TournamentProvider } from './context/tournamentContext';
 import JoinLeague from './components/league/joinLeague';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 const { Header } = Layout;
 
@@ -20,26 +20,28 @@ function App() {
 
   return (
     <div className="App">
-      <Layout style={{ height: '100vh' }}>
-        <AuthProvider>
-          <Header style={{ padding: 0 }}>
-            <Topnav />
-          </Header>
-      
-          <LeagueProvider>
-            <SettingsProvider>
-              <TournamentProvider>
-                <Router>
-                  <LandingPage path='/' />
-                  <Main path='/home' />
-                  <League path='/leagues/:leagueId/*' />
-                  <JoinLeague path='/joinLeague' />
-                </Router>
-              </TournamentProvider>
-            </SettingsProvider>
-          </LeagueProvider>
-        </AuthProvider>
-      </Layout>
+      <BrowserRouter>
+        <Layout style={{ height: '100vh' }}>
+          <AuthProvider>
+            <Header style={{ padding: 0 }}>
+              <Topnav />
+            </Header>
+        
+            <LeagueProvider>
+              <SettingsProvider>
+                <TournamentProvider>
+                  <Routes>
+                    <Route path='/' element={<LandingPage />} />
+                    <Route path='/home' element={<Main />} />
+                    <Route path='/leagues/:leagueId/*' element={<League />} />
+                    <Route path='/joinLeague' element={<JoinLeague />} />
+                  </Routes>
+                </TournamentProvider>
+              </SettingsProvider>
+            </LeagueProvider>
+          </AuthProvider>
+        </Layout>
+      </BrowserRouter>
     </div>
   );
 }
