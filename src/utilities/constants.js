@@ -101,7 +101,6 @@ export const NOTIF = {
   LEAGUE_FORM_TOGGLE: 'league_form_toggle',
   LEAGUE_CREATED: 'league_created',
   LEAGUE_JOINED: 'league_joined',
-  LEAGUE_MENU_TOGGLE: 'league_menu_toggle',
   LEAGUE_SUMMARIES_FETCHED: 'league_summaries_fetched',
   LEAGUE_USER_SUMMARIES_FETCHED: 'league_user_summaries_fetched',
   UPCOMING_GAMES_DOWNLOADED: 'upcoming_games_downloaded',

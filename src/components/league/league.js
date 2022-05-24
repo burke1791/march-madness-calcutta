@@ -13,7 +13,7 @@ import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
 import { Layout } from 'antd';
 import 'antd/dist/antd.css';
 import { User } from '../../utilities/authService';
-import LeagueSettings from '../leagueSettings/leagueSettings';
+import LeagueSettings from '../../pages/leagueSettings/leagueSettings';
 import { useSettingsDispatch, useSettingsState } from '../../context/leagueSettingsContext';
 import LeagueService from '../../services/league/league.service';
 import { LEAGUE_SERVICE_ENDPOINTS, SETTING_TYPES } from '../../utilities/constants';
@@ -228,7 +228,7 @@ function League(props) {
               {/* <Route path='message_board' element={<MessageBoard leagueId={leagueId} role={role} />} /> */}
               {/* <Route path='message_board/:topicId' element={<MessageThread leagueId={leagueId} role={role} />} /> */}
               <Route path='member/:userId' element={<MemberPage />} />
-              <Route path='settings/:settingsGroup' element={<LeagueSettings />} />
+              <Route path='settings/*' element={<LeagueSettings />} />
             </Routes>
           </Content>
         </Layout>
