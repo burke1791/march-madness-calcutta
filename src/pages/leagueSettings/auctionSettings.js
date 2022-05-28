@@ -1,6 +1,7 @@
 import React from 'react';
 import { Col, Divider, Layout, Row } from 'antd';
 import AuctionRules from '../../components/auctionRules/auctionRules';
+import SettingsDivider from '../../components/settingsDivider/settingsDivider';
 
 const { Content } = Layout;
 
@@ -8,12 +9,10 @@ function AuctionSettings() {
 
   return (
     <Content>
-      <Row justify='center'>
-        <Col xxl={12} xl={14} lg={16} md={18} sm={20} xs={22}>
-          <Divider orientation='left'>Auction Rules</Divider>
-          <AuctionRules />
-        </Col>
-      </Row>
+      <SettingsDivider justify='center' dividerOrientation='left'>Auction Rules</SettingsDivider>
+      <AuctionRules />
+      <SettingsDivider justify='center' dividerOrientation='left'>Bidding Rules</SettingsDivider>
+      <SettingsDivider justify='center' dividerOrientation='left'>Tax Brackets</SettingsDivider>
     </Content>
   )
 }

@@ -51,6 +51,9 @@ function LeagueSettings() {
         <Menu.Item key='auction'>
           Auction
         </Menu.Item>
+        <Menu.Item key='auction-groups'>
+          Auction Groups
+        </Menu.Item>
         <Menu.Item key='payouts'>
           Payout Rules
         </Menu.Item>
