@@ -31,7 +31,9 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   NEW_LEAGUE_SEED_GROUP: '/newLeagueSeedGroup',
   DELETE_LEAGUE_SEED_GROUP: '/deleteLeagueSeedGroup',
   KICK_LEAGUE_MEMBER: '/kickLeagueMember',
-  UPDATE_LEAGUE_NAME: '/updateLeagueName'
+  UPDATE_LEAGUE_NAME: '/updateLeagueName',
+  GET_AUCTION_BID_RULES: '/getAuctionBidRules',
+  SET_AUCTION_BID_RULES: '/setAuctionBidRules'
 }
 
 export const AUCTION_SERVICE_ENDPOINTS = {
