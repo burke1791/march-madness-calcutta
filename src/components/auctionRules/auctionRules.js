@@ -12,6 +12,7 @@ import AuctionRulesDisplay from './auctionRulesDisplay';
  * @property {String} ruleKey
  * @property {Boolean} isRuleChanged
  * @property {Function} getNewRules - packages the changed rules into a payload to send to the postEndpoint
+ * @property {Function} clearRulesRef - clears the ref containing the updated rules values
  * @property {Array<any>} children - List of antd <Column /> components
  */
 
@@ -50,6 +51,7 @@ function AuctionRules(props) {
   useEffect(() => {
     if (rulesFetchDate != undefined) {
       setDataLoading(false);
+      props.clearRulesRef();
     }
   }, [rulesFetchDate]);
 
@@ -67,8 +69,8 @@ function AuctionRules(props) {
 
   const sendUpdateRulesRequest = () => {
     setUpdateLoading(true);
-    const newRules = props.getNewRules();
-    updateRules(newRules);
+    const payload = props.getNewRules();
+    updateRules(payload);
   }
 
   return (
