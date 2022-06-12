@@ -1,12 +1,11 @@
 import React, { Fragment, useRef, useState } from 'react';
 import { Table, Tooltip } from 'antd';
-import './auctionRules.css';
 import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
 import { QuestionCircleTwoTone } from '@ant-design/icons';
 import AuctionRuleInputNumberCell from './auctionRuleInputNumberCell';
 import AuctionRuleCheckboxCell from './auctionRuleCheckboxCell';
-import AuctionRules from './auctionRules';
+import AuctionRules from '../auctionRules/auctionRules';
 
 const { Column } = Table;
 
