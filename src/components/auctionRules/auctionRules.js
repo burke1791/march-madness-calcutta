@@ -13,6 +13,9 @@ import AuctionRulesDisplay from './auctionRulesDisplay';
  * @property {Boolean} isRuleChanged
  * @property {Function} getNewRules - packages the changed rules into a payload to send to the postEndpoint
  * @property {Function} clearRulesRef - clears the ref containing the updated rules values
+ * @property {Boolean} [showNewRuleButton]
+ * @property {String} [newRuleButtonText]
+ * @property {any} [newRuleTemplate]
  * @property {Array<any>} children - List of antd <Column /> components
  */
 
@@ -77,10 +80,14 @@ function AuctionRules(props) {
     <AuctionRulesDisplay
       tableLoading={dataLoading}
       dataSource={rules}
+      dataSourceChanged={rulesFetchDate?.valueOf()}
       rowKey={props.ruleKey}
       updateLoading={updateLoading}
       isRuleChanged={props.isRuleChanged}
       sendUpdateRulesRequest={sendUpdateRulesRequest}
+      showNewRuleButton={props.showNewRuleButton}
+      newRuleButtonText={props.newRuleButtonText}
+      newRuleTemplate={props.newRuleTemplate}
     >
       {props.children}
     </AuctionRulesDisplay>

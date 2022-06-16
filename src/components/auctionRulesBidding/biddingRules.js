@@ -7,6 +7,12 @@ import AuctionBidRuleInputNumberCell from './auctionBidRuleInputNumberCell';
 
 const { Column } = Table;
 
+const bidRuleTemplate = {
+  MinThresholdExclusive: null,
+  MaxThresholdInclusive: null,
+  MinIncrement: null
+};
+
 function BiddingRules() {
 
   const [ruleChangedEvent, setRuleChangedEvent] = useState(null);
@@ -38,7 +44,7 @@ function BiddingRules() {
   }
 
   const packageChangedRules = () => {
-
+    
   }
 
   const clearRulesRef = () => {
@@ -53,6 +59,9 @@ function BiddingRules() {
       isRuleChanged={!!ruleChangedEvent}
       getNewRules={packageChangedRules}
       clearRulesRef={clearRulesRef}
+      showNewRuleButton={true}
+      newRuleButtonText='New Bid Rule'
+      newRuleTemplate={bidRuleTemplate}
     >
       <Column
         title='Lower Bound'
