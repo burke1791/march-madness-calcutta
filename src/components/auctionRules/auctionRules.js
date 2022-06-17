@@ -60,6 +60,7 @@ function AuctionRules(props) {
 
   useEffect(() => {
     setUpdateLoading(false);
+    console.log(rulesUpdate);
     if (rulesUpdateReturnDate != undefined) {
       downloadRules();
     }
@@ -73,6 +74,7 @@ function AuctionRules(props) {
   const sendUpdateRulesRequest = () => {
     setUpdateLoading(true);
     const payload = props.getNewRules();
+    console.log(payload);
     updateRules(payload);
   }
 

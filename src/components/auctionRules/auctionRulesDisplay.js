@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Row, Col, Table, Button } from 'antd';
 
 /**
@@ -23,6 +23,7 @@ import { Row, Col, Table, Button } from 'antd';
 function AuctionRulesDisplay(props) {
 
   const [tableData, setTableData] = useState([]);
+  const [newRuleNumber, setNewRuleNumber] = useState(0);
 
   useEffect(() => {
     if (props.dataSource?.length > 0) {
@@ -31,10 +32,24 @@ function AuctionRulesDisplay(props) {
   }, [props.dataSourceChanged]);
 
   const addNewRule = () => {
-    const newRuleTemplate = props.newRuleTemplate;
-    newRuleTemplate[props.rowKey] = `newRule_${tableData.length + 1}`;
+    const newRuleTemplate = structuredClone(props.newRuleTemplate);
+    const ruleId = 'newRule_' + newRuleNumber;
+    newRuleTemplate[props.rowKey] = ruleId;
+    newRuleTemplate.deleteNewRule = () => { removeRule(ruleId) };
 
     setTableData([...tableData, newRuleTemplate]);
+    setNewRuleNumber(newRuleNumber + 1);
+  }
+
+  const removeRule = (ruleId) => {
+    const newTableData = tableData.filter(record => {
+      console.log(ruleId);
+      console.log(record);
+    
+      return !(record[props.rowKey] == ruleId);
+    });
+
+    setTableData(newTableData);
   }
 
   const renderNewRuleButton = () => {
@@ -42,7 +57,7 @@ function AuctionRulesDisplay(props) {
       return (
         <Button
           type='primary'
-          style={{ marginTop: 8 }}
+          style={{ marginTop: 8, marginRight: 8 }}
           onClick={addNewRule}
         >
           {props.newRuleButtonText || 'New Rule'}

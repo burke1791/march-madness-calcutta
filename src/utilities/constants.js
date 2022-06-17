@@ -33,7 +33,8 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   KICK_LEAGUE_MEMBER: '/kickLeagueMember',
   UPDATE_LEAGUE_NAME: '/updateLeagueName',
   GET_AUCTION_BID_RULES: '/getAuctionBidRules',
-  SET_AUCTION_BID_RULES: '/setAuctionBidRules'
+  SET_AUCTION_BID_RULES: '/setAuctionBidRules',
+  AUCTION_TAX_RULE: '/auctionTaxRule'
 }
 
 export const AUCTION_SERVICE_ENDPOINTS = {

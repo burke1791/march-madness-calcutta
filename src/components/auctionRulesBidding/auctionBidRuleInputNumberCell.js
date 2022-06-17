@@ -1,11 +1,13 @@
-import { InputNumber } from 'antd';
 import React from 'react';
+import { DeleteTwoTone } from '@ant-design/icons';
+import { InputNumber } from 'antd';
 
 /**
  * @typedef AuctionBidRuleInputNumberCellProps
  * @property {Number} ruleId
  * @property {String} name
  * @property {Number} value
+ * @property {Boolean} isDeleted
  * @property {Function} onChange
  */
 
@@ -25,6 +27,8 @@ function AuctionBidRuleInputNumberCell(props) {
 
 	return (
     <InputNumber
+      status={props.isDeleted ? 'warning' : null}
+      prefix={props.isDeleted ? <DeleteTwoTone /> : null}
       defaultValue={props.value}
       precision={props.precision || 0}
       formatter={formatter}
