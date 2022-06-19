@@ -7,6 +7,8 @@ import { InputNumber } from 'antd';
  * @property {Number} ruleId
  * @property {String} name
  * @property {Number} value
+ * @property {Function} [formatter]
+ * @property {Function} [parser]
  * @property {Boolean} isDeleted
  * @property {Function} onChange
  */
@@ -25,14 +27,18 @@ function AuctionBidRuleInputNumberCell(props) {
     return `$ ${value}`
   }
 
+  const parser = (value) => {
+    return value.replace(/\$\s/g, '');
+  }
+
 	return (
     <InputNumber
       status={props.isDeleted ? 'warning' : null}
       prefix={props.isDeleted ? <DeleteTwoTone /> : null}
       defaultValue={props.value}
       precision={props.precision || 0}
-      formatter={formatter}
-      parser={value => value.replace(/\$\s/g, '')}
+      formatter={props.formatter || formatter}
+      parser={props.parser || parser}
       size='small'
       onChange={onChange}
       style={{ width: '90%' }}

@@ -1,21 +1,21 @@
-import React, { useRef, useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Table } from 'antd';
 import { useLeagueState } from '../../context/leagueContext';
 import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import AuctionRules from '../auctionRules/auctionRules';
-import AuctionBidRuleInputNumberCell from './auctionBidRuleInputNumberCell';
-import AuctionBidRuleDeleteCell from './auctionBidRuleDeleteCell';
+import { AuctionTaxRuleInputNumberCell } from './auctionTaxRuleInputNumberCell';
+import { AuctionTaxRuleDeleteCell } from './auctionTaxRuleDeleteCell';
 
 const { Column } = Table;
 
-const bidRuleTemplate = {
-  MinThresholdExclusive: null,
-  MaxThresholdInclusive: null,
-  MinIncrement: null,
+const taxRuleTemplate = {
+  MinThresholdExclusive: 0,
+  MaxThresholdInclusive: 0,
+  TaxRate: 0,
   IsNewRule: true
 };
 
-function BiddingRules() {
+function TaxRules() {
 
   const [ruleChangedEvent, setRuleChangedEvent] = useState(null);
 
@@ -33,21 +33,31 @@ function BiddingRules() {
     setRuleChangedEvent(new Date().valueOf());
   }
 
+  const taxRateFormatter = (value) => {
+    return `${value} %`;
+  }
+
+  const taxRateParser = (value) => {
+    return value.replace(/%\s/g, '');
+  }
+
   const renderRuleValueCell = (ruleId, name, value) => {
     return (
-      <AuctionBidRuleInputNumberCell
+      <AuctionTaxRuleInputNumberCell
         ruleId={ruleId}
         name={name}
         value={value}
+        formatter={name == 'taxRate' ? taxRateFormatter : null}
+        parser={name == 'taxRate' ? taxRateParser : null}
         isDeleted={rulesRef.current[ruleId]?.isDeleted || false}
         onChange={ruleValueChanged}
       />
-    );
+    )
   }
 
   const renderRuleDeleteCell = (ruleId, isNewRule, deleteNewRule) => {
     return (
-      <AuctionBidRuleDeleteCell
+      <AuctionTaxRuleDeleteCell
         ruleId={ruleId}
         isDeleted={rulesRef.current[ruleId]?.isDeleted || false}
         isNewRule={!!isNewRule}
@@ -72,10 +82,10 @@ function BiddingRules() {
 
     const newRules = keys.map(ruleId => {
       return {
-        auctionBidRuleId: ruleId.includes('newRule') ? null : ruleId,
+        auctionTaxRuleId: ruleId.includes('newRule') ? null : ruleId,
         minThreshold: rulesRef.current[ruleId].minThresholdExclusive || null,
         maxThreshold: rulesRef.current[ruleId].maxThresholdInclusive || null,
-        minIncrement: rulesRef.current[ruleId].minIncrement || null,
+        taxRate: rulesRef.current[ruleId].taxRate || null,
         isDeleted: !!rulesRef.current[ruleId].isDeleted
       };
     });
@@ -95,36 +105,36 @@ function BiddingRules() {
 
   return (
     <AuctionRules
-      getEndpoint={`${LEAGUE_SERVICE_ENDPOINTS.GET_AUCTION_BID_RULES}/${leagueId}`}
-      postEndpoint={`${LEAGUE_SERVICE_ENDPOINTS.SET_AUCTION_BID_RULES}/${leagueId}`}
-      ruleKey='AuctionBidRuleId'
+      getEndpoint={`${LEAGUE_SERVICE_ENDPOINTS.AUCTION_TAX_RULE}/${leagueId}`}
+      postEndpoint={`${LEAGUE_SERVICE_ENDPOINTS.AUCTION_TAX_RULE}/${leagueId}`}
+      ruleKey='AuctionTaxRuleId'
       isRuleChanged={!!ruleChangedEvent}
       getNewRules={packageChangedRules}
       clearRulesRef={clearRulesRef}
-      showNewRuleButton={true}
-      newRuleButtonText='New Bid Rule'
-      newRuleTemplate={bidRuleTemplate}
+      showNewRuleButton
+      newRuleButtonText='New Tax Bracket'
+      newRuleTemplate={taxRuleTemplate}
     >
       <Column
         title='Lower Bound'
         dataIndex='MinThresholdExclusive'
-        render={(text, record) => renderRuleValueCell(record.AuctionBidRuleId, 'minThresholdExclusive', record.MinThresholdExclusive)}
+        render={(text, record) => renderRuleValueCell(record.AuctionTaxRuleId, 'minThresholdExclusive', record.MinThresholdExclusive)}
       />
       <Column
         title='Upper Bound'
         dataIndex='MaxThresholdInclusive'
-        render={(text, record) => renderRuleValueCell(record.AuctionBidRuleId, 'maxThresholdInclusive', record.MaxThresholdInclusive)}
+        render={(text, record) => renderRuleValueCell(record.AuctionTaxRuleId, 'maxThresholdInclusive', record.MaxThresholdInclusive)}
       />
       <Column
-        title='Min Bid Increment'
-        dataIndex='MinIncrement'
-        render={(text, record) => renderRuleValueCell(record.AuctionBidRuleId, 'minIncrement', record.MinIncrement)}
+        title='Tax Rate'
+        dataIndex='TaxRate'
+        render={(text, record) => renderRuleValueCell(record.AuctionTaxRuleId, 'taxRate', record.TaxRate)}
       />
       <Column
-        render={(text, record) => renderRuleDeleteCell(record.AuctionBidRuleId, record.IsNewRule, record.deleteNewRule)}
+        render={(text, record) => renderRuleDeleteCell(record.AuctionTaxRuleId, record.IsNewRule, record.deleteNewRule)}
       />
     </AuctionRules>
-  )
+  );
 }
 
-export default BiddingRules;
+export default TaxRules;
