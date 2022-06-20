@@ -24,6 +24,9 @@ function TaxRules() {
   const rulesRef = useRef({});
 
   const ruleValueChanged = (ruleId, name, value) => {
+    console.log(name);
+    console.log(value);
+    console.log(rulesRef.current);
     if (rulesRef.current[ruleId] === undefined) {
       rulesRef.current[ruleId] = { [name]: value }
     } else {
@@ -33,22 +36,15 @@ function TaxRules() {
     setRuleChangedEvent(new Date().valueOf());
   }
 
-  const taxRateFormatter = (value) => {
-    return `${value} %`;
-  }
-
-  const taxRateParser = (value) => {
-    return value.replace(/%\s/g, '');
-  }
-
   const renderRuleValueCell = (ruleId, name, value) => {
     return (
       <AuctionTaxRuleInputNumberCell
         ruleId={ruleId}
         name={name}
-        value={value}
-        formatter={name == 'taxRate' ? taxRateFormatter : null}
-        parser={name == 'taxRate' ? taxRateParser : null}
+        value={name == 'taxRate' ? +value * 100 : value}
+        addonBefore={name == 'taxRate' ? null : '$'}
+        addonAfter={name =='taxRate' ? '%' : null}
+        precision={2}
         isDeleted={rulesRef.current[ruleId]?.isDeleted || false}
         onChange={ruleValueChanged}
       />
@@ -85,7 +81,7 @@ function TaxRules() {
         auctionTaxRuleId: ruleId.includes('newRule') ? null : ruleId,
         minThreshold: rulesRef.current[ruleId].minThresholdExclusive || null,
         maxThreshold: rulesRef.current[ruleId].maxThresholdInclusive || null,
-        taxRate: rulesRef.current[ruleId].taxRate || null,
+        taxRate: +rulesRef.current[ruleId]?.taxRate / 100 || null,
         isDeleted: !!rulesRef.current[ruleId].isDeleted
       };
     });
@@ -128,7 +124,7 @@ function TaxRules() {
       <Column
         title='Tax Rate'
         dataIndex='TaxRate'
-        render={(text, record) => renderRuleValueCell(record.AuctionTaxRuleId, 'taxRate', record.TaxRate)}
+        render={(text, record) => renderRuleValueCell(record.AuctionTaxRuleId, 'taxRate', +record.TaxRate * 100)}
       />
       <Column
         render={(text, record) => renderRuleDeleteCell(record.AuctionTaxRuleId, record.IsNewRule, record.deleteNewRule)}

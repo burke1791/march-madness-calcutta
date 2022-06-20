@@ -39,6 +39,7 @@ function BiddingRules() {
         ruleId={ruleId}
         name={name}
         value={value}
+        addonBefore='$'
         isDeleted={rulesRef.current[ruleId]?.isDeleted || false}
         onChange={ruleValueChanged}
       />

@@ -9,6 +9,9 @@ import { InputNumber } from 'antd';
  * @property {Number} value
  * @property {Function} [formatter]
  * @property {Function} [parser]
+ * @property {Number} [precision]
+ * @property {Any} [addonBefore]
+ * @property {Any} [addonAfter]
  * @property {Boolean} isDeleted
  * @property {Function} onChange
  */
@@ -20,11 +23,12 @@ import { InputNumber } from 'antd';
 function AuctionBidRuleInputNumberCell(props) {
 
   const onChange = (value) => {
+    console.log(value);
     props.onChange(props.ruleId, props.name, value);
   }
 
   const formatter = (value) => {
-    return `$ ${value}`
+    return value;
   }
 
   const parser = (value) => {
@@ -39,6 +43,8 @@ function AuctionBidRuleInputNumberCell(props) {
       precision={props.precision || 0}
       formatter={props.formatter || formatter}
       parser={props.parser || parser}
+      addonBefore={props.addonBefore}
+      addonAfter={props.addonAfter}
       size='small'
       onChange={onChange}
       style={{ width: '90%' }}
