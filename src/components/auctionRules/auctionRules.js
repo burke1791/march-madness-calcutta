@@ -8,6 +8,7 @@ import AuctionRulesDisplay from './auctionRulesDisplay';
 /**
  * @typedef AuctionRulesProps
  * @property {String} getEndpoint
+ * @property {Function} [getPostProcess]
  * @property {String} postEndpoint
  * @property {String} ruleKey
  * @property {Boolean} isRuleChanged
@@ -35,6 +36,7 @@ function AuctionRules(props) {
     baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
     endpoint: props.getEndpoint,
     method: 'GET',
+    processData: props.getPostProcess || null,
     conditions: [authenticated]
   });
 
@@ -60,7 +62,6 @@ function AuctionRules(props) {
 
   useEffect(() => {
     setUpdateLoading(false);
-    console.log(rulesUpdate);
     if (rulesUpdateReturnDate != undefined) {
       downloadRules();
     }

@@ -24,9 +24,6 @@ function TaxRules() {
   const rulesRef = useRef({});
 
   const ruleValueChanged = (ruleId, name, value) => {
-    console.log(name);
-    console.log(value);
-    console.log(rulesRef.current);
     if (rulesRef.current[ruleId] === undefined) {
       rulesRef.current[ruleId] = { [name]: value }
     } else {
