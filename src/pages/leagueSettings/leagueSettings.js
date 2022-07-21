@@ -5,6 +5,7 @@ import { useLeagueState } from '../../context/leagueContext';
 import GeneralSettings from './generalSettings';
 import MembershipSettings from './membershipSettings';
 import AuctionSettings from './auctionSettings';
+import AuctionGroup from '../../components/auctionRulesGroup/auctionGroup';
 
 function LeagueSettings() {
 
@@ -62,6 +63,7 @@ function LeagueSettings() {
         <Route path='/' element={<GeneralSettings />} />
         <Route path='/roster' element={<MembershipSettings />} />
         <Route path='/auction' element={<AuctionSettings />} />
+        <Route path='/auction-groups' element={<AuctionGroup />} />
 
         <Route path='*' element={<Navigate to={`/leagues/${leagueId}/settings`} replace />} />
       </Routes>
