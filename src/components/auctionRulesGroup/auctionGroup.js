@@ -1,117 +1,90 @@
 import React, { useEffect, useState } from 'react';
-import { Button, List, message, Row, Table } from 'antd';
+import { List, Row, Col, Table, Divider } from 'antd';
 import 'antd/dist/antd.css';
 import { useLeagueState } from '../../context/leagueContext';
-import LeagueService from '../../services/league/league.service';
-import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { leagueServiceHelper } from '../../services/league/helper';
 import { teamDisplayName } from '../../utilities/helper';
 import { useAuthState } from '../../context/authContext';
+import AuctionGroupDeleteButtonCell from './auctionGroupDeleteButtonCell';
+import useData from '../../hooks/useData';
+
+const { Column } = Table;
 
 function AuctionGroup() {
 
-  const seedGroupColumns = [
-    {
-      title: 'Group Name',
-      dataIndex: 'groupName',
-      width: 350
-    },
-    {
-      title: 'Teams',
-      dataIndex: 'teams',
-      width: 300,
-      render: (text, record) => {
-        return (
-          <List
-            dataSource={record.teams}
-            size='small'
-            renderItem={item => {
-              return (
-                <List.Item key={item.slotId} size='small'>
-                  {teamDisplayName(item.teamName, item.seed)}
-                </List.Item>
-              );
-            }}
-          />
-        );
-      }
-    },
-    {
-      key: 'delete',
-      render: (text, record) => {
-        return (
-          <Button
-            type='primary'
-            danger
-            onClick={() => deleteSeedGroup(record.groupId)}
-            loading={deleteLoading}
-          >
-            Delete
-          </Button>
-        )
-      }
-    }
-  ]
-
   const [loading, setLoading] = useState(true);
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  const [groups, setGroups] = useState([]);
 
   const { leagueId, seedGroupsRefresh } = useLeagueState();
   const { authenticated } = useAuthState();
 
+  const [groups, groupsReturnDate, fetchGroups] = useData({
+    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
+    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SEED_GROUPS}/${leagueId}`,
+    method: 'GET',
+    processData: leagueServiceHelper.packageLeagueSeedGroups,
+    conditions: [authenticated, leagueId]
+  });
+
   useEffect(() => {
     if (leagueId && authenticated) {
-      fetchSeedGroups();
+      fetchGroups();
     }
   }, [leagueId, seedGroupsRefresh, authenticated]);
 
-  const fetchSeedGroups = () => {
-    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SEED_GROUPS, { leagueId }).then(response => {
-      let groups = leagueServiceHelper.packageLeagueSeedGroups(response.data);
-      console.log(groups);
-      setGroups(groups);
+  useEffect(() => {
+    if (groupsReturnDate != undefined) {
       setLoading(false);
-    }).catch(error => {
-      setLoading(false);
-      console.log(error);
-    });
-  }
-
-  const deleteSeedGroup = (groupId) => {
-    setDeleteLoading(true);
-
-    let payload = {
-      leagueId: leagueId,
-      groupId: groupId
-    };
-
-    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.DELETE_LEAGUE_SEED_GROUP, { payload }).then(response => {
-      console.log(response);
-      setDeleteLoading(false);
-
-      if (response.data && response.data[0]?.Error != undefined) {
-        message.error(response.data[0].Error);
-      } else {
-        fetchSeedGroups();
-      }
-    }).catch(error => {
-      setDeleteLoading(false);
-      console.log(error);
-    });
-  }
+    }
+  }, [groupsReturnDate]);
 
   return (
     <Row justify='center'>
-      <Table
-        columns={seedGroupColumns}
-        dataSource={groups}
-        loading={loading}
-        rowKey='groupId'
-        rowClassName='pointer'
-        size='small'
-        pagination={false}
-      />
+      <Col xxl={12} xl={14} lg={16} md={18} sm={20} xs={22}>
+        <Divider orientation='left'>Auction Groups</Divider>
+        <Table
+          dataSource={groups}
+          loading={loading}
+          rowKey='groupId'
+          rowClassName='pointer'
+          size='small'
+          pagination={false}
+        >
+          <Column
+            title='Group Name'
+            dataIndex='groupName'
+            width={350}
+          />
+          <Column
+            title='Teams'
+            dataIndex='teams'
+            width={300}
+            render={(text, record) => {
+              return (
+                <List
+                  dataSource={record.teams}
+                  size='small'
+                  renderItem={item => {
+                    return (
+                      <List.Item key={item.slotId} size='small'>
+                        {teamDisplayName(item.teamName, item.seed)}
+                      </List.Item>
+                    );
+                  }}
+                />
+              );
+            }}
+          />
+          <Column
+            key='delete'
+            render={(text, record) => {
+              return (
+                <AuctionGroupDeleteButtonCell groupId={record.groupId} />
+              );
+            }}
+          />
+        </Table>
+      </Col>
     </Row>
   )
 }

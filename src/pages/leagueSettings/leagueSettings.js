@@ -20,7 +20,8 @@ function LeagueSettings() {
   }, [location.pathname]);
 
   const getSelectedMenuItem = () => {
-    const parsedSettingPath = location.pathname.match(/(?<=\/leagues\/\d{1,}\/settings\/)\w{1,}($|(?=\/))/ig);
+    const parsedSettingPath = location.pathname.match(/(?<=\/leagues\/\d{1,}\/settings\/)(\w|-){1,}($|(?=\/))/ig);
+    console.log(parsedSettingPath);
     if (!parsedSettingPath) {
       return 'general';
     }
