@@ -1,92 +1,44 @@
-import React, { useEffect, useState } from 'react';
-import { List, Row, Col, Table, Divider } from 'antd';
-import 'antd/dist/antd.css';
-import { useLeagueState } from '../../context/leagueContext';
-import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
-import { leagueServiceHelper } from '../../services/league/helper';
-import { teamDisplayName } from '../../utilities/helper';
-import { useAuthState } from '../../context/authContext';
-import AuctionGroupDeleteButtonCell from './auctionGroupDeleteButtonCell';
-import useData from '../../hooks/useData';
-
-const { Column } = Table;
+import React, { Fragment, useState } from 'react';
+import { Button, Col, Divider, Row } from 'antd';
+import AuctionGroupTable from './auctionGroupTable';
+import AuctionGroupModal from './auctionGroupModal';
 
 function AuctionGroup() {
 
-  const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const { leagueId, seedGroupsRefresh } = useLeagueState();
-  const { authenticated } = useAuthState();
+  const showGroupModal = () => {
+    setModalVisible(true);
+  }
 
-  const [groups, groupsReturnDate, fetchGroups] = useData({
-    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
-    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SEED_GROUPS}/${leagueId}`,
-    method: 'GET',
-    processData: leagueServiceHelper.packageLeagueSeedGroups,
-    conditions: [authenticated, leagueId]
-  });
-
-  useEffect(() => {
-    if (leagueId && authenticated) {
-      fetchGroups();
-    }
-  }, [leagueId, seedGroupsRefresh, authenticated]);
-
-  useEffect(() => {
-    if (groupsReturnDate != undefined) {
-      setLoading(false);
-    }
-  }, [groupsReturnDate]);
+  const hideGroupModal = () => {
+    setModalVisible(false);
+  }
 
   return (
-    <Row justify='center'>
-      <Col xxl={12} xl={14} lg={16} md={18} sm={20} xs={22}>
-        <Divider orientation='left'>Auction Groups</Divider>
-        <Table
-          dataSource={groups}
-          loading={loading}
-          rowKey='groupId'
-          rowClassName='pointer'
-          size='small'
-          pagination={false}
+    <Fragment>
+      <Row justify='center'>
+        <Col xxl={12} xl={14} lg={16} md={18} sm={20} xs={22}>
+          <Divider orientation='left'>Auction Groups</Divider>
+        </Col>
+      </Row>
+      <Row justify='center'>
+        <Col xxl={12} xl={14} lg={16} md={18} sm={20} xs={22}>
+          <AuctionGroupTable />
+        </Col>
+      </Row>
+      <Row justify='center'>
+        <Button
+          type='primary'
+          onClick={showGroupModal}
+          style={{ marginTop: 8 }}
         >
-          <Column
-            title='Group Name'
-            dataIndex='groupName'
-            width={350}
-          />
-          <Column
-            title='Teams'
-            dataIndex='teams'
-            width={300}
-            render={(text, record) => {
-              return (
-                <List
-                  dataSource={record.teams}
-                  size='small'
-                  renderItem={item => {
-                    return (
-                      <List.Item key={item.slotId} size='small'>
-                        {teamDisplayName(item.teamName, item.seed)}
-                      </List.Item>
-                    );
-                  }}
-                />
-              );
-            }}
-          />
-          <Column
-            key='delete'
-            render={(text, record) => {
-              return (
-                <AuctionGroupDeleteButtonCell groupId={record.groupId} />
-              );
-            }}
-          />
-        </Table>
-      </Col>
-    </Row>
-  )
+          New Group
+        </Button>
+      </Row>
+      <AuctionGroupModal visible={modalVisible} dismiss={hideGroupModal} />
+    </Fragment>
+  );
 }
 
 export default AuctionGroup;
