@@ -5,7 +5,8 @@ import { useLeagueState } from '../../context/leagueContext';
 import GeneralSettings from './generalSettings';
 import MembershipSettings from './membershipSettings';
 import AuctionSettings from './auctionSettings';
-import AuctionGroup from '../../components/auctionRulesGroup/auctionGroup';
+import GroupSettings from './groupSettings';
+import PayoutSettings from './payoutSettings';
 
 function LeagueSettings() {
 
@@ -56,7 +57,7 @@ function LeagueSettings() {
         <Menu.Item key='auction-groups'>
           Auction Groups
         </Menu.Item>
-        <Menu.Item key='payouts'>
+        <Menu.Item key='payout-rules'>
           Payout Rules
         </Menu.Item>
       </Menu>
@@ -64,7 +65,8 @@ function LeagueSettings() {
         <Route path='/' element={<GeneralSettings />} />
         <Route path='/roster' element={<MembershipSettings />} />
         <Route path='/auction' element={<AuctionSettings />} />
-        <Route path='/auction-groups' element={<AuctionGroup />} />
+        <Route path='/auction-groups' element={<GroupSettings />} />
+        <Route path='/payout-rules' element={<PayoutSettings />} />
 
         <Route path='*' element={<Navigate to={`/leagues/${leagueId}/settings`} replace />} />
       </Routes>

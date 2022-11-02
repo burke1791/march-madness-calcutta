@@ -1,9 +1,10 @@
 import React, { Fragment, useState } from 'react';
-import { Button, Col, Divider, Row } from 'antd';
-import AuctionGroupTable from './auctionGroupTable';
-import AuctionGroupModal from './auctionGroupModal';
+import { Button, Col, Row } from 'antd';
+import AuctionGroupTable from '../../components/auctionRulesGroup/auctionGroupTable';
+import AuctionGroupModal from '../../components/auctionRulesGroup/auctionGroupModal';
+import SettingsDivider from '../../components/settingsDivider/settingsDivider';
 
-function AuctionGroup() {
+function GroupSettings() {
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -17,11 +18,7 @@ function AuctionGroup() {
 
   return (
     <Fragment>
-      <Row justify='center'>
-        <Col xxl={12} xl={14} lg={16} md={18} sm={20} xs={22}>
-          <Divider orientation='left'>Auction Groups</Divider>
-        </Col>
-      </Row>
+      <SettingsDivider justify='center' dividerOrientation='left'>Auction Groups</SettingsDivider>
       <Row justify='center'>
         <Col xxl={12} xl={14} lg={16} md={18} sm={20} xs={22}>
           <AuctionGroupTable />
@@ -41,4 +38,4 @@ function AuctionGroup() {
   );
 }
 
-export default AuctionGroup;
+export default GroupSettings;

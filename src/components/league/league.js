@@ -66,7 +66,7 @@ function League(props) {
 
   const fetchSettings = (leagueId) => {
     LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SETTINGS, { leagueId }).then(response => {
-      setSettingsInContext(response.data);
+      setSettingsInContext(response.data.settings);
     }).catch(error => {
       console.log(error);
     });

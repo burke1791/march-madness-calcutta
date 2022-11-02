@@ -1,11 +1,10 @@
 import React from 'react';
-import { Col, Divider, Row } from 'antd';
+import { Divider } from 'antd';
+import SettingsRow from '../settingsRow/settingsRow';
 
 /**
  * @typedef SettingsDividerProps
- * @property {('start'|'center'|'end'|'space-around'|'space-between'|'space-evenly')} justify 
  * @property {('center'|'left'|'right')} dividerOrientation
- * @property {Object} children
  */
 
 /**
@@ -15,13 +14,11 @@ import { Col, Divider, Row } from 'antd';
 function SettingsDivider(props) {
 
   return (
-    <Row justify={props.justify || 'center'}>
-      <Col xxl={12} xl={14} lg={16} md={18} sm={20} xs={22}>
-        <Divider orientation={props.dividerOrientation || 'left'}>
-          {props.children}
-        </Divider>
-      </Col>
-    </Row>
+    <SettingsRow justify='center'>
+      <Divider orientation={props.dividerOrientation || 'left'}>
+        {props.children}
+      </Divider>
+    </SettingsRow>
   );
 }
 

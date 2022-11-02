@@ -66,7 +66,7 @@ function GeneralRules() {
 
   return (
     <AuctionRules
-      getEndpoint={`${LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SETTINGS}/${leagueId}`}
+      getEndpoint={`${LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SETTINGS}/${leagueId}?settingClass=Auction`}
       postEndpoint={LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_SETTINGS}
       ruleKey='SettingParameterId'
       isRuleChanged={!!ruleChangedEvent}
