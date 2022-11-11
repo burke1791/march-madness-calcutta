@@ -3,6 +3,7 @@ import { Layout } from 'antd';
 import SettingsDivider from '../../components/settingsDivider/settingsDivider';
 import SettingsRow from '../../components/settingsRow/settingsRow';
 import PayoutCalculation from '../../components/payoutCalculation/payoutCalculation';
+import PayoutRules from '../../components/auctionRulesPayout/payoutRules';
 
 const { Content } = Layout;
 
@@ -15,7 +16,7 @@ function PayoutSettings() {
         <PayoutCalculation />
       </SettingsRow>
       <SettingsDivider dividerOrientation='left'>Payout Rules</SettingsDivider>
-      {/* PayoutRules */}
+      <PayoutRules />
     </Content>
   )
 }

@@ -4,6 +4,7 @@ import { QuestionCircleTwoTone } from '@ant-design/icons';
 import { useLeagueState } from '../../context/leagueContext';
 import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import AuctionRules from '../auctionRules/auctionRules';
+import { AuctionPayoutRuleInputNumberCell } from './auctionPayoutRuleInputNumberCell';
 
 const { Column } = Table;
 
@@ -24,14 +25,24 @@ function PayoutRules() {
     const newRules = newRulesKeys.map(ruleId => {
       return {
         tournamentPayoutId: ruleId,
-        payoutRate: rulesRef.current[ruleId].payoutRate,
-        payoutThreshold: rulesRef.current[ruleId].payoutThreshold
+        payoutRate: rulesRef.current[ruleId].payoutRateValue || null,
+        payoutThreshold: rulesRef.current[ruleId].payoutThreshold || null
       }
     });
 
     payload.settings = newRules;
 
     return payload;
+  }
+
+  const payoutRateChanged = (ruleId, name, value) => {
+    if (rulesRef.current[ruleId] === undefined) {
+      rulesRef.current[ruleId] = { [name]: value / 100 };
+    } else {
+      rulesRef.current[ruleId][name] = value / 100;
+    }
+
+    setRuleChangedEvent(new Date().valueOf());
   }
 
   const clearRulesRef = () => {
@@ -50,11 +61,11 @@ function PayoutRules() {
       <Column
         title='Rule'
         dataIndex='PayoutName'
-        width='50%'
+        width='60%'
         render={(text, record) => {
           return (
             <Fragment>
-              <span>{record.PayoutName}</span>
+              <span>{record.PayoutName} </span>
               <Tooltip placement='top' title={record.Tooltip}>
                 <QuestionCircleTwoTone />
               </Tooltip>
@@ -63,12 +74,24 @@ function PayoutRules() {
         }}
       />
       <Column
-        title='Payout'
+        title='Payout Rate'
         dataIndex='PayoutRateValue'
-        width='25%'
+        width='40%'
         render={(text, record) => {
-          
+          const payoutRate = record.PayoutRateSuffix == '%' ? (record.PayoutRateValue * 100).toFixed(2) : record.PayoutRateValue.toFixed(2);
+          return (
+            <AuctionPayoutRuleInputNumberCell
+              ruleId={record.TournamentPayoutId}
+              name='payoutRateValue'
+              value={payoutRate}
+              addonBefore={record.PayoutRatePrefix}
+              addonAfter={record.PayoutRateSuffix}
+              precision={record.PayoutRatePrecision}
+              onChange={payoutRateChanged}
+            />
+          );
         }}
+      />
     </AuctionRules>
   );
 }

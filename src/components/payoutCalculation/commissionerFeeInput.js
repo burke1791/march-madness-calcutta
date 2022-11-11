@@ -23,7 +23,7 @@ function CommissionerFeeInput(props) {
       size='small'
       value={props.feeValue}
       onChange={props.feeValueChange}
-      style={{ width: '100%' }}
+      style={{ width: '75%' }}
     />
   );
 }
