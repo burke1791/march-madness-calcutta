@@ -57,6 +57,7 @@ function AuctionRules(props) {
     if (rulesFetchDate != undefined) {
       setDataLoading(false);
       props.clearRulesRef();
+      console.log(rules);
     }
   }, [rulesFetchDate]);
 

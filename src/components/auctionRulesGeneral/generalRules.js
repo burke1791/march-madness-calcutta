@@ -64,10 +64,19 @@ function GeneralRules() {
     rulesRef.current = {}
   }
 
+  const rulesParser = (rules) => {
+    if (rules.settings && rules.settings.length) {
+      return rules.settings;
+    }
+
+    return null;
+  }
+
   return (
     <AuctionRules
       getEndpoint={`${LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SETTINGS}/${leagueId}?settingClass=Auction`}
       postEndpoint={LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_SETTINGS}
+      getPostProcess={rulesParser}
       ruleKey='SettingParameterId'
       isRuleChanged={!!ruleChangedEvent}
       getNewRules={packageChangedRules}
