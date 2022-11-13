@@ -21,12 +21,12 @@ function GeneralSettings() {
           <LeagueInviteInfo />
         </Col>
       </Row>
-      <Row justify='center'>
+      {/* <Row justify='center'>
         <Col xxl={12} xl={14} lg={16} md={18} sm={20} xs={22}>
           <Divider orientation='left'>League Type</Divider>
           Placeholder
         </Col>
-      </Row>
+      </Row> */}
     </Content>
   )
 }
