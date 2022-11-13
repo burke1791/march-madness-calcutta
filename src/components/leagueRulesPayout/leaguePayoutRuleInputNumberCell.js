@@ -1,1 +1,1 @@
-export { default as AuctionPayoutRuleInputNumberCell } from '../auctionRulesBidding/auctionBidRuleInputNumberCell';
+export { default as LeaguePayoutRuleInputNumberCell } from '../auctionRulesBidding/auctionBidRuleInputNumberCell';

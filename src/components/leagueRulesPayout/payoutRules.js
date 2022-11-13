@@ -4,7 +4,7 @@ import { QuestionCircleTwoTone } from '@ant-design/icons';
 import { useLeagueState } from '../../context/leagueContext';
 import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import AuctionRules from '../auctionRules/auctionRules';
-import { AuctionPayoutRuleInputNumberCell } from './leaguePayoutRuleInputNumberCell';
+import { LeaguePayoutRuleInputNumberCell } from './leaguePayoutRuleInputNumberCell';
 
 const { Column } = Table;
 
@@ -80,7 +80,7 @@ function PayoutRules() {
         render={(text, record) => {
           const payoutRate = record.PayoutRateSuffix == '%' ? (record.PayoutRateValue * 100).toFixed(2) : record.PayoutRateValue.toFixed(2);
           return (
-            <AuctionPayoutRuleInputNumberCell
+            <LeaguePayoutRuleInputNumberCell
               ruleId={record.TournamentPayoutId}
               name='payoutRateValue'
               value={payoutRate}
