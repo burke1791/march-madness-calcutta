@@ -3,7 +3,7 @@ import { Layout } from 'antd';
 import SettingsDivider from '../../components/settingsDivider/settingsDivider';
 import SettingsRow from '../../components/settingsRow/settingsRow';
 import PayoutCalculation from '../../components/payoutCalculation/payoutCalculation';
-import PayoutRules from '../../components/auctionRulesPayout/payoutRules';
+import PayoutRules from '../../components/leagueRulesPayout/payoutRules';
 
 const { Content } = Layout;
 

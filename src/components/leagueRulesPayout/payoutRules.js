@@ -4,7 +4,7 @@ import { QuestionCircleTwoTone } from '@ant-design/icons';
 import { useLeagueState } from '../../context/leagueContext';
 import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import AuctionRules from '../auctionRules/auctionRules';
-import { AuctionPayoutRuleInputNumberCell } from './auctionPayoutRuleInputNumberCell';
+import { AuctionPayoutRuleInputNumberCell } from './leaguePayoutRuleInputNumberCell';
 
 const { Column } = Table;
 
