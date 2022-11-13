@@ -38,7 +38,7 @@ function TaxRules() {
       <AuctionTaxRuleInputNumberCell
         ruleId={ruleId}
         name={name}
-        value={name == 'taxRate' ? +value * 100 : value}
+        value={value}
         addonBefore={name == 'taxRate' ? null : '$'}
         addonAfter={name =='taxRate' ? '%' : null}
         precision={2}
@@ -76,9 +76,9 @@ function TaxRules() {
     const newRules = keys.map(ruleId => {
       return {
         auctionTaxRuleId: ruleId.includes('newRule') ? null : ruleId,
-        minThreshold: rulesRef.current[ruleId].minThresholdExclusive || null,
-        maxThreshold: rulesRef.current[ruleId].maxThresholdInclusive || null,
-        taxRate: +rulesRef.current[ruleId]?.taxRate / 100 || null,
+        minThreshold: rulesRef.current[ruleId].minThresholdExclusive != undefined ? rulesRef.current[ruleId].minThresholdExclusive : null,
+        maxThreshold: rulesRef.current[ruleId].maxThresholdInclusive != undefined ? rulesRef.current[ruleId].maxThresholdInclusive : null,
+        taxRate: +rulesRef.current[ruleId]?.taxRate != undefined ? +rulesRef.current[ruleId]?.taxRate / 100 : null,
         isDeleted: !!rulesRef.current[ruleId].isDeleted
       };
     });

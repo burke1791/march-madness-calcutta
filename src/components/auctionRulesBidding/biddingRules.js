@@ -74,9 +74,9 @@ function BiddingRules() {
     const newRules = keys.map(ruleId => {
       return {
         auctionBidRuleId: ruleId.includes('newRule') ? null : ruleId,
-        minThreshold: rulesRef.current[ruleId].minThresholdExclusive || null,
-        maxThreshold: rulesRef.current[ruleId].maxThresholdInclusive || null,
-        minIncrement: rulesRef.current[ruleId].minIncrement || null,
+        minThreshold: rulesRef.current[ruleId].minThresholdExclusive != undefined ? rulesRef.current[ruleId].minThresholdExclusive : null,
+        maxThreshold: rulesRef.current[ruleId].maxThresholdInclusive != undefined ? rulesRef.current[ruleId].maxThresholdInclusive : null,
+        minIncrement: rulesRef.current[ruleId].minIncrement != undefined ? rulesRef.current[ruleId].minIncrement : null,
         isDeleted: !!rulesRef.current[ruleId].isDeleted
       };
     });
