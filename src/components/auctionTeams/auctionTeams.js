@@ -5,6 +5,7 @@ import { Row, List } from 'antd';
 import 'antd/dist/antd.css';
 import { formatMoney } from '../../utilities/helper';
 import Team from '../team/team';
+import { useAuctionState } from '../../context/auctionContext';
 
 function AuctionTeams(props) {
 
@@ -28,11 +29,17 @@ function AuctionTeams(props) {
 
 function AuctionTeamsList(props) {
 
-  const teamsRef = useRef([]);
+  const [loading, setLoading] = useState(true);
+  const [teamsList, setTeamsList] = useState([]);
+
+  const { teams, teamsDownloadedDate } = useAuctionState();
 
   useEffect(() => {
-    teamsRef.current = parseTeams();
-  }, [JSON.stringify(props.teams)]);
+    if (teamsDownloadedDate && teams.length) {
+      setTeamsList(parseTeams(teams));
+      setLoading(false);
+    }
+  }, [teamsDownloadedDate])
 
   const getDisplayType = (isComplete, price) => {
     let displayClass = 'active';
@@ -52,19 +59,19 @@ function AuctionTeamsList(props) {
     };
   }
 
-  const parseTeams = () => {
-    const teams = props.teams.map(team => {
+  const parseTeams = (teams) => {
+    const auctionTeams = teams.map(team => {
       return {
         ...team,
         ...getDisplayType(team.isComplete, team.price)
       }
     });
 
-    teams.sort((a, b) => a.displayOrder - b.displayOrder);
+    auctionTeams.sort((a, b) => a.displayOrder - b.displayOrder);
 
-    console.log(teams);
+    console.log(auctionTeams);
 
-    return teams;
+    return auctionTeams
   }
 
   const getStatusText = (displayClass, price) => {
@@ -83,8 +90,8 @@ function AuctionTeamsList(props) {
     <List
       bordered={true}
       itemLayout='horizontal'
-      dataSource={teamsRef.current}
-      loading={props.loading}
+      dataSource={teamsList}
+      loading={loading}
       size='small'
       style={{ padding: '6px 10px', maxHeight: 'calc(100vh - 160px)', overflow: 'auto', width: '100%' }}
       renderItem={team => (

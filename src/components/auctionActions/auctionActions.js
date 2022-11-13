@@ -33,8 +33,7 @@ function AuctionActions(props) {
   
   const { roleId, leagueId } = useLeagueState();
   const { userId, authenticated } = useAuthState();
-  const { status, displayName, currentItemId, itemTypeId, price, winnerId, winnerAlias, lastBid, prevUpdate, teamLogoUrl, connected } = useAuctionState();
-  const { settingsList } = useSettingsState();
+  const { auctionInterval, status, displayName, currentItemId, itemTypeId, price, winnerId, winnerAlias, lastBid, prevUpdate, teamLogoUrl, connected } = useAuctionState();
 
   useEffect(() => {
     updateBidButtonState();
@@ -120,7 +119,6 @@ function AuctionActions(props) {
 
   const itemComplete = () => {
     if (roleId == 1 || roleId == 2) {
-      // setItemComplete(leagueId);
       props.sendSocketMessage('ITEM_COMPLETE', { leagueId });
     }
   }
@@ -128,7 +126,6 @@ function AuctionActions(props) {
   const placeBid = (value) => {
     setBiddingDisabled(true);
 
-    // placeAuctionBid(leagueId, value);
     props.sendSocketMessage('PLACE_BID', { leagueId: leagueId, amount: value, itemId: currentItemId, itemTypeId: itemTypeId });
   }
 
@@ -143,9 +140,7 @@ function AuctionActions(props) {
   }
 
   const getInterval = () => {
-    let intervalObj = settingsList?.find(obj => obj.settingId == 1);
-
-    let interval = Number(intervalObj?.inputList[0]?.serverValue) || 15;
+    const interval = auctionInterval || 15;
 
     return interval * 1000;
   }

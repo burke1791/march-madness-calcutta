@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AuctionTeams from '../auctionTeams/auctionTeams';
 import AuctionActions from '../auctionActions/auctionActions';
 import AuctionChat from '../auctionChat/auctionChat';
@@ -7,7 +7,7 @@ import { Row, Col, message } from 'antd';
 import 'antd/dist/antd.css';
 import MyTeams from '../myTeams/myTeams';
 import MemberList from '../memberList/memberList';
-import { AUCTION_SERVICE_ENDPOINTS, SOCKETS, AUCTION_STATUS } from '../../utilities/constants';
+import { AUCTION_SERVICE_ENDPOINTS, SOCKETS, AUCTION_STATUS, API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
 import AuctionService from '../../services/autction/auction.service';
@@ -17,10 +17,12 @@ import { auctionServiceHelper } from '../../services/autction/helper';
 import { useAuctionDispatch, useAuctionState } from '../../context/auctionContext';
 import AuctionModal from './auctionModal';
 import AuctionLoadingModal from './auctionLoadingModal';
+import useData from '../../hooks/useData';
+import { parseAuctionSettings } from './helper';
 
 function LeagueAuction(props) {
 
-  const [teams, setTeams] = useState([]);
+  // const [teams, setTeams] = useState([]);
   const [auctionTeamsLoading, setAuctionTeamsLoading] = useState(true);
   const [prizepool, setPrizepool] = useState(0);
   const [myTeams, setMyTeams] = useState([]);
@@ -30,11 +32,21 @@ function LeagueAuction(props) {
   const [leagueUsers, setLeagueUsers] = useState([]);
   const [sidebarInUse, setSidebarInUse] = useState(true);
 
+  const teams = useRef([]);
+
   const { leagueId } = useLeagueState();
   const { userId, authenticated } = useAuthState();
   const { newItemTimestamp, errorMessage, prevUpdate, connected } = useAuctionState();
 
   const auctionDispatch = useAuctionDispatch();
+
+  const [auctionSettings, auctionSettingsReturnDate, fetchAuctionSettings] = useData({
+    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
+    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SETTINGS}/${leagueId}?settingClass=Auction`,
+    method: 'GET',
+    processData: parseAuctionSettings,
+    conditions: [authenticated, leagueId]
+  });
 
   useEffect(() => {
     if (errorMessage !== null && errorMessage !== undefined) {
@@ -59,10 +71,21 @@ function LeagueAuction(props) {
     }
   }, [newItemTimestamp]);
 
+  useEffect(() => {
+    if (auctionSettingsReturnDate && auctionSettings) {
+      const keys = Object.keys(auctionSettings);
+      
+      for (let key of keys) {
+        auctionDispatch({ type: 'update', key: key, value: auctionSettings[key] });
+      }
+    }
+  }, [auctionSettingsReturnDate]);
+
   const fetchAllAuctionData = () => {
     fetchAuctionTeams();
     fetchAuctionBuyIns();
     fetchAuctionStatus();
+    fetchAuctionSettings();
   }
 
   const fetchAuctionTeams = () => {
@@ -95,7 +118,9 @@ function LeagueAuction(props) {
 
   const processAuctionTeams = (data) => {
     let auctionTeams = auctionServiceHelper.packageAuctionTeams(data);
-    setTeams(auctionTeams);
+    // setTeams(auctionTeams);
+    // teams.current = auctionTeams;
+    auctionDispatch({ type: 'update', key: 'teams', value: auctionTeams });
     setAuctionTeamsLoading(false);
     
     const myTeamsArr = auctionTeams.filter(team => {
@@ -158,7 +183,7 @@ function LeagueAuction(props) {
     // @TODO refactor this styling after implementing a toggle functionality for the league navigation
     <Row style={sidebarInUse ? { height: 'calc(100vh - 64px)' } : { height: 'calc(100vh - 114px)' }}>
       <Col span={8}>
-        <AuctionTeams teams={teams} prizepool={prizepool} loading={auctionTeamsLoading} />
+        <AuctionTeams teams={teams.current} prizepool={prizepool} loading={auctionTeamsLoading} />
       </Col>
       <Col span={10} className='flex-growVert-parent'>
         <AuctionActions totalSpent={myTotalBuyIn} sendSocketMessage={props.sendSocketMessage} />
