@@ -9,9 +9,9 @@ import { AuctionTaxRuleDeleteCell } from './auctionTaxRuleDeleteCell';
 const { Column } = Table;
 
 const taxRuleTemplate = {
-  MinThresholdExclusive: 0,
-  MaxThresholdInclusive: 0,
-  TaxRate: 0,
+  MinThresholdExclusive: null,
+  MaxThresholdInclusive: null,
+  TaxRate: null,
   IsNewRule: true
 };
 

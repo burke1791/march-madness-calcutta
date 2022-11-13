@@ -30,7 +30,7 @@ function BiddingWidget(props) {
   }, [price]);
 
   const validatePotentialBid = (bid) => {
-    if (maxBuyin == null) {
+    if (maxBuyin === null) {
       return null;
     }
 
