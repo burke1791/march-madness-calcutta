@@ -36,7 +36,7 @@ export function parseAuctionSettings(data) {
           auctionSettings.minBuyin = +setting.SettingValue;
           break;
         case 'MAX_BUYIN':
-          auctionSettings.maxBuyin = +setting.SettingValue;
+          auctionSettings.maxBuyin = setting.SettingValue == null ? null : +setting.SettingValue;
           break;
         case 'UNCLAIMED_ALLOWED':
           auctionSettings.allowUnsoldTeams = setting.SettingValue.toLowerCase() === 'true' ? true : false;

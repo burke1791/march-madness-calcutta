@@ -93,6 +93,7 @@ function AuctionActions(props) {
   }
 
   const updateBidButtonState = () => {
+    console.log(status);
     if (status === AUCTION_STATUS.BIDDING && connected) {
       setBiddingDisabled(false);
     } else {

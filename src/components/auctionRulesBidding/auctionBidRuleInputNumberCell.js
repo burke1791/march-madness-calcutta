@@ -23,8 +23,8 @@ import { InputNumber } from 'antd';
 function AuctionBidRuleInputNumberCell(props) {
 
   const onChange = (value) => {
-    console.log(value);
-    props.onChange(props.ruleId, props.name, value);
+    console.log(value || -1);
+    props.onChange(props.ruleId, props.name, value || -1);
   }
 
   const formatter = (value) => {
