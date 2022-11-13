@@ -42,16 +42,13 @@ function LeagueNav() {
   const getSelectedMenuItem = () => {
     console.log(location);
     const pathData = parseLeaguePathName(location.pathname);
+    console.log(pathData);
 
     if (pathData.menuItem == undefined) {
       return [TOP_LEVEL_MENU_ITEMS.HOME];
     }
 
-    if (pathData.subMenuItem == undefined) {
-      return [pathData.menuItem];
-    }
-
-    return [`${pathData.menuItem}/${pathData.subMenuItem}`];
+    return [pathData.menuItem];
   }
 
   const handleLeagueNavClick = (event) => {
