@@ -7,7 +7,7 @@ import { Row, Col, message } from 'antd';
 import 'antd/dist/antd.css';
 import MyTeams from '../myTeams/myTeams';
 import MemberList from '../memberList/memberList';
-import { AUCTION_SERVICE_ENDPOINTS, SOCKETS, AUCTION_STATUS } from '../../utilities/constants';
+import { AUCTION_SERVICE_ENDPOINTS, SOCKETS, AUCTION_STATUS, API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
 import AuctionService from '../../services/autction/auction.service';
@@ -17,6 +17,8 @@ import { auctionServiceHelper } from '../../services/autction/helper';
 import { useAuctionDispatch, useAuctionState } from '../../context/auctionContext';
 import AuctionModal from './auctionModal';
 import AuctionLoadingModal from './auctionLoadingModal';
+import useData from '../../hooks/useData';
+import { parseAuctionSettings } from './helper';
 
 function LeagueAuction(props) {
 
@@ -37,6 +39,14 @@ function LeagueAuction(props) {
   const { newItemTimestamp, errorMessage, prevUpdate, connected } = useAuctionState();
 
   const auctionDispatch = useAuctionDispatch();
+
+  const [auctionSettings, auctionSettingsReturnDate, fetchAuctionSettings] = useData({
+    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
+    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SETTINGS}/${leagueId}?settingClass=Auction`,
+    method: 'GET',
+    processData: parseAuctionSettings,
+    conditions: [authenticated, leagueId]
+  });
 
   useEffect(() => {
     if (errorMessage !== null && errorMessage !== undefined) {
@@ -61,10 +71,21 @@ function LeagueAuction(props) {
     }
   }, [newItemTimestamp]);
 
+  useEffect(() => {
+    if (auctionSettingsReturnDate && auctionSettings) {
+      const keys = Object.keys(auctionSettings);
+      
+      for (let key of keys) {
+        auctionDispatch({ type: 'update', key: key, value: auctionSettings[key] });
+      }
+    }
+  }, [auctionSettingsReturnDate]);
+
   const fetchAllAuctionData = () => {
     fetchAuctionTeams();
     fetchAuctionBuyIns();
     fetchAuctionStatus();
+    fetchAuctionSettings();
   }
 
   const fetchAuctionTeams = () => {

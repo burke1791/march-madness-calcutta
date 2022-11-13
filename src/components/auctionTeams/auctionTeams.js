@@ -29,17 +29,15 @@ function AuctionTeams(props) {
 
 function AuctionTeamsList(props) {
 
-  const teamsRef = useRef([]);
+  const [loading, setLoading] = useState(true);
+  const [teamsList, setTeamsList] = useState([]);
 
   const { teams, teamsDownloadedDate } = useAuctionState();
 
-  // useEffect(() => {
-  //   teamsRef.current = parseTeams();
-  // }, [JSON.stringify(props.teams)]);
-
   useEffect(() => {
     if (teamsDownloadedDate && teams.length) {
-      teamsRef.current = parseTeams(teams);
+      setTeamsList(parseTeams(teams));
+      setLoading(false);
     }
   }, [teamsDownloadedDate])
 
@@ -62,7 +60,6 @@ function AuctionTeamsList(props) {
   }
 
   const parseTeams = (teams) => {
-    // const teams = props.teams.map(team => {
     const auctionTeams = teams.map(team => {
       return {
         ...team,
@@ -70,13 +67,10 @@ function AuctionTeamsList(props) {
       }
     });
 
-    // teams.sort((a, b) => a.displayOrder - b.displayOrder);
     auctionTeams.sort((a, b) => a.displayOrder - b.displayOrder);
 
-    // console.log(teams);
     console.log(auctionTeams);
 
-    // return teams;
     return auctionTeams
   }
 
@@ -96,8 +90,8 @@ function AuctionTeamsList(props) {
     <List
       bordered={true}
       itemLayout='horizontal'
-      dataSource={teamsRef.current}
-      loading={props.loading}
+      dataSource={teamsList}
+      loading={loading}
       size='small'
       style={{ padding: '6px 10px', maxHeight: 'calc(100vh - 160px)', overflow: 'auto', width: '100%' }}
       renderItem={team => (

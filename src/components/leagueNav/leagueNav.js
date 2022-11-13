@@ -6,7 +6,6 @@ import { parseLeaguePathName } from '../../utilities/helper';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const { Sider } = Layout;
-const { SubMenu } = Menu;
 
 const TOP_LEVEL_MENU_ITEMS = {
   HOME: 'leagueHome',
@@ -70,8 +69,6 @@ function LeagueNav() {
         // navigate(`/leagues/${leagueId}/message_board`)
       } else if (event.key == TOP_LEVEL_MENU_ITEMS.SETTINGS) {
         navigate(`/leagues/${leagueId}/${event.key}`);
-      } else if (event.keyPath[1] == TOP_LEVEL_MENU_ITEMS.SETTINGS_SUB) {
-        navigate(`/leagues/${leagueId}/${event.key}`);
       }
     } else {
       console.debug('LeagueNav: leagueId is falsy');
@@ -123,20 +120,6 @@ function LeagueNav() {
         <Menu.Item key='settings'>
           Settings
         </Menu.Item>
-        <SubMenu key='settingSub' title='Settings'>
-          <Menu.Item key='settings/league'>
-            League Settings
-          </Menu.Item>
-          <Menu.Item key='settings/auction'>
-            Auction Settings
-          </Menu.Item>
-          <Menu.Item key='settings/seed_groups'>
-            Seed Groups
-          </Menu.Item>
-          <Menu.Item key='settings/payout'>
-            Payout Settings
-          </Menu.Item>
-        </SubMenu>
       </Menu>
     </Sider>
   );
