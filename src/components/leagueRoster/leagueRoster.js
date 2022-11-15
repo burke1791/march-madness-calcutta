@@ -6,44 +6,12 @@ import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
 import LeagueService from '../../services/league/league.service';
 import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { leagueServiceHelper } from '../../services/league/helper';
+import useData from '../../hooks/useData';
+import { API_CONFIG } from '../../utilities/constants';
+
+const { Column } = Table;
 
 function LeagueRoster() {
-
-  const columns = [
-    {
-      title: 'Username',
-      dataIndex: 'name',
-      width: '80%'
-    },
-    {
-      title: 'Role',
-      dataIndex: 'role',
-      width: '20%'
-    },
-    {
-      key: 'kick',
-      width: 100,
-      render: (text, record) => {
-        let disabled = false;
-
-        if (record.id == userId) {
-          disabled = true;
-        }
-        
-        return (
-          <Button
-            type='primary'
-            danger
-            disabled={disabled}
-            onClick={() => kickLeagueMember(record.id)}
-            loading={kickLoading}
-          >
-            Remove
-          </Button>
-        )
-      }
-    }
-  ];
 
   const [loading, setLoading] = useState(true);
   const [kickLoading, setKickLoading] = useState(false);
@@ -53,26 +21,36 @@ function LeagueRoster() {
 
   const leagueDispatch = useLeagueDispatch();
 
+  const [roster, rosterFetchDate, getRoster] = useData({
+    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
+    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES}/${leagueId}`,
+    method: 'GET',
+    conditions: [authenticated],
+    processData: leagueServiceHelper.packageLeagueUserInfo
+  });
+
   useEffect(() => {
+    console.log(authenticated);
+    console.log(leagueId);
     if (authenticated && leagueId) {
-      fetchLeagueRoster();
+      console.log('calling getRoster');
+      getRoster();
     }
   }, [authenticated, leagueId]);
+
+  useEffect(() => {
+    console.log(roster);
+    console.log(rosterFetchDate);
+    if (rosterFetchDate && roster && roster.length > 0) {
+      leagueDispatch({ type: 'update', key: 'userList', value: roster });
+    }
+  }, [rosterFetchDate]);
 
   useEffect(() => {
     if (userList && userList.length) {
       setLoading(false);
     }
-  }, [userList]);
-
-  const fetchLeagueRoster = () => {
-    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES, { leagueId }).then(response => {
-      let leagueUsers = leagueServiceHelper.packageLeagueUserInfo(response.data);
-      leagueDispatch({ type: 'update', key: 'userList', value: leagueUsers });
-    }).catch(error => {
-      console.log(error);
-    });
-  }
+  }, [JSON.stringify(userList)]);
 
   const kickLeagueMember = (kickedUserId) => {
     setKickLoading(true);
@@ -88,7 +66,7 @@ function LeagueRoster() {
       if (response.data && response.data[0]?.Error != undefined) {
         message.error(response.data[0].Error);
       } else {
-        fetchLeagueRoster();
+        getRoster();
       }
 
       setKickLoading(false);
@@ -99,14 +77,47 @@ function LeagueRoster() {
 
   return (
     <Table
-      columns={columns}
       dataSource={userList}
       loading={loading}
       rowKey='id'
       size='small'
       pagination={false}
       style={{ width: '100%' }}
-    />
+    >
+      <Column
+        title='Username'
+        dataIndex='name'
+        width='80%'
+      />
+      <Column
+        title='Role'
+        dataIndex='role'
+        width='20%'
+      />
+      <Column
+        key='kick'
+        width={100}
+        render={(text, record) => {
+          let disabled = false;
+
+          if (record.id == userId) {
+            disabled = true;
+          }
+          
+          return (
+            <Button
+              type='primary'
+              danger
+              disabled={disabled}
+              onClick={() => kickLeagueMember(record.id)}
+              loading={kickLoading}
+            >
+              Remove
+            </Button>
+          )
+        }}
+      />
+    </Table>
   );
 }
 

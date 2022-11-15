@@ -7,17 +7,14 @@ import LeagueModal from '../leagueModal/leagueModal';
 
 import { NOTIF, LEAGUE_FORM_TYPE, LEAGUE_SERVICE_ENDPOINTS, USER_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';
-import { User } from '../../utilities/authService';
-import { Redirect, navigate } from '@reach/router';
 import LeagueService from '../../services/league/league.service';
 import { leagueTableColumns } from './leagueTableColumns';
-import { useAuthState, useAuthDispatch } from '../../context/authContext';
+import { useAuthState, } from '../../context/authContext';
 import { leagueServiceHelper } from '../../services/league/helper';
-import { genericContextUpdate } from '../../context/helper';
 import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
 import UserService from '../../services/user/user.service';
-import { formatDatestamp } from '../../utilities/helper';
 import Team from '../team/team';
+import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -36,7 +33,8 @@ function Main() {
   ]);
   const [inactiveLeagueSummaries, setInactiveLeagueSummaries] = useState([]);
 
-  const { authenticated, alias } = useAuthState();  
+  const { authenticated, alias } = useAuthState();
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.SIGN_OUT, Main, handleSignout);
@@ -136,9 +134,7 @@ function Main() {
       </div>
     );
   } else {
-    return (
-      <Redirect to='/' noThrow />
-    );
+    return navigate('/');
   }
   
 }
@@ -262,6 +258,8 @@ function UpcomingGameListItemTeam(props) {
 
 
 const LeagueSummaries = memo(function LeagueSummaries(props) {
+
+  const navigate = useNavigate();
 
   return (
     <Table

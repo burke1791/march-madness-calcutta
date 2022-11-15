@@ -68,20 +68,16 @@ function LeagueHome() {
       <LeagueHeader class='secondary' text={secondaryHeaderText()} />
       <Content style={{ overflowX: 'hidden' }}>
         <LeagueHomeCards userCount={numUsers} prizepool={prizepool} remainingTeams={remainingTeamsCount} buyIn={myBuyIn} payout={myPayout} />
-        <Row type='flex' justify='center' gutter={[12, 8]}>
+        <Row type='flex' justify='center' gutter={[12, 8]} style={{ marginTop: 16 }}>
           <Col md={20} xxl={16}>
             <LeagueHomeStandings />
           </Col>
         </Row>
-        <Row type='flex' justify='center' gutter={[12, 8]}>
+        <Row type='flex' justify='center' gutter={[12, 8]} style={{ marginTop: 16 }}>
           <Col md={20} xxl={16}>
             <LeagueHomeUpcomingGames />
           </Col>
         </Row>
-        {/* <Row type='flex' justify='center' gutter={[12, 8]}>
-          @TODO move this to the auction results page
-          <AuctionChart status={status} />
-        </Row> */}
       </Content>
     </Layout>
   );

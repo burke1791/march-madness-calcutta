@@ -31,7 +31,10 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   NEW_LEAGUE_SEED_GROUP: '/newLeagueSeedGroup',
   DELETE_LEAGUE_SEED_GROUP: '/deleteLeagueSeedGroup',
   KICK_LEAGUE_MEMBER: '/kickLeagueMember',
-  UPDATE_LEAGUE_NAME: '/updateLeagueName'
+  UPDATE_LEAGUE_NAME: '/updateLeagueName',
+  GET_AUCTION_BID_RULES: '/getAuctionBidRules',
+  SET_AUCTION_BID_RULES: '/setAuctionBidRules',
+  AUCTION_TAX_RULE: '/auctionTaxRule'
 }
 
 export const AUCTION_SERVICE_ENDPOINTS = {
@@ -101,7 +104,6 @@ export const NOTIF = {
   LEAGUE_FORM_TOGGLE: 'league_form_toggle',
   LEAGUE_CREATED: 'league_created',
   LEAGUE_JOINED: 'league_joined',
-  LEAGUE_MENU_TOGGLE: 'league_menu_toggle',
   LEAGUE_SUMMARIES_FETCHED: 'league_summaries_fetched',
   LEAGUE_USER_SUMMARIES_FETCHED: 'league_user_summaries_fetched',
   UPCOMING_GAMES_DOWNLOADED: 'upcoming_games_downloaded',

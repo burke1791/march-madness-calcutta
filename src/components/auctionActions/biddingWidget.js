@@ -20,23 +20,8 @@ import { useAuctionState } from '../../context/auctionContext';
 function BiddingWidget(props) {
 
   const [bidVal, setBidVal] = useState(0);
-  const [minBid, setMinBid] = useState(1);
-  const [maxBuyin, setMaxBuyin] = useState(null);
 
-  const { settingsList } = useSettingsState();
-  const { price } = useAuctionState();
-
-  useEffect(() => {
-    if (settingsList?.length) {
-      const minBidObj = settingsList?.find(obj => obj.settingId == 3);
-      const minBidValue = Number(minBidObj?.inputList[0]?.serverValue) || 1;
-      setMinBid(minBidValue);
-
-      const maxBuyinObj = settingsList?.find(obj => obj.settingId == 2);
-      const maxBuyinValue = Number(maxBuyinObj?.inputList[0]?.serverValue) || null;
-      setMaxBuyin(maxBuyinValue);
-    }
-  }, [JSON.stringify(settingsList)]);
+  const { price, minBid, maxBuyin } = useAuctionState();
 
   useEffect(() => {
     if (price === 0) {
@@ -45,12 +30,12 @@ function BiddingWidget(props) {
   }, [price]);
 
   const validatePotentialBid = (bid) => {
-    if (maxBuyin == null) {
+    if (maxBuyin === null) {
       return null;
     }
 
     if ((bid + props.totalSpent || 0) > maxBuyin) {
-      return 'Bid will exceed maximum buy-in';
+      return `Bid will exceed maximum buy-in of $${maxBuyin}`;
     }
   }
 

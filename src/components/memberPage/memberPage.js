@@ -8,6 +8,7 @@ import { formatMoney, teamDisplayName } from '../../utilities/helper';
 import { useLeagueState } from '../../context/leagueContext';
 import { leagueServiceHelper } from '../../services/league/helper';
 import { useAuthState } from '../../context/authContext';
+import { useLocation } from 'react-router-dom';
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
@@ -59,6 +60,7 @@ function MemberPage(props) {
 
   const [alias, setAlias] = useState('');
   const [teams, setTeams] = useState([]);
+  const [userId, setUserId] = useState(null);
   const [numTeams, setNumTeams] = useState(0);
   const [totalBuyIn, setTotalBuyIn] = useState(0);
   const [taxBuyIn, setTaxBuyIn] = useState(0);
@@ -67,18 +69,26 @@ function MemberPage(props) {
 
   const { leagueId } = useLeagueState();
   const { authenticated } = useAuthState();
+  const location = useLocation();
 
   useEffect(() => {
-    if (authenticated) {
+    const parsedUserId = +location.pathname.match(/(?<=\/leagues\/\d{1,}\/member\/)\d{1,}($|(?=\/))/ig)[0];
+    if (parsedUserId) {
+      setUserId(parsedUserId);
+    }
+  }, [JSON.stringify(location)]);
+
+  useEffect(() => {
+    if (authenticated && userId != null) {
       fetchUserMetadata();
       fetchTeams();
     }
-  }, [authenticated, props.userId]);
+  }, [authenticated, userId]);
 
   const fetchUserMetadata = () => {
     LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_USER_METADATA, {
       leagueId: leagueId,
-      userId: props.userId
+      userId: userId
     }).then(response => {
       if (response.data.length > 0) {
         let data = response.data[0];
@@ -95,7 +105,7 @@ function MemberPage(props) {
   const fetchTeams = () => {
     LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS, {
       leagueId: leagueId,
-      userId: props.userId
+      userId: userId
     }).then(response => {
       if (response.data.length > 0) {
         let userTeams =  leagueServiceHelper.packageUserTeams(response.data);

@@ -4,14 +4,13 @@ import { message, Table, Typography } from 'antd';
 import 'antd/dist/antd.css';
 
 import AlivePie from '../alivePie/alivePie';
-
-import { navigate } from '@reach/router';
 import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
 import { formatMoney } from '../../utilities/helper';
 import { useAuthState } from '../../context/authContext';
 import LeagueService from '../../services/league/league.service';
 import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { leagueServiceHelper } from '../../services/league/helper';
+import { useNavigate } from 'react-router-dom';
 
 const { Text } = Typography;
 
@@ -23,6 +22,7 @@ function LeagueHomeStandings(props) {
   const { userId, authenticated } = useAuthState();
 
   const leagueDispatch = useLeagueDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (authenticated && leagueId) {

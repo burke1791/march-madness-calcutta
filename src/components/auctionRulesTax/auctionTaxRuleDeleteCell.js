@@ -1,0 +1,1 @@
+export { default as AuctionTaxRuleDeleteCell } from '../auctionRulesBidding/auctionBidRuleDeleteCell';

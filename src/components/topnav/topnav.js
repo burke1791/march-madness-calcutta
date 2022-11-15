@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { Link } from '@reach/router';
+import { Link } from 'react-router-dom';
 
 import AuthModal from '../authModal/authModal';
 
-import { Menu } from 'antd';
+import { Menu, Row, Col } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 
@@ -95,14 +95,15 @@ function Topnav() {
               My Account
             </span>
           }
-          style={{ float: 'right' }}
+          key='auth-submenu'
+          style={{ marginLeft: 'auto' }}
         >
           {generateAuthenticatedDropdown()}
         </SubMenu>
       );
     } else {
       return (
-        <Menu.Item key='signin' style={{ float: 'right' }}>
+        <Menu.Item key='signin' style={{ marginLeft: 'auto' }}>
           Sign In
         </Menu.Item>
       );
@@ -122,14 +123,22 @@ function Topnav() {
 
   return (
     <nav className='topnav'>
-      <Menu theme='dark' mode='horizontal' selectable={false} onClick={handleMenuItemClicked} style={{ lineHeight: '64px' }}>
-        <Menu.Item key='brand' style={{ fontSize: '32px' }}>
-          <Link to='/home'>
-            <span>Calcutta</span>
-          </Link>
-        </Menu.Item>
-        {generateAuthMenu()}
-      </Menu>
+      <Row justify='space-between' wrap={false}>
+        <Col flex='1 1 175px'>
+          <Menu theme='dark' mode='horizontal' selectable={false} onClick={handleMenuItemClicked} style={{ lineHeight: '64px' }}>
+            <Menu.Item key='brand' style={{ fontSize: '32px' }}>
+              <Link to='/home'>
+                <span>Calcutta</span>
+              </Link>
+            </Menu.Item>
+          </Menu>
+        </Col>
+        <Col flex='0 1 200px'>
+          <Menu theme='dark' mode='horizontal' selectable={false} onClick={handleMenuItemClicked} style={{ lineHeight: '64px'}}>
+            {generateAuthMenu()}
+          </Menu>
+        </Col>
+      </Row>
       <AuthModal />
     </nav>
   );
