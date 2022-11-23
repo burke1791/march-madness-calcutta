@@ -72,8 +72,10 @@ function MemberPage(props) {
   const location = useLocation();
 
   useEffect(() => {
-    const parsedUserId = +location.pathname.match(/(?<=\/leagues\/\d{1,}\/member\/)\d{1,}($|(?=\/))/ig)[0];
-    if (parsedUserId) {
+    // cannot use lookbehind on mobile because reasons (ugh)
+    const userIdPath = location.pathname.match(/\/member\/\d{1,}($|(?=\/))/ig)[0];
+    const parsedUserId = Number(userIdPath.substring(8));
+    if (parsedUserId && !isNaN(parsedUserId)) {
       setUserId(parsedUserId);
     }
   }, [JSON.stringify(location)]);

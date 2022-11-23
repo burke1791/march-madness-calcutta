@@ -37,7 +37,8 @@ function League(props) {
   const { authenticated } = useAuthState();
 
   useEffect(() => {
-    const parsedLeagueId = +location.pathname.match(/(?<=\/leagues\/)\d{1,}($|(?=\/))/ig)[0];
+    // cannot use lookbehind because it causes issues on mobile (ugh)
+    const parsedLeagueId = +location.pathname.match(/\d{1,}($|(?=\/))/ig)[0];
     genericContextUpdate({ leagueId: parsedLeagueId }, dispatch);
 
     return (() => {

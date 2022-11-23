@@ -15,6 +15,11 @@ import UserService from '../../services/user/user.service';
 import { genericContextUpdate } from '../../context/helper';
 import { userServiceHelper } from '../../services/user/helper';
 
+const brandLink = (
+  <Link to='/home'>
+    <span>Calcutta</span>
+  </Link>
+);
 
 const { SubMenu } = Menu;
 
@@ -73,40 +78,57 @@ function Topnav() {
   }
 
   const generateAuthenticatedDropdown = () => {
-    let menu = [
-      <Menu.Item key='passwordReset' style={{textAlign: 'center'}}  >
-        Reset Password
-      </Menu.Item>,
-      <Menu.Item key='signout' style={{textAlign: 'center'}}  >
-        Sign Out
-      </Menu.Item>
-    ];
+    // let menu = [
+    //   <Menu.Item key='passwordReset' style={{textAlign: 'center'}}  >
+    //     Reset Password
+    //   </Menu.Item>,
+    //   <Menu.Item key='signout' style={{textAlign: 'center'}}  >
+    //     Sign Out
+    //   </Menu.Item>
+    // ];
 
-    return menu;
+    // return menu;
+
+    return [
+      { key: 'passwordReset', label: 'Reset Password', style: { textAlign: 'center' }},
+      { key: 'signout', label: 'Sign Out', style: { textAlign: 'center' }}
+    ];
   }
 
   const generateAuthMenu = () => {
     if (authenticated) {
-      return (
-        <SubMenu
-          title={
-            <span className="submenu-title-wrapper">
-              <SettingOutlined />
-              My Account
-            </span>
-          }
-          key='auth-submenu'
-          style={{ marginLeft: 'auto' }}
-        >
-          {generateAuthenticatedDropdown()}
-        </SubMenu>
+      // return (
+      //   <SubMenu
+      //     title={
+      //       <span className="submenu-title-wrapper">
+      //         <SettingOutlined />
+      //         My Account
+      //       </span>
+      //     }
+      //     key='auth-submenu'
+      //     style={{ marginLeft: 'auto' }}
+      //   >
+      //     {generateAuthenticatedDropdown()}
+      //   </SubMenu>
+      // );
+      const authSubmenu = (
+        <span className="submenu-title-wrapper">
+          <SettingOutlined />
+          My Account
+        </span>
       );
+      return [
+        { key: 'auth-submenu', label: authSubmenu, style: { marginLeft: 'auto' }, children: generateAuthenticatedDropdown() }
+      ];
     } else {
-      return (
-        <Menu.Item key='signin' style={{ marginLeft: 'auto' }}>
-          Sign In
-        </Menu.Item>
-      );
+      // return (
+      //   <Menu.Item key='signin' style={{ marginLeft: 'auto' }}>
+      //     Sign In
+      //   </Menu.Item>
+      // );
+      return [
+        { key: 'signin', label: 'Sign In', style: { marginLeft: 'auto' }}
+      ];
     }
   }
 
@@ -125,18 +147,31 @@ function Topnav() {
     <nav className='topnav'>
       <Row justify='space-between' wrap={false}>
         <Col flex='1 1 175px'>
-          <Menu theme='dark' mode='horizontal' selectable={false} onClick={handleMenuItemClicked} style={{ lineHeight: '64px' }}>
-            <Menu.Item key='brand' style={{ fontSize: '32px' }}>
-              <Link to='/home'>
-                <span>Calcutta</span>
-              </Link>
-            </Menu.Item>
-          </Menu>
+          <Menu
+            theme='dark'
+            mode='horizontal'
+            selectable={false}
+            onClick={handleMenuItemClicked}
+            style={{ lineHeight: '64px' }}
+            items={[
+              { key: 'brand', label: brandLink, style: { fontSize: '32px' }}
+              // <Menu.Item key='brand' style={{ fontSize: '32px' }}>
+              //   <Link to='/home'>
+              //     <span>Calcutta</span>
+              //   </Link>
+              // </Menu.Item>
+            ]}
+          />
         </Col>
         <Col flex='0 1 200px'>
-          <Menu theme='dark' mode='horizontal' selectable={false} onClick={handleMenuItemClicked} style={{ lineHeight: '64px'}}>
-            {generateAuthMenu()}
-          </Menu>
+          <Menu
+            theme='dark'
+            mode='horizontal'
+            selectable={false}
+            onClick={handleMenuItemClicked}
+            style={{ lineHeight: '64px'}}
+            items={generateAuthMenu()}
+          />
         </Col>
       </Row>
       <AuthModal />
