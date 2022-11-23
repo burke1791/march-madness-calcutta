@@ -21,12 +21,13 @@ function LeagueSettings() {
   }, [location.pathname]);
 
   const getSelectedMenuItem = () => {
-    const parsedSettingPath = location.pathname.match(/(?<=\/leagues\/\d{1,}\/settings\/)(\w|-){1,}($|(?=\/))/ig);
+    // cannot use lookbehind on mobile (ugh)
+    const parsedSettingPath = location.pathname.match(/\/settings\/(\w|-){1,}($|(?=\/))/ig);
     console.log(parsedSettingPath);
     if (!parsedSettingPath) {
       return 'general';
     }
-    return parsedSettingPath[0];
+    return parsedSettingPath[0].substring(10);
   }
 
   const handleSettingMenuClick = (event) => {
