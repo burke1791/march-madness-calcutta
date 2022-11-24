@@ -21,7 +21,7 @@ function LeagueNav() {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState([]);
 
-  const { leagueId, hasBracketPage } = useLeagueState();
+  const { leagueId, hasBracketPage, supplementalPages, supplementalPagesSync } = useLeagueState();
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -40,9 +40,7 @@ function LeagueNav() {
   }
 
   const getSelectedMenuItem = () => {
-    console.log(location);
     const pathData = parseLeaguePathName(location.pathname);
-    console.log(pathData);
 
     if (pathData.menuItem == undefined) {
       return [TOP_LEVEL_MENU_ITEMS.HOME];
@@ -56,17 +54,7 @@ function LeagueNav() {
     // setSelectedKeys([event.key]);
 
     if (leagueId) {
-      if (event.key == TOP_LEVEL_MENU_ITEMS.HOME) {
-        navigate(`/leagues/${leagueId}`);
-      } else if (event.key == TOP_LEVEL_MENU_ITEMS.AUCTION) {
-        navigate(`/leagues/${leagueId}/auction`);
-      } else if (event.key == 'bracket') {
-        navigate(`/leagues/${leagueId}/bracket`);
-      } else if (event.key == TOP_LEVEL_MENU_ITEMS.MESSAGE_BOARD) {
-        // navigate(`/leagues/${leagueId}/message_board`)
-      } else if (event.key == TOP_LEVEL_MENU_ITEMS.SETTINGS) {
-        navigate(`/leagues/${leagueId}/${event.key}`);
-      }
+      navigate(`/leagues/${leagueId}/${event.key}`);
     } else {
       console.debug('LeagueNav: leagueId is falsy');
     }
@@ -79,6 +67,20 @@ function LeagueNav() {
           Bracket
         </Menu.Item>
       );
+    }
+
+    return null;
+  }
+
+  const generateSupplementalPageMenuItems = () => {
+    if (supplementalPages && supplementalPages.length > 0) {
+      return supplementalPages.map(page => {
+        return (
+          <Menu.Item key={page.path}>
+            {page.displayName}
+          </Menu.Item>
+        );
+      });
     }
 
     return null;
@@ -101,13 +103,13 @@ function LeagueNav() {
         defaultOpenKeys={['settingSub']}
         selectedKeys={selectedKeys}
       >
-        <Menu.Item key='leagueHome'>
+        <Menu.Item key=''>
           League Home
         </Menu.Item>
         <Menu.Item key='auction'>
           Auction Room
         </Menu.Item>
-        {generateBracketMenuItem()}
+        {generateSupplementalPageMenuItems()}
         {/* <Menu.Item key='myTeams' disabled>
           My Teams
         </Menu.Item>

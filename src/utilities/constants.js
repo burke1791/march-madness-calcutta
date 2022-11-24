@@ -34,7 +34,8 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   UPDATE_LEAGUE_NAME: '/updateLeagueName',
   GET_AUCTION_BID_RULES: '/getAuctionBidRules',
   SET_AUCTION_BID_RULES: '/setAuctionBidRules',
-  AUCTION_TAX_RULE: '/auctionTaxRule'
+  AUCTION_TAX_RULE: '/auctionTaxRule',
+  GET_SUPPLEMENTAL_PAGES: '/getLeagueSupplementalPages'
 }
 
 export const AUCTION_SERVICE_ENDPOINTS = {
