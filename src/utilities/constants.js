@@ -157,3 +157,8 @@ export const SETTINGS_TOOLTIPS = {
   INVITE_CODE: 'Your friends can use this code when they click the "Join League" button on the main page',
   INVITE_URL: 'This Url can be used to navigate directly to a "Join League" page'
 };
+
+export const SUPPLEMENTAL_PAGES = [
+  'world-cup-group-stage',
+  'world-cup-knockout'
+];

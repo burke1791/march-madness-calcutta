@@ -16,7 +16,7 @@ import { User } from '../../utilities/authService';
 import LeagueSettings from '../../pages/leagueSettings/leagueSettings';
 import { useSettingsDispatch } from '../../context/leagueSettingsContext';
 import LeagueService from '../../services/league/league.service';
-import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS, SUPPLEMENTAL_PAGES } from '../../utilities/constants';
 import { useAuthState } from '../../context/authContext';
 import { AuctionProvider } from '../../context/auctionContext';
 import { leagueServiceHelper } from '../../services/league/helper';
@@ -76,14 +76,12 @@ function League(props) {
     if (supplementalPages && supplementalPages.length > 0) {
       const pages = [];
       for (let page of supplementalPages) {
-        switch (page.ReactComponentKey) {
-          case 'world-cup-group-stage':
-            pages.push({
-              displayName: page.PageName,
-              path: page.PathName,
-              displayOrder: page.DisplayOrder
-            });
-            break;
+        if (SUPPLEMENTAL_PAGES.indexOf(page.ReactComponentKey) !== -1) {
+          pages.push({
+            displayName: page.PageName,
+            path: page.PathName,
+            displayOrder: page.DisplayOrder
+          });
         }
       }
 
@@ -106,6 +104,8 @@ function League(props) {
       return supplementalPages.map(page => {
         switch (page.ReactComponentKey) {
           case 'world-cup-group-stage':
+            return <Route key={page.ReactComponentKey} path={page.PathName} element={<WorldCupGroupStage />} />;
+          case 'world-cup-knockout':
             return <Route key={page.ReactComponentKey} path={page.PathName} element={<WorldCupGroupStage />} />;
           default:
             return null;
