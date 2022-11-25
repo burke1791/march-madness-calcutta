@@ -65,3 +65,91 @@ function getTeams(game) {
     }
   ]
 }
+
+/**
+ * @typedef WorldCupTableTeam
+ * @property {Number} MatchupId
+ * @property {String} GroupName
+ * @property {Number} TeamId
+ * @property {String} TeamName
+ * @property {String} [LogoUrl]
+ * @property {Number} TeamOwnerUserId
+ * @property {String} TeamOwnerName
+ * @property {Number} Price
+ * @property {Number} Payout
+ * @property {Number} Wins
+ * @property {Number} Draws
+ * @property {Number} Losses
+ * @property {Number} [Points]
+ * @property {Number} GoalsFor
+ * @property {Number} GoalsAgainst
+ * @property {Number} [GoalDifferential]
+ * @property {Number} [Position]
+ * @property {Boolean} IsEliminated
+ */
+
+/**
+ * @typedef WorldCupGroup
+ * @property {String} groupName
+ * @property {Array<WorldCupTableTeam>} teams
+ */
+
+/**
+ * @function
+ * @param {Array<WorldCupTableTeam>} teams 
+ * @returns {Array<WorldCupGroup>}
+ */
+export function parseWorldCupTables(teams) {
+  const groupNames = [];
+
+  // compute the number of points and goal differential for each team
+  // AND get a unique list of all groups
+  for (let team of teams) {
+    team.Points = Number(team.Wins) * 3 + Number(team.Draws);
+    team.GoalDifferential = Number(team.GoalsFor) - Number(team.GoalsAgainst);
+
+    if (groupNames.indexOf(team.GroupName) === -1) groupNames.push(team.GroupName);
+  }
+
+  // separate teams into their respective groups
+  const groups = [];
+
+  for (let groupName of groupNames) {
+    const groupTeams = teams.filter(team => {
+      return team.GroupName === groupName;
+    });
+
+    // sort the teams by the world cup table rules and tiebreakers
+    /* Position Rules
+      1. Points
+      2. Goal Differential
+      3. Most GoalsFor
+
+      ** The database currently does not return sufficient information to evaluate the below rules **
+      4. Head-to-head
+      5. GD in matches between tied teams
+      6. GoalsFor in matches between tied teams
+      7. Fair Play (better disciplinary record)
+    */
+    groupTeams.sort((a, b) => {
+      return b.Points - a.Points ||
+        b.GoalDifferential - a.GoalDifferential ||
+        b.GoalsFor - a.GoalsFor ||
+        0;
+    });
+
+    let pos = 1;
+
+    for (let groupTeam of groupTeams) {
+      groupTeam.Position = pos;
+      pos++;
+    }
+
+    groups.push({
+      groupName: groupName,
+      teams: groupTeams
+    });
+  }
+
+  return groups;
+}

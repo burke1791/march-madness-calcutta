@@ -1,0 +1,1 @@
+export { default as WorldCupGroupStage } from './worldCupGroupStage/worldCupGroupStage';

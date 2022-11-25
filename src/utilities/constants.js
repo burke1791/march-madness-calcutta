@@ -34,7 +34,8 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   UPDATE_LEAGUE_NAME: '/updateLeagueName',
   GET_AUCTION_BID_RULES: '/getAuctionBidRules',
   SET_AUCTION_BID_RULES: '/setAuctionBidRules',
-  AUCTION_TAX_RULE: '/auctionTaxRule'
+  AUCTION_TAX_RULE: '/auctionTaxRule',
+  GET_SUPPLEMENTAL_PAGES: '/getLeagueSupplementalPages'
 }
 
 export const AUCTION_SERVICE_ENDPOINTS = {
@@ -52,7 +53,8 @@ export const USER_SERVICE_ENDPOINTS = {
 }
 
 export const TOURNAMENT_SERVICE_ENDPOINTS = {
-  GET_TOURNAMENT_TREE: '/getTournamentTree'
+  GET_TOURNAMENT_TREE: '/getTournamentTree',
+  GET_WORLD_CUP_TABLES: '/getWorldCupTables'
 }
 
 export const THEME_COLORS = {
@@ -156,3 +158,8 @@ export const SETTINGS_TOOLTIPS = {
   INVITE_CODE: 'Your friends can use this code when they click the "Join League" button on the main page',
   INVITE_URL: 'This Url can be used to navigate directly to a "Join League" page'
 };
+
+export const SUPPLEMENTAL_PAGES = [
+  'world-cup-group-stage',
+  'world-cup-knockout'
+];

@@ -1,0 +1,17 @@
+
+.eliminated {
+  background-color: #ffccc7;
+}
+
+.pos-advanced {
+  background-color: #b7eb8f;
+}
+
+.highlight {
+  background-color: #91caff;
+}
+
+/* undoes antd's default hover style */
+tbody > tr:hover > td {
+  background-color: unset !important;
+}
