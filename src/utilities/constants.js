@@ -53,7 +53,8 @@ export const USER_SERVICE_ENDPOINTS = {
 }
 
 export const TOURNAMENT_SERVICE_ENDPOINTS = {
-  GET_TOURNAMENT_TREE: '/getTournamentTree'
+  GET_TOURNAMENT_TREE: '/getTournamentTree',
+  GET_WORLD_CUP_TABLES: '/getWorldCupTables'
 }
 
 export const THEME_COLORS = {
