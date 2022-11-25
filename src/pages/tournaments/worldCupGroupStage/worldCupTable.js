@@ -100,15 +100,6 @@ function WorldCupTable(props) {
           <Column
             title='W'
             dataIndex='Wins'
-            render={(text) => {
-              return (
-                <Popover
-                  content='TEST'
-                >
-                  {text}
-                </Popover>
-              )
-            }}
           />
           <Column
             title='D'
