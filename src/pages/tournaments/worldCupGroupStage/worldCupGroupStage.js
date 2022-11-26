@@ -3,7 +3,7 @@ import { Layout } from 'antd';
 import 'antd/dist/antd.css';
 import LeagueHeader from '../../../components/league/leagueHeader';
 import { useLeagueState } from '../../../context/leagueContext';
-import HighlightDropdown from './highlightDropdown';
+import HighlightDropdown from '../common/highlightDropdown';
 import useData from '../../../hooks/useData';
 import { API_CONFIG, TOURNAMENT_SERVICE_ENDPOINTS } from '../../../utilities/constants';
 import { parseWorldCupTables } from '../../../services/tournament/helper';
@@ -58,7 +58,7 @@ function WorldCupGroupStage(props) {
   return (
     <Layout>
       <LeagueHeader class='primary' text={leagueName} />
-      <LeagueHeader class='secondary' text='World Cup Tables' />
+      <LeagueHeader class='secondary' text='Tables' />
       <Content style={{ textAlign: 'center', height: 'calc(100vh - 192px)', overflowY: 'scroll' }}>
         <HighlightDropdown
           selectedUserKey='worldCupSelectedUser'
