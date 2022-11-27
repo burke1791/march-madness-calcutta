@@ -54,7 +54,9 @@ export const USER_SERVICE_ENDPOINTS = {
 
 export const TOURNAMENT_SERVICE_ENDPOINTS = {
   GET_TOURNAMENT_TREE: '/getTournamentTree',
-  GET_WORLD_CUP_TABLES: '/getWorldCupTables'
+  GET_WORLD_CUP_TABLES: '/getWorldCupTables',
+  GET_WORLD_CUP_BRACKET: '/getWorldCupBracket',
+  GET_MARCH_MADNESS_BRACKET: '/getMarchMadnessBracket'
 }
 
 export const THEME_COLORS = {
@@ -161,5 +163,6 @@ export const SETTINGS_TOOLTIPS = {
 
 export const SUPPLEMENTAL_PAGES = [
   'world-cup-group-stage',
-  'world-cup-knockout'
+  'world-cup-knockout',
+  'march-madness-bracket'
 ];

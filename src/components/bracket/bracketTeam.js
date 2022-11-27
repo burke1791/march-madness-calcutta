@@ -1,53 +1,124 @@
-import React from 'react';
-import { Row, Typography } from 'antd';
-import { formatMoney } from '../../utilities/helper';
+import React, { useState, useEffect } from 'react';
+import { Popover } from 'antd';
+import { useTournamentDispatch, useTournamentState } from '../../context/tournamentContext';
+import BracketTeamPopover from './bracketTeamPopover';
+import { teamDisplayName } from '../../utilities/helper';
+import Team from '../team/team';
+import { useBracketState } from '../../context/bracketContext';
+import RectClipped from './rectClipped';
 
-const { Text } = Typography;
+function BracketTeam(props) {
 
-function BracketTeamPopover(props) {
+  const [hover, setHover] = useState(false);
+  const [bracketUserHover, setBracketUserHover] = useState(false);
 
-  const getEliminatedText = () => {
-    if (props.team.teamName == null) {
-      return null;
-    } else if (props.team.eliminated) {
-      return 'Eliminated';
+  const { bracketUserSelected, hoverHighlightId } = useTournamentState();
+  const { gameWidth, scoreWidth } = useBracketState();
+  const tournamentDispatch = useTournamentDispatch();
+
+  useEffect(() => {
+    if (props.ownerId && props.ownerId == bracketUserSelected) {
+      setBracketUserHover(true);
     } else {
-      return 'Alive';
+      setBracketUserHover(false);
+    }
+  }, [bracketUserSelected]);
+
+  useEffect(() => {
+    if (props.id != undefined && hoverHighlightId == props.id) {
+      setHover(true);
+    } else {
+      setHover(false);
+    }
+  }, [hoverHighlightId]);
+
+  const sendHoverMsg = (hover) => {
+    if (props.id != null) {
+      if (hover) {
+        tournamentDispatch({ type: 'update', key: 'hoverHighlightId', value: props.id });
+      } else {
+        tournamentDispatch({ type: 'update', key: 'hoverHighlightId', value: null });
+      }
     }
   }
 
-  const getEliminatedType = () => {
-    if (props.team.teamName == null) {
-      return null;
-    } else if (props.team.eliminated) {
-      return 'danger';
-    } else {
-      return 'success';
+  const getTeamBackground = () => {
+    return (hover || bracketUserHover) ? '#03314e' : '#fff';
+  }
+  
+  const getTeamColor = () => {
+    return (hover || bracketUserHover) ? '#fff' : null;
+  }
+
+  const getTeamTextStyle = () => {
+    let style = { fontSize: 9 };
+    return props.winner ? { fontWeight: 'bold', ...style } : style;
+  }
+
+  const getScoreBackground = () => {
+    return props.winner ? '#e77822' : '#e6f7ff';
+  }
+
+  const getScoreColor = () => {
+    return props.winner ? '#fff' : null;
+  }
+
+  const getScoreTextStyle = () => {
+    let style = { fontSize: 9 };
+
+    return props.winner ? { fontWeight: 'bold', ...style } : style;
+  }
+
+  const generateScoreBackgroundPath = () => {
+    if (props.anchor == 'left') {
+      return <path d={`m${props.x + (gameWidth - scoreWidth)},${props.y + 2.5} h${scoreWidth - 1} a2.5,2.5 0 0 1 2.5,2.5 v9 a2.5,2.5 0 0 1 -2.5,2.5 h-${scoreWidth - 1} z`} fill={getScoreBackground()} />;
+    } else if (props.anchor == 'right') {
+      return <path d={`m${props.x + (scoreWidth + 4)},${props.y + 2.5} h-${scoreWidth - 1} a2.5,2.5 0 0 0 -2.5,2.5 v9 a2.5,2.5 0 0 0 2.5,2.5 h${scoreWidth - 1} z`} fill={getScoreBackground()} />;
     }
   }
 
   return (
-    <div>
-      <Row>
-        <Text>Owner: {props.team.owner}</Text>
-      </Row>
-      <Row>
-        <Text>Price: {formatMoney(props.team.price)}</Text>
-      </Row>
-      <Row>
-        <div>
-          <Text>Payout: </Text>
-          <Text type={props.team.payout >= props.team.price ? 'success' : 'danger'}>{formatMoney(props.team.payout)}</Text>
-        </div>
-      </Row>
-      <Row>
-        <div>
-          <Text>Status: </Text>
-          <Text type={getEliminatedType()}>{getEliminatedText()}</Text>
-        </div>
-      </Row>
-    </div>
-  )
+    <Popover 
+      title={
+        <Team
+          imageSrc={props.team.logoUrl}
+          style={{ fontSize: 18 }}
+          imgStyle={{ maxWidth: 25 }}
+          name={teamDisplayName(props.team.teamName, props.team.seed)}
+        />
+      }
+      content={<BracketTeamPopover team={props.team} />}
+    >
+      <g
+        onMouseEnter={() => sendHoverMsg(true)}
+        onMouseLeave={() => sendHoverMsg(false)}
+      >
+        <rect
+          x={props.x + 2}
+          y={props.y + 2}
+          width={gameWidth}
+          height={15}
+          fill={getTeamBackground()}
+          rx={3}
+          ry={3}
+          style={{ stroke: '#dedede', strokeWidth: 1 }}
+        />
+
+        <RectClipped x={props.x} y={props.y} height={16.5} width={115}>
+          <text x={props.x + (props.anchor == 'left' ? 5 : gameWidth - 5)} y={props.y + 14} textAnchor={props.anchor == 'left' ? 'start' : 'end'} style={getTeamTextStyle()} fill={getTeamColor()}>
+            {props.displayName}
+          </text>
+        </RectClipped>
+
+        {generateScoreBackgroundPath()}
+        <line x1={props.x + (props.anchor == 'left' ? gameWidth - scoreWidth : scoreWidth + 4)} y1={props.y + 2.5} x2={props.x + (props.anchor == 'left' ? gameWidth - scoreWidth : scoreWidth + 4)} y2={props.y + 16.5} style={{ stroke: '#dedede', strokeWidth: 1 }} />
+
+        <text x={props.x + (props.anchor == 'left' ? (gameWidth - (scoreWidth / 2)) : (scoreWidth + 4) / 2)} y={props.y + 14} textAnchor='middle' style={getScoreTextStyle()} fill={getScoreColor()}>
+          {props.score}
+        </text>
+      </g>
+    </Popover>
+  );
 }
 
-export default BracketTeamPopover;
+export default BracketTeam;

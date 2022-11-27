@@ -3,7 +3,6 @@ import React, { Fragment, useEffect } from 'react';
 import LeagueNav from '../leagueNav/leagueNav';
 import LeagueHome from '../leagueHome/leagueHome';
 import LeagueAuction from '../leagueAuction/leagueAuction';
-import Tournament from '../tournament/tournament';
 import MessageBoard from '../messageBoard/messageBoard';
 import MessageThread from '../messageThread/messageThread';
 import MemberPage from '../memberPage/memberPage';
@@ -24,6 +23,8 @@ import { genericContextUpdate } from '../../context/helper';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import useData from '../../hooks/useData';
 import { WorldCupGroupStage } from '../../pages/tournaments';
+import WorldCupKnockout from '../../pages/tournaments/worldCupKnockout/worldCupKnockout';
+import MarchMadnessBracket from '../../pages/tournaments/marchMadnessBracket/marchMadnessBracket';
 
 const { Content } = Layout;
 
@@ -106,7 +107,9 @@ function League(props) {
           case 'world-cup-group-stage':
             return <Route key={page.ReactComponentKey} path={page.PathName} element={<WorldCupGroupStage />} />;
           case 'world-cup-knockout':
-            return <Route key={page.ReactComponentKey} path={page.PathName} element={<WorldCupGroupStage />} />;
+            return <Route key={page.ReactComponentKey} path={page.PathName} element={<WorldCupKnockout />} />;
+          case 'march-madness-bracket':
+            return <Route key={page.ReactComponentKey} path={page.PathName} element={<MarchMadnessBracket />} />;
           default:
             return null;
         }
@@ -150,7 +153,6 @@ function League(props) {
 
               {constructRoutes()}
 
-              {/* <Route path='bracket' element={<Tournament />} /> */}
               {/* <Route path='message_board' element={<MessageBoard leagueId={leagueId} role={role} />} /> */}
               {/* <Route path='message_board/:topicId' element={<MessageThread leagueId={leagueId} role={role} />} /> */}
               <Route path='member/:userId' element={<MemberPage />} />
