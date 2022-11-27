@@ -1,16 +1,30 @@
+/**
+ * @function
+ * @description Returns a formatted string representing US dollars
+ * @param {Number} value 
+ * @returns {String}
+ */
 const formatMoney = (value) => {
-  let moneyString;
+  let symbol;
   value = isNaN(value) ? 0 : value;
   value = parseFloat(+value);
 
-  if (value < 0) {
-    moneyString = '-$';
-    value = Math.abs(value);
+  let moneyString;
+  if (value >= 1000 & value % 1 == 0) {
+    moneyString = Math.abs(value).toFixed(0);
   } else {
-    moneyString = '$';
+    moneyString = Math.abs(value).toFixed(2);
   }
 
-  return `${moneyString}${value.toFixed(2)}`;
+  moneyString = moneyString.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+  if (value < 0) {
+    symbol = '-$';
+  } else {
+    symbol = '$';
+  }
+
+  return `${symbol}${moneyString}`;
 }
 
 const formatTimestamp = (value) => {
