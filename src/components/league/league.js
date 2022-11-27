@@ -3,7 +3,6 @@ import React, { Fragment, useEffect } from 'react';
 import LeagueNav from '../leagueNav/leagueNav';
 import LeagueHome from '../leagueHome/leagueHome';
 import LeagueAuction from '../leagueAuction/leagueAuction';
-import Tournament from '../tournament/tournament';
 import MessageBoard from '../messageBoard/messageBoard';
 import MessageThread from '../messageThread/messageThread';
 import MemberPage from '../memberPage/memberPage';
@@ -154,7 +153,6 @@ function League(props) {
 
               {constructRoutes()}
 
-              {/* <Route path='bracket' element={<Tournament />} /> */}
               {/* <Route path='message_board' element={<MessageBoard leagueId={leagueId} role={role} />} /> */}
               {/* <Route path='message_board/:topicId' element={<MessageThread leagueId={leagueId} role={role} />} /> */}
               <Route path='member/:userId' element={<MemberPage />} />
