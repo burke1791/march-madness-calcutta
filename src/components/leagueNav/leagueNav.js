@@ -7,15 +7,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const { Sider } = Layout;
 
-const TOP_LEVEL_MENU_ITEMS = {
-  HOME: 'leagueHome',
-  AUCTION: 'auction',
-  BRACKET: 'bracket',
-  MESSAGE_BOARD: 'messageBoard',
-  SETTINGS: 'settings',
-  SETTINGS_SUB: 'settingSub'
-};
-
 function LeagueNav() {
 
   const [collapsed, setCollapsed] = useState(false);
@@ -42,11 +33,7 @@ function LeagueNav() {
   const getSelectedMenuItem = () => {
     const pathData = parseLeaguePathName(location.pathname);
 
-    if (pathData.menuItem == undefined) {
-      return [TOP_LEVEL_MENU_ITEMS.HOME];
-    }
-
-    return [pathData.menuItem];
+    return [pathData.menuItem || ''];
   }
 
   const handleLeagueNavClick = (event) => {

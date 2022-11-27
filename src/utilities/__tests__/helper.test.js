@@ -29,4 +29,22 @@ describe('formatMoney', () => {
 
     expect(formatMoney(value)).toBe('$0.00');
   });
+
+  test('commas - no decimal', () => {
+    const value = 1000;
+
+    expect(formatMoney(value)).toBe('$1,000');
+  });
+
+  test('commas - with decimal', () => {
+    const value = 1234.567;
+
+    expect(formatMoney(value)).toBe('$1,234.57');
+  });
+
+  test('large commas - no decimal', () => {
+    const value = 1234567;
+
+    expect(formatMoney(value)).toBe('$1,234,567');
+  });
 });
