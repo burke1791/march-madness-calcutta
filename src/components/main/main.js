@@ -108,7 +108,7 @@ function Main() {
 
   if (authenticated == undefined || authenticated) {
     return (
-      <div>
+      <div style={{ overflowY: 'scroll', paddingBottom: 16 }}>
         <Row type='flex' justify='center'>
           <Title level={1}>{alias}</Title>
         </Row>
@@ -122,9 +122,9 @@ function Main() {
           </Col> */}
           <Col md={24} lg={20} xl={18} xxl={12}>
             <Divider orientation='left'>Active Leagues</Divider>
-            <LeagueSummaries leagueSummaries={activeLeagueSummaries} loading={loading} />
+            <LeagueSummaries leagueSummaries={activeLeagueSummaries} loading={loading} scrollY={500} />
             <Divider orientation='left'>Past Leagues</Divider>
-            <LeagueSummaries leagueSummaries={inactiveLeagueSummaries} loading={loading} />
+            <LeagueSummaries leagueSummaries={inactiveLeagueSummaries} loading={loading} scrollY={500} />
           </Col>
           {/* <Col xs={0} sm={0} md={0} lg={0} xl={0} xxl={6}>
             <LifetimeStats />
@@ -270,6 +270,7 @@ const LeagueSummaries = memo(function LeagueSummaries(props) {
       loading={props.loading}
       rowKey='id'
       rowClassName='pointer'
+      scroll={{ y: props.scrollY }}
       onRow={
         (record) => {
           return {

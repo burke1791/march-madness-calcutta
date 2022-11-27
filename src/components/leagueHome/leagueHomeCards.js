@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Row, Col, Statistic } from 'antd';
 import { UserOutlined, ClockCircleOutlined, DollarTwoTone, FundTwoTone } from '@ant-design/icons';
 import 'antd/dist/antd.css';
+import { formatMoney } from '../../utilities/helper';
 
 const { Meta } = Card;
 
@@ -20,7 +21,7 @@ function LeagueHomeCards(props) {
       </Col>
       <Col xs={0} md={5} xxl={4}>
         <Card style={{ textAlign: 'center' }} bodyStyle={{ padding: '24px 12px' }}>
-          <Statistic title='Prizepool' value={props.prizepool} precision={2} prefix={<DollarTwoTone />} />
+          <Statistic title='Prizepool' value={formatMoney(props.prizepool)} precision={2} prefix={<DollarTwoTone />} />
         </Card>
       </Col>
       <Col xs={0} md={5} xxl={4}>
