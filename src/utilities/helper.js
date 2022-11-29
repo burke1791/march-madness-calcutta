@@ -1,10 +1,11 @@
 /**
  * @function
  * @description Returns a formatted string representing US dollars
- * @param {Number} value 
+ * @param {Number} value
+ * @param {Boolean} excludeSymbol
  * @returns {String}
  */
-const formatMoney = (value) => {
+const formatMoney = (value, excludeSymbol = false) => {
   let symbol;
   value = isNaN(value) ? 0 : value;
   value = parseFloat(+value);
@@ -18,7 +19,11 @@ const formatMoney = (value) => {
 
   moneyString = moneyString.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-  if (value < 0) {
+  if (excludeSymbol && value < 0) {
+    symbol = '-';
+  } else if (excludeSymbol) {
+    symbol = '';
+  } else if (value < 0) {
     symbol = '-$';
   } else {
     symbol = '$';

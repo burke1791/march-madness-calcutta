@@ -25,6 +25,7 @@ import useData from '../../hooks/useData';
 import { WorldCupGroupStage } from '../../pages/tournaments';
 import WorldCupKnockout from '../../pages/tournaments/worldCupKnockout/worldCupKnockout';
 import MarchMadnessBracket from '../../pages/tournaments/marchMadnessBracket/marchMadnessBracket';
+import LeagueTeams from '../leagueTeams/leagueTeams';
 
 const { Content } = Layout;
 
@@ -150,6 +151,7 @@ function League(props) {
                   </AuctionProvider>
                 } 
               />
+              <Route path='teams' element={<LeagueTeams />} />
 
               {constructRoutes()}
 
