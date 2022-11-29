@@ -35,7 +35,9 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   GET_AUCTION_BID_RULES: '/getAuctionBidRules',
   SET_AUCTION_BID_RULES: '/setAuctionBidRules',
   AUCTION_TAX_RULE: '/auctionTaxRule',
-  GET_SUPPLEMENTAL_PAGES: '/getLeagueSupplementalPages'
+  GET_SUPPLEMENTAL_PAGES: '/getLeagueSupplementalPages',
+  GET_MANUAL_PAYOUT_INFO: '/getManualPayoutInfo',
+  SET_MANUAL_PAYOUT_INFO: '/setManualPayoutInfo'
 }
 
 export const AUCTION_SERVICE_ENDPOINTS = {
