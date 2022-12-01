@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Col, Modal, Row, Space, Table, Typography } from 'antd';
+import { Button, Col, Input, Modal, Row, Space, Table, Typography } from 'antd';
 import { formatMoney } from '../../utilities/helper';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
-import InputNumberCell from '../tableCells/inputNumberCell';
+import { InputNumberCell, InputCell } from '../tableCells';
 
 const { Column } = Table;
 const { Text, Title } = Typography;
@@ -12,6 +12,7 @@ const payoutTemplate = {
   PayoutAmount: null,
   PayoutDescription: null,
   UpdatedByUsername: null,
+  UpdatedByUserId: null,
   editable: true
 }
 
@@ -33,6 +34,7 @@ function TeamPayoutModal(props) {
 
   const payoutsRef = useRef([]);
 
+  const [width, setWidth] = useState('75%');
   const [tableData, setTableData] = useState([]);
   const [newPayoutNumber, setNewPayoutNumber] = useState(0);
   const [totalPayout, setTotalPayout] = useState(null);
@@ -42,16 +44,26 @@ function TeamPayoutModal(props) {
   const { authenticated, alias, userId } = useAuthState();
 
   useEffect(() => {
-    setTableData(props.payouts);
-    payoutsRef.current = props.payouts;
-    updateTotalPayouts();
-  }, [JSON.stringify(props.payouts)]);
+    if (props.open) {
+      setTableData(props.payouts);
+      payoutsRef.current = props.payouts;
+      updateTotalPayouts();
+    }
+  }, [JSON.stringify(props.payouts), props.open]);
 
   useEffect(() => {
     if (updateEvent) {
       updateTotalPayouts();
     }
   }, [updateEvent]);
+
+  useEffect(() => {
+    if (window.innerWidth > 720) {
+      setWidth('75%');
+    } else {
+      setWidth('100%');
+    }
+  }, [window.innerWidth]);
 
   const addPayout = () => {
     const newPayoutTemplate = structuredClone(payoutTemplate);
@@ -89,6 +101,7 @@ function TeamPayoutModal(props) {
               Add Payout
             </Button>
             <Button
+              disabled={!updateEvent}
               type='primary'
               size='small'
               onClick={savePayouts}
@@ -104,8 +117,14 @@ function TeamPayoutModal(props) {
   }
 
   const payoutChanged = (name, value) => {
-    console.log(name);
-    console.log(value);
+    const payout = payoutsRef.current.find(p => p.LeagueTeamPayoutId === name);
+    payout.PayoutAmount = value;
+    setUpdateEvent(new Date().valueOf());
+  }
+
+  const payoutDescriptionChanged = (name, value) => {
+    const payout = payoutsRef.current.find(p => p.LeagueTeamPayoutId === name);
+    payout.PayoutDescription = value;
     setUpdateEvent(new Date().valueOf());
   }
 
@@ -117,7 +136,10 @@ function TeamPayoutModal(props) {
   }
 
   const savePayouts = () => {
-    // do nothing for now
+    console.log(payoutsRef.current);
+    const payload = payoutsRef.current.map(p => {
+      
+    })
   }
 
   return (
@@ -126,7 +148,7 @@ function TeamPayoutModal(props) {
       open={props.open}
       onCancel={dismiss}
       footer={null}
-      width={720}
+      width={width}
     >
       <Row justify='center'>
         <Title level={2}>{props.teamName}</Title>
@@ -153,7 +175,6 @@ function TeamPayoutModal(props) {
               render={(value, record) => {
                 if (record.editable) {
                   return (
-                    // create a new component called TableInputNumberCell
                     <InputNumberCell
                       name={record.LeagueTeamPayoutId}
                       value={record.PayoutAmount}
@@ -169,6 +190,18 @@ function TeamPayoutModal(props) {
             <Column
               title='Description'
               dataIndex='PayoutDescription'
+              render={(value, record) => {
+                if (record.editable) {
+                  return (
+                    <InputCell
+                      name={record.LeagueTeamPayoutId}
+                      value={record.PayoutDescription}
+                      onChange={payoutDescriptionChanged}
+                    />
+                  );
+                }
+                return <Text>{record.PayoutDescription}</Text>
+              }}
             />
           </Table>
         </Col>
