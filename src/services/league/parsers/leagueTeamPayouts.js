@@ -80,7 +80,7 @@ export function parseLeagueTeamPayouts(payouts) {
     });
 
     team.totalPayout = totalPayout;
-    team.payouts = payoutArr;
+    team.payouts = payoutArr.filter(p => p.LeagueTeamPayoutId != null);
   }
 
   teams.sort((a, b) => {
