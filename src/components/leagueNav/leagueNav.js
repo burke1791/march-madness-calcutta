@@ -5,6 +5,17 @@ import { useLeagueState } from '../../context/leagueContext';
 import { parseLeaguePathName } from '../../utilities/helper';
 import { useNavigate, useLocation } from 'react-router-dom';
 
+const menuItems = {
+  start: [
+    { key: '', label: 'League Home' },
+    { key: 'auction', label: 'Auction Room' },
+    { key: 'teams', label: 'Teams' }
+  ],
+  tail: [
+    { key: 'settings', label: 'Settings' }
+  ]
+};
+
 const { Sider } = Layout;
 
 function LeagueNav() {
@@ -62,15 +73,28 @@ function LeagueNav() {
   const generateSupplementalPageMenuItems = () => {
     if (supplementalPages && supplementalPages.length > 0) {
       return supplementalPages.map(page => {
-        return (
-          <Menu.Item key={page.path}>
-            {page.displayName}
-          </Menu.Item>
-        );
+        return { key: page.path, label: page.displayName };
       });
     }
 
     return null;
+  }
+
+  const getMenuItems = () => {
+    const supplementalItems = generateSupplementalPageMenuItems();
+
+    if (supplementalItems && supplementalItems.length > 0) {
+      return [
+        ...menuItems.start,
+        ...supplementalItems,
+        ...menuItems.tail
+      ];
+    } else {
+      return [
+        ...menuItems.start,
+        ...menuItems.tail
+      ];
+    }
   }
 
   return (
@@ -89,23 +113,18 @@ function LeagueNav() {
         style={{ height: '100%', borderRight: 0 }}
         defaultOpenKeys={['settingSub']}
         selectedKeys={selectedKeys}
+        items={getMenuItems()}
       >
-        <Menu.Item key=''>
+        {/* <Menu.Item key=''>
           League Home
         </Menu.Item>
         <Menu.Item key='auction'>
           Auction Room
         </Menu.Item>
         {generateSupplementalPageMenuItems()}
-        {/* <Menu.Item key='myTeams' disabled>
-          My Teams
-        </Menu.Item>
-        <Menu.Item key='messageBoard' disabled>
-          Message Board
-        </Menu.Item> */}
         <Menu.Item key='settings'>
           Settings
-        </Menu.Item>
+        </Menu.Item> */}
       </Menu>
     </Sider>
   );
