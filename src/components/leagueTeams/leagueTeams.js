@@ -102,6 +102,7 @@ function LeagueTeams(props) {
               size='small'
               loading={loading}
               rowKey='TeamId'
+              scroll={{ x: '100%' }}
             >
               <Column
                 title='Team'
@@ -110,6 +111,7 @@ function LeagueTeams(props) {
               <Column
                 title='Owner'
                 dataIndex='Username'
+                responsive={['md']}
               />
               <Column
                 title='Current Payout'
