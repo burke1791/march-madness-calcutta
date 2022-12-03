@@ -1,13 +1,17 @@
 import React from 'react';
-import { Layout } from 'antd';
+import { Layout, Skeleton } from 'antd';
 import SettingsDivider from '../../components/settingsDivider/settingsDivider';
 import SettingsRow from '../../components/settingsRow/settingsRow';
 import PayoutCalculation from '../../components/payoutCalculation/payoutCalculation';
 import PayoutRules from '../../components/leagueRulesPayout/payoutRules';
+import { useSettingsState } from '../../context/leagueSettingsContext';
+import PayoutRulesText from '../../components/leagueRulesPayout/payoutRulesText';
 
 const { Content } = Layout;
 
 function PayoutSettings() {
+
+  const { calcOption } = useSettingsState();
 
   return (
     <Content>
@@ -16,7 +20,7 @@ function PayoutSettings() {
         <PayoutCalculation />
       </SettingsRow>
       <SettingsDivider dividerOrientation='left'>Payout Rules</SettingsDivider>
-      <PayoutRules />
+      {calcOption?.toLowerCase() === 'automatic' ? <PayoutRules /> : <PayoutRulesText />}
     </Content>
   )
 }

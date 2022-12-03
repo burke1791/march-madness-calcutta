@@ -5,6 +5,7 @@ import useData from '../../hooks/useData';
 import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useAuthState } from '../../context/authContext';
 import { useLeagueState } from '../../context/leagueContext';
+import { useSettingsDispatch } from '../../context/leagueSettingsContext';
 
 const { Option } = Select;
 
@@ -20,6 +21,8 @@ function PayoutCalculation() {
 
   const { authenticated } = useAuthState();
   const { leagueId } = useLeagueState();
+
+  const settingsDispatch = useSettingsDispatch();
 
   const [payoutSettings, settingsFetchDate, getSettings] = useData({
     baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
@@ -46,7 +49,7 @@ function PayoutCalculation() {
   useEffect(() => {
     if (payoutSettings) {
       // parse allowed calculation options
-      if (payoutSettings.allowed && payoutSettings.allowed.length > 1) {
+      if (payoutSettings.allowed && payoutSettings.allowed.length > 0) {
         const calcAllowed = payoutSettings.allowed.filter(val => {
           return val.Code === 'PAYOUT_CALCULATION_MODE';
         });
@@ -59,6 +62,7 @@ function PayoutCalculation() {
         const selectedCalcOption = payoutSettings.settings.find(s => s.Code === 'PAYOUT_CALCULATION_MODE');
         console.log(selectedCalcOption);
         setSelectedCalcOption(selectedCalcOption.SettingValue);
+        settingsDispatch({ type: 'update', key: 'calcOption', value: selectedCalcOption.SettingValue });
 
         // parse current commissioner's fee value
         const feePercent = payoutSettings.settings.find(s => s.Code === 'COMMISSIONER_FEE_PERCENT');
@@ -92,6 +96,7 @@ function PayoutCalculation() {
   const calcOptionSelected = (opt) => {
     setIsSettingChanged(true);
     setSelectedCalcOption(opt);
+    settingsDispatch({ type: 'update', key: 'calcOption', value: opt });
   }
 
   const commissionerFeeTypeChange = (event) => {

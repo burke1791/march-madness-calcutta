@@ -78,16 +78,6 @@ function Topnav() {
   }
 
   const generateAuthenticatedDropdown = () => {
-    // let menu = [
-    //   <Menu.Item key='passwordReset' style={{textAlign: 'center'}}  >
-    //     Reset Password
-    //   </Menu.Item>,
-    //   <Menu.Item key='signout' style={{textAlign: 'center'}}  >
-    //     Sign Out
-    //   </Menu.Item>
-    // ];
-
-    // return menu;
 
     return [
       { key: 'passwordReset', label: 'Reset Password', style: { textAlign: 'center' }},
@@ -97,20 +87,6 @@ function Topnav() {
 
   const generateAuthMenu = () => {
     if (authenticated) {
-      // return (
-      //   <SubMenu
-      //     title={
-      //       <span className="submenu-title-wrapper">
-      //         <SettingOutlined />
-      //         My Account
-      //       </span>
-      //     }
-      //     key='auth-submenu'
-      //     style={{ marginLeft: 'auto' }}
-      //   >
-      //     {generateAuthenticatedDropdown()}
-      //   </SubMenu>
-      // );
       const authSubmenu = (
         <span className="submenu-title-wrapper">
           <SettingOutlined />
@@ -121,11 +97,6 @@ function Topnav() {
         { key: 'auth-submenu', label: authSubmenu, style: { marginLeft: 'auto' }, children: generateAuthenticatedDropdown() }
       ];
     } else {
-      // return (
-      //   <Menu.Item key='signin' style={{ marginLeft: 'auto' }}>
-      //     Sign In
-      //   </Menu.Item>
-      // );
       return [
         { key: 'signin', label: 'Sign In', style: { marginLeft: 'auto' }}
       ];
@@ -155,11 +126,6 @@ function Topnav() {
             style={{ lineHeight: '64px' }}
             items={[
               { key: 'brand', label: brandLink, style: { fontSize: '32px' }}
-              // <Menu.Item key='brand' style={{ fontSize: '32px' }}>
-              //   <Link to='/home'>
-              //     <span>Calcutta</span>
-              //   </Link>
-              // </Menu.Item>
             ]}
           />
         </Col>
