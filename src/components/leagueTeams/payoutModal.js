@@ -1,18 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, Col, Input, Modal, Row, Space, Table, Typography } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Col, message, Modal, Row, Space, Typography } from 'antd';
 import { formatMoney } from '../../utilities/helper';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
-import { InputNumberCell, InputCell } from '../tableCells';
+import useData from '../../hooks/useData';
+import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import LeagueTeamPayoutTable from './leagueTeamPayoutTable';
 
-const { Column } = Table;
-const { Text, Title } = Typography;
+const { Title } = Typography;
 
 const payoutTemplate = {
   PayoutAmount: null,
   PayoutDescription: null,
   UpdatedByUsername: null,
   UpdatedByUserId: null,
+  IsDeleted: false,
   editable: true
 }
 
@@ -24,6 +26,8 @@ const payoutTemplate = {
  * @property {Array} payouts
  * @property {Boolean} open
  * @property {Function} dismiss
+ * @property {Function} refreshPayouts
+ * @property {Number} refreshView
  */
 
 /**
@@ -32,24 +36,39 @@ const payoutTemplate = {
  */
 function TeamPayoutModal(props) {
 
-  const payoutsRef = useRef([]);
-
   const [width, setWidth] = useState('75%');
   const [tableData, setTableData] = useState([]);
+  const [updatedPayouts, setUpdatedPayouts] = useState([]);
   const [newPayoutNumber, setNewPayoutNumber] = useState(0);
   const [totalPayout, setTotalPayout] = useState(null);
   const [updateEvent, setUpdateEvent] = useState(null);
+  const [saveLoading, setSaveLoading] = useState(false);
 
-  const { roleId } = useLeagueState();
+  const { roleId, leagueId } = useLeagueState();
   const { authenticated, alias, userId } = useAuthState();
+
+  const [payoutSet, payoutSetReturnDate, setPayouts] = useData({
+    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
+    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.SET_LEAGUE_TEAM_PAYOUTS}/${leagueId}`,
+    method: 'POST',
+    conditions: [authenticated, leagueId]
+  });
 
   useEffect(() => {
     if (props.open) {
-      setTableData(props.payouts);
-      payoutsRef.current = props.payouts;
-      updateTotalPayouts();
+      if (props.payouts.length > 0) {
+        setTableData([...props.payouts]);
+      }
+      setUpdatedPayouts([]);
+      setUpdateEvent(new Date().valueOf());
     }
-  }, [JSON.stringify(props.payouts), props.open]);
+  }, [props.open]);
+
+  useEffect(() => {
+    setUpdatedPayouts([]);
+    setTableData([...props.payouts]);
+    setUpdateEvent(new Date().valueOf());
+  }, [props.refreshView]);
 
   useEffect(() => {
     if (updateEvent) {
@@ -65,27 +84,75 @@ function TeamPayoutModal(props) {
     }
   }, [window.innerWidth]);
 
+  useEffect(() => {
+    if (payoutSetReturnDate) {
+      props.refreshPayouts();
+      if (payoutSet && payoutSet.length && payoutSet.Error) {
+        message.error(payoutSet[0].Error);
+      }
+      setSaveLoading(false);
+    }
+  }, [payoutSetReturnDate]);
+
   const addPayout = () => {
     const newPayoutTemplate = structuredClone(payoutTemplate);
     newPayoutTemplate.LeagueTeamPayoutId = `newPayout_${newPayoutNumber}`;
     newPayoutTemplate.UpdatedByUsername = alias;
 
-    payoutsRef.current = [...payoutsRef.current, newPayoutTemplate];
-    setTableData([...payoutsRef.current, newPayoutTemplate]);
+    setTableData([...tableData, newPayoutTemplate]);
     setNewPayoutNumber(newPayoutNumber + 1);
   }
 
   const updateTotalPayouts = () => {
-    console.log(payoutsRef.current);
-    if (payoutsRef.current.length > 0) {
+    if (tableData.length > 0) {
       let totalPayout = 0;
-      payoutsRef.current.forEach(payout => {
-        totalPayout += payout.PayoutAmount;
+      tableData.forEach(payout => {
+        if (!payout.IsDeleted) {
+          totalPayout += payout.PayoutAmount;
+        }
       });
       setTotalPayout(totalPayout);
     } else {
       setTotalPayout(0);
     }
+  }
+
+  const savePayouts = () => {
+    setSaveLoading(true);
+
+    const payouts = [];
+
+    for (let name of updatedPayouts) {
+      const payout = tableData.find(p => p.LeagueTeamPayoutId == name);
+      const id = payout.LeagueTeamPayoutId.includes('newPayout_') ? null : payout.LeagueTeamPayoutId;
+
+      payouts.push({
+        LeagueTeamPayoutId: id,
+        TeamId: props.teamId,
+        PayoutAmount: payout.PayoutAmount,
+        PayoutDescription: payout.PayoutDescription,
+        UpdatedByUserId: userId,
+        IsDeleted: !!payout.IsDeleted
+      });
+    }
+
+    setPayouts({ payouts: payouts });
+  }
+
+  const payoutChanged = (id, key, newValue) => {
+    // add this payout to the updatedPayouts array (if not already there)
+    if (updatedPayouts.indexOf(id) == -1) {
+      setUpdatedPayouts([...updatedPayouts, id]);
+    }
+
+    // update tableData with the new value
+    const payouts = [...tableData];
+
+    const updatedPayout = payouts.find(p => p.LeagueTeamPayoutId == id);
+    updatedPayout[key] = newValue;
+
+    setTableData(payouts);
+    setUpdateEvent(new Date().valueOf());
   }
 
   const generateAdminButtons = () => {
@@ -105,6 +172,7 @@ function TeamPayoutModal(props) {
               type='primary'
               size='small'
               onClick={savePayouts}
+              loading={saveLoading}
             >
               Save
             </Button>
@@ -116,30 +184,13 @@ function TeamPayoutModal(props) {
     return null;
   }
 
-  const payoutChanged = (name, value) => {
-    const payout = payoutsRef.current.find(p => p.LeagueTeamPayoutId === name);
-    payout.PayoutAmount = value;
-    setUpdateEvent(new Date().valueOf());
-  }
-
-  const payoutDescriptionChanged = (name, value) => {
-    const payout = payoutsRef.current.find(p => p.LeagueTeamPayoutId === name);
-    payout.PayoutDescription = value;
-    setUpdateEvent(new Date().valueOf());
-  }
-
   const dismiss = () => {
     setTableData([]);
-    payoutsRef.current = [];
+    setSaveLoading(false);
+    setUpdatedPayouts([]);
     setNewPayoutNumber(0);
+    setUpdateEvent(null);
     props.dismiss();
-  }
-
-  const savePayouts = () => {
-    console.log(payoutsRef.current);
-    const payload = payoutsRef.current.map(p => {
-      
-    })
   }
 
   return (
@@ -159,51 +210,11 @@ function TeamPayoutModal(props) {
       {generateAdminButtons()}
       <Row justify='center'>
         <Col span={24}>
-          <Table
-            dataSource={payoutsRef.current}
-            pagination={false}
-            size='small'
-            rowKey='LeagueTeamPayoutId'
-          >
-            <Column
-              title='Paid By'
-              dataIndex='UpdatedByUsername'
-            />
-            <Column
-              title='Amount'
-              dataIndex='PayoutAmount'
-              render={(value, record) => {
-                if (record.editable) {
-                  return (
-                    <InputNumberCell
-                      name={record.LeagueTeamPayoutId}
-                      value={record.PayoutAmount}
-                      precision={2}
-                      addonBefore='$'
-                      onChange={payoutChanged}
-                    />
-                  );
-                }
-                return formatMoney(value);
-              }}
-            />
-            <Column
-              title='Description'
-              dataIndex='PayoutDescription'
-              render={(value, record) => {
-                if (record.editable) {
-                  return (
-                    <InputCell
-                      name={record.LeagueTeamPayoutId}
-                      value={record.PayoutDescription}
-                      onChange={payoutDescriptionChanged}
-                    />
-                  );
-                }
-                return <Text>{record.PayoutDescription}</Text>
-              }}
-            />
-          </Table>
+          <LeagueTeamPayoutTable
+            teamId={props.teamId}
+            payouts={tableData}
+            payoutChanged={payoutChanged}
+          />
         </Col>
       </Row>
     </Modal>

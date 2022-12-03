@@ -23,10 +23,6 @@ function InputNumberCell(props) {
     props.onChange(props.name, value);
   }
 
-  const formatter = (value) => {
-    return value;
-  }
-
   const parser = (value) => {
     return value;
   }
@@ -35,7 +31,7 @@ function InputNumberCell(props) {
     <InputNumber
       defaultValue={props.value}
       precision={props.precision || 0}
-      formatter={props.formatter || formatter}
+      formatter={props.formatter}
       parser={props.parser || parser}
       addonBefore={props.addonBefore}
       addonAfter={props.addonAfter}

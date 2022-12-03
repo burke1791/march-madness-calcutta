@@ -22,10 +22,12 @@ function LeagueTeams(props) {
   const [selectedTeamId, setSelectedTeamId] = useState(null);
   const [selectedTeamOwner, setSelectedTeamOwner] = useState(null);
   const [selectedTeamPayouts, setSelectedTeamPayouts] = useState([]);
+  const [refreshModal, setRefreshModal] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [totalAwarded, setTotalAwarded] = useState(0);
 
   const { authenticated } = useAuthState();
-  const { leagueId, leagueName, roleId } = useLeagueState();
+  const { leagueId, leagueName, roleId, prizepool } = useLeagueState();
 
   const [teams, teamsReturnDate, fetchTeams] = useData({
     baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
@@ -43,7 +45,14 @@ function LeagueTeams(props) {
 
   useEffect(() => {
     if (teamsReturnDate) {
-      console.log(teams);
+      updateSelectedPayouts();
+      if (teams && teams.length) {
+        const totalAwarded = teams.reduce((total, team) => total + team.totalPayout, 0);
+        setTotalAwarded(totalAwarded);
+      } else {
+        setTotalAwarded(0);
+      }
+      
       setLoading(false);
     }
   }, [teamsReturnDate]);
@@ -58,14 +67,34 @@ function LeagueTeams(props) {
 
   const dismissModal = () => {
     setModalOpen(false);
+    setSelectedTeamName(null);
+    setSelectedTeamId(null);
+    setSelectedTeamOwner(null);
+    setSelectedTeamPayouts(null);
+  }
+
+  const refreshPayouts = () => {
+    setLoading(true);
+    fetchTeams();
+  }
+
+  const updateSelectedPayouts = () => {
+    if (selectedTeamId != null) {
+      const team = teams.find(t => t.TeamId == selectedTeamId);
+
+      if (team != undefined) {
+        setSelectedTeamPayouts(team.payouts);
+        setRefreshModal(new Date().valueOf());
+      }
+    }
   }
 
   return (
     <Layout>
       <LeagueHeader class='primary' text={leagueName} />
       <Content style={{ overflowX: 'hidden' }}>
-        <PrizepoolCards prizepool={5500} totalAwarded={5000.69} />
-        <Row type='flex' justify='center' style={{ marginTop: 16 }}>
+        <PrizepoolCards prizepool={prizepool} totalAwarded={totalAwarded} />
+        <Row type='flex' justify='center' style={{ marginTop: 16, marginBottom: 8 }}>
           <Col md={20} xxl={16}>
             <Table
               pagination={false}
@@ -119,6 +148,8 @@ function LeagueTeams(props) {
               payouts={selectedTeamPayouts}
               open={modalOpen}
               dismiss={dismissModal}
+              refreshPayouts={refreshPayouts}
+              refreshView={refreshModal}
             />
           </Col>
         </Row>

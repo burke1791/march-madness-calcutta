@@ -15,7 +15,6 @@ import { Input } from 'antd';
 function InputCell(props) {
 
   const onChange = (event) => {
-    console.log(event.target.value);
     props.onChange(props.name, event.target.value)
   }
 
