@@ -8,15 +8,6 @@ import { formatMoney } from '../../utilities/helper';
 const { Column } = Table;
 const { Text } = Typography;
 
-const payoutTemplate = {
-  PayoutAmount: null,
-  PayoutDescription: null,
-  UpdatedByUsername: null,
-  UpdatedByUserId: null,
-  IsDeleted: false,
-  editable: true
-};
-
 /**
  * @typedef LeagueTeamPayoutTableProps
  * @property {Number} teamId
