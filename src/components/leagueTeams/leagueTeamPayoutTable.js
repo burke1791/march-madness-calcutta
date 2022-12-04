@@ -4,6 +4,7 @@ import { ButtonCell, InputCell, InputNumberCell } from '../tableCells';
 import './leagueTeamPayoutTable.css';
 import { useLeagueState } from '../../context/leagueContext';
 import { formatMoney } from '../../utilities/helper';
+import { DeleteOutlined } from '@ant-design/icons';
 
 const { Column } = Table;
 const { Text } = Typography;
@@ -52,6 +53,7 @@ function LeagueTeamPayoutTable(props) {
     if (roleId == 1 || roleId == 2) {
       return (
         <Column
+          align='right'
           render={(value, record) => {
             return (
               <ButtonCell
@@ -64,7 +66,7 @@ function LeagueTeamPayoutTable(props) {
                 }}
                 animated={false}
               >
-                {record.IsDeleted ? 'Undo' : 'Delete'}
+                {record.IsDeleted ? 'Undo' : <DeleteOutlined />}
               </ButtonCell>
             );
           }}
@@ -86,6 +88,7 @@ function LeagueTeamPayoutTable(props) {
       <Column
         title='Paid By'
         dataIndex='UpdatedByUsername'
+        responsive={['sm']}
       />
       <Column
         title='Amount'
