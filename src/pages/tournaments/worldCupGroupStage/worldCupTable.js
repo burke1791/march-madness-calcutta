@@ -44,7 +44,7 @@ function WorldCupTable(props) {
 
   return (
     <Row justify='center' style={{ margin: props.margin || '6px 0' }}>
-      <Col md={24} lg={18} xl={16} xxl={12}>
+      <Col xs={24} lg={18} xl={16} xxl={12}>
         <Table
           dataSource={props.teams}
           bordered

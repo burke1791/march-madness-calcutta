@@ -95,7 +95,7 @@ function LeagueTeams(props) {
       <Content style={{ overflowX: 'hidden' }}>
         <PrizepoolCards prizepool={prizepool} totalAwarded={totalAwarded} />
         <Row type='flex' justify='center' style={{ marginTop: 16, marginBottom: 8 }}>
-          <Col md={20} xxl={16}>
+          <Col xs={24} md={20} xxl={16}>
             <Table
               pagination={false}
               dataSource={teams}
@@ -103,6 +103,7 @@ function LeagueTeams(props) {
               loading={loading}
               rowKey='TeamId'
               scroll={{ x: '100%' }}
+              style={{ width: '100%' }}
             >
               <Column
                 title='Team'
