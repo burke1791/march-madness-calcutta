@@ -156,9 +156,11 @@ function LeagueAuction(props) {
   }
 
   const updateUserSummaries = (userBuyIns) => {
-    let myBuyIn = userBuyIns.find(user => user.userId == userId)
-    let myTaxBurden = myBuyIn.taxBuyIn;
-    let currentUserTotalBuyIn = myBuyIn.totalBuyIn;
+    const myBuyIn = userBuyIns.find(user => user.userId == userId);
+
+    // if myBuyIn is undefined then the current user is a spectator, so we default to 0
+    const myTaxBurden = myBuyIn?.taxBuyIn || 0;
+    const currentUserTotalBuyIn = myBuyIn?.totalBuyIn || 0;
 
     const prizepool = userBuyIns.reduce((prev, current, i) => {
       if (i == 1) {
