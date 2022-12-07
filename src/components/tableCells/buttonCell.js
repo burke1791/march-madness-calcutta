@@ -7,6 +7,7 @@ import 'antd/dist/antd.css';
  * @typedef {Object} ButtonCellProps
  * @property {('primary'|'ghost'|'dashed'|'link'|'text'|'default')} type - button type
  * @property {Boolean} danger - danger status
+ * @property {Boolean} disabled
  * @property {('small'|'middle'|'large')} size - button size
  * @property {Function} onClick - function to run after the button is clicked
  * @property {Boolean} [animated] - whether or not to display the loading animation when clicked
@@ -40,6 +41,7 @@ function ButtonCell(props) {
     <Button
       type={props.type}
       danger={props.danger}
+      disabled={props.disabled}
       size={props.size}
       loading={loading}
       onClick={buttonClicked}
