@@ -39,7 +39,9 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   GET_MANUAL_PAYOUT_INFO: '/getManualPayoutInfo',
   SET_MANUAL_PAYOUT_INFO: '/setManualPayoutInfo',
   GET_LEAGUE_TEAM_PAYOUTS: '/getLeagueTeamPayouts',
-  SET_LEAGUE_TEAM_PAYOUTS: '/setLeagueTeamPayouts'
+  SET_LEAGUE_TEAM_PAYOUTS: '/setLeagueTeamPayouts',
+  GET_LEAGUE_ROSTER: '/getLeagueRoster',
+  SET_LEAGUE_MEMBER_ROLES: '/setLeagueMemberRoles'
 }
 
 export const AUCTION_SERVICE_ENDPOINTS = {
