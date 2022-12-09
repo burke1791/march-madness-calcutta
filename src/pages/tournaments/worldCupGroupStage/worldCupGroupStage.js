@@ -42,15 +42,16 @@ function WorldCupGroupStage(props) {
   }, [authenticated, leagueId]);
 
   useEffect(() => {
+    console.log(groups);
     if (groupsReturnDate) {
-      setGroupA(groups.find(group => group.groupName === 'Group A').teams);
-      setGroupB(groups.find(group => group.groupName === 'Group B').teams);
-      setGroupC(groups.find(group => group.groupName === 'Group C').teams);
-      setGroupD(groups.find(group => group.groupName === 'Group D').teams);
-      setGroupE(groups.find(group => group.groupName === 'Group E').teams);
-      setGroupF(groups.find(group => group.groupName === 'Group F').teams);
-      setGroupG(groups.find(group => group.groupName === 'Group G').teams);
-      setGroupH(groups.find(group => group.groupName === 'Group H').teams);
+      setGroupA(groups.find(group => group.groupName === 'Group A')?.teams || []);
+      setGroupB(groups.find(group => group.groupName === 'Group B')?.teams || []);
+      setGroupC(groups.find(group => group.groupName === 'Group C')?.teams || []);
+      setGroupD(groups.find(group => group.groupName === 'Group D')?.teams || []);
+      setGroupE(groups.find(group => group.groupName === 'Group E')?.teams || []);
+      setGroupF(groups.find(group => group.groupName === 'Group F')?.teams || []);
+      setGroupG(groups.find(group => group.groupName === 'Group G')?.teams || []);
+      setGroupH(groups.find(group => group.groupName === 'Group H')?.teams || []);
       setTeamsParsed(groupsReturnDate);
     }
   }, [groupsReturnDate]);
