@@ -86,7 +86,7 @@ function LeagueModal() {
   return (
     <Modal
       title={formType}
-      visible={visible}
+      open={visible}
       onCancel={handleCancel}
       style={{ maxWidth: '348px' }}
       footer={null}

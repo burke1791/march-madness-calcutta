@@ -17,7 +17,7 @@ function AuctionGroupModal(props) {
   return (
     <Modal
       title='New Group'
-      visible={props.visible}
+      open={props.visible}
       onCancel={props.dismiss}
       style={{ maxWidth: 320, top: 50 }}
       footer={null}

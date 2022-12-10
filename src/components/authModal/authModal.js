@@ -87,7 +87,7 @@ function AuthModal() {
   return (
     <Modal
       title={formType}
-      visible={visible}
+      open={visible}
       onCancel={handleCancel}
       style={{ maxWidth: '320px', top: '50px' }}
       footer={null}
