@@ -27,7 +27,6 @@ function AuctionRulesDisplay(props) {
 
   useEffect(() => {
     if (props.dataSource?.length > 0) {
-      console.log('data changed: ' + props.rowKey);
       setTableData([...props.dataSource]);
     } else {
       setTableData([]);
