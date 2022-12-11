@@ -14,7 +14,7 @@ function PayoutSettings() {
   const { calcOption } = useSettingsState();
 
   return (
-    <Content>
+    <Content style={{ paddingBottom: 12 }}>
       <SettingsDivider dividerOrientation='left'>Payout Calculation</SettingsDivider>
       <SettingsRow justify='center'>
         <PayoutCalculation />

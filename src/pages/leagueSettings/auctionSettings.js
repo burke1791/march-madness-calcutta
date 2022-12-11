@@ -10,7 +10,7 @@ const { Content } = Layout;
 function AuctionSettings() {
 
   return (
-    <Content>
+    <Content style={{ paddingBottom: 12 }}>
       <SettingsDivider justify='center' dividerOrientation='left'>Auction Rules</SettingsDivider>
       <GeneralRules />
       <SettingsDivider justify='center' dividerOrientation='left'>Bidding Rules</SettingsDivider>

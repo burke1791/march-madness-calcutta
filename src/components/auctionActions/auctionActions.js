@@ -74,7 +74,6 @@ function AuctionActions(props) {
 
   const getServerOffset = () => {
     AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.SERVER_TIMESTAMP, {}).then(response => {
-      console.log(response);
       let clockOffset = auctionServiceHelper.updateServerPing(response.data[0].ServerTimestamp);
       updateOffset(clockOffset);
     });
@@ -93,7 +92,6 @@ function AuctionActions(props) {
   }
 
   const updateBidButtonState = () => {
-    console.log(status);
     if (status === AUCTION_STATUS.BIDDING && connected) {
       setBiddingDisabled(false);
     } else {

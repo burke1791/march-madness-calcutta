@@ -8,7 +8,7 @@ const { Content } = Layout;
 function GeneralSettings() {
 
   return (
-    <Content>
+    <Content style={{ paddingBottom: 12 }}>
       <Row justify='center'>
         <Col xxl={12} xl={14} lg={16} md={18} sm={20} xs={22}>
           <Divider orientation='left'>Edit League Name</Divider>

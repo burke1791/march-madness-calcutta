@@ -111,7 +111,6 @@ function LeagueAuction(props) {
   const fetchAuctionStatus = () => {
     AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_STATUS, { leagueId }).then(response => {
       let statusObj = auctionServiceHelper.updateAuctionStatus(response.data[0]);
-      console.log(statusObj);
       updateAuctionStatusInContext(statusObj);
     });
   }
