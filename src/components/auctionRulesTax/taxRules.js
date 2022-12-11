@@ -34,11 +34,18 @@ function TaxRules() {
   }
 
   const renderRuleValueCell = (ruleId, name, value) => {
+    const changedRule = rulesRef.current[ruleId];
+    let ruleValue = value;
+
+    if (changedRule !== undefined && changedRule[name] !== undefined) {
+      ruleValue = changedRule[name];
+    }
+
     return (
       <AuctionTaxRuleInputNumberCell
         ruleId={ruleId}
         name={name}
-        value={value}
+        value={ruleValue}
         addonBefore={name == 'taxRate' ? null : '$'}
         addonAfter={name =='taxRate' ? '%' : null}
         precision={2}
@@ -74,11 +81,15 @@ function TaxRules() {
     const keys = Object.keys(rulesRef.current);
 
     const newRules = keys.map(ruleId => {
+      const minThreshold = rulesRef.current[ruleId].minThresholdExclusive !== null ? rulesRef.current[ruleId].minThresholdExclusive : 0;
+      const maxThreshold = rulesRef.current[ruleId].maxThresholdInclusive !== null ? rulesRef.current[ruleId].maxThresholdInclusive : 0;
+      const taxRate = rulesRef.current[ruleId]?.taxRate !== null ? +rulesRef.current[ruleId]?.taxRate / 100 : null;
+      
       return {
         auctionTaxRuleId: ruleId.includes('newRule') ? null : ruleId,
-        minThreshold: rulesRef.current[ruleId].minThresholdExclusive != undefined ? rulesRef.current[ruleId].minThresholdExclusive : null,
-        maxThreshold: rulesRef.current[ruleId].maxThresholdInclusive != undefined ? rulesRef.current[ruleId].maxThresholdInclusive : null,
-        taxRate: +rulesRef.current[ruleId]?.taxRate != undefined ? +rulesRef.current[ruleId]?.taxRate / 100 : null,
+        minThreshold: minThreshold == 0 ? -1 : minThreshold,
+        maxThreshold: maxThreshold == 0 ? -1 : maxThreshold,
+        taxRate: taxRate,
         isDeleted: !!rulesRef.current[ruleId].isDeleted
       };
     });
@@ -94,6 +105,8 @@ function TaxRules() {
     } else {
       rulesRef.current = {};
     }
+
+    setRuleChangedEvent(null);
   }
 
   return (

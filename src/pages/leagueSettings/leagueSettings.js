@@ -31,7 +31,6 @@ function LeagueSettings() {
   const getSelectedMenuItem = () => {
     // cannot use lookbehind on mobile (ugh)
     const parsedSettingPath = location.pathname.match(/\/settings\/(\w|-){1,}($|(?=\/))/ig);
-    console.log(parsedSettingPath);
     if (!parsedSettingPath) {
       return 'general';
     }

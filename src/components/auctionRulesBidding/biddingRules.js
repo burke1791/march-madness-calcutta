@@ -34,11 +34,18 @@ function BiddingRules() {
   }
 
   const renderRuleValueCell = (ruleId, name, value) => {
+    const changedRule = rulesRef.current[ruleId];
+    let ruleValue = value;
+
+    if (changedRule !== undefined && changedRule[name] !== undefined) {
+      ruleValue = changedRule[name];
+    }
+
     return (
       <AuctionBidRuleInputNumberCell
         ruleId={ruleId}
         name={name}
-        value={value}
+        value={ruleValue}
         addonBefore='$'
         isDeleted={rulesRef.current[ruleId]?.isDeleted || false}
         onChange={ruleValueChanged}
@@ -72,11 +79,15 @@ function BiddingRules() {
     const keys = Object.keys(rulesRef.current);
 
     const newRules = keys.map(ruleId => {
+      const minThreshold = rulesRef.current[ruleId].minThresholdExclusive !== null ? rulesRef.current[ruleId].minThresholdExclusive : 0;
+      const maxThreshold = rulesRef.current[ruleId].maxThresholdInclusive !== null ? rulesRef.current[ruleId].maxThresholdInclusive : 0;
+      const minIncrement = rulesRef.current[ruleId].minIncrement !== null ? rulesRef.current[ruleId].minIncrement : 0;
+
       return {
         auctionBidRuleId: ruleId.includes('newRule') ? null : ruleId,
-        minThreshold: rulesRef.current[ruleId].minThresholdExclusive != undefined ? rulesRef.current[ruleId].minThresholdExclusive : null,
-        maxThreshold: rulesRef.current[ruleId].maxThresholdInclusive != undefined ? rulesRef.current[ruleId].maxThresholdInclusive : null,
-        minIncrement: rulesRef.current[ruleId].minIncrement != undefined ? rulesRef.current[ruleId].minIncrement : null,
+        minThreshold: minThreshold == 0 ? -1 : minThreshold,
+        maxThreshold: maxThreshold == 0 ? -1 : maxThreshold,
+        minIncrement: minIncrement == 0 ? -1 : minIncrement,
         isDeleted: !!rulesRef.current[ruleId].isDeleted
       };
     });
@@ -92,6 +103,8 @@ function BiddingRules() {
     } else {
       rulesRef.current = {};
     }
+
+    setRuleChangedEvent(null);
   }
 
   return (

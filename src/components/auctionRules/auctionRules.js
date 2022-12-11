@@ -1,3 +1,4 @@
+import { message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useAuthState } from '../../context/authContext';
 import { useLeagueState } from '../../context/leagueContext';
@@ -57,13 +58,19 @@ function AuctionRules(props) {
     if (rulesFetchDate != undefined) {
       setDataLoading(false);
       props.clearRulesRef();
-      console.log(rules);
     }
   }, [rulesFetchDate]);
 
   useEffect(() => {
+    // display the error message from the server
     setUpdateLoading(false);
-    if (rulesUpdateReturnDate != undefined) {
+
+    if (rulesUpdate && rulesUpdate.length > 0 && rulesUpdate[0]?.Error) {
+      message.error(rulesUpdate[0].Error, 5);
+    } else if (rulesUpdate && rulesUpdate.length > 0 && rulesUpdate[0]?.Info) {
+      message.info(rulesUpdate[0].Info, 5);
+      downloadRules();
+    } else if (rulesUpdateReturnDate != undefined) {
       downloadRules();
     }
   }, [rulesUpdateReturnDate]);
@@ -76,7 +83,6 @@ function AuctionRules(props) {
   const sendUpdateRulesRequest = () => {
     setUpdateLoading(true);
     const payload = props.getNewRules();
-    console.log(payload);
     updateRules(payload);
   }
 
