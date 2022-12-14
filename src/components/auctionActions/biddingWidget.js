@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './auctionActions.css';
 import { Button, Card, Row, InputNumber, message } from 'antd';
-import { useSettingsState } from '../../context/leagueSettingsContext';
 import { useAuctionState } from '../../context/auctionContext';
 import useData from '../../hooks/useData';
 import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
@@ -26,9 +25,8 @@ function BiddingWidget(props) {
   const [bidVal, setBidVal] = useState(0);
   const [bidStep, setBidStep] = useState(1);
   const [bidStatus, setBidStatus] = useState(null);
-  const [minRequiredBid, setMinRequiredBid] = useState(1);
 
-  const { price, minBid, maxBuyin } = useAuctionState();
+  const { price, maxBuyin } = useAuctionState();
   const { leagueId } = useLeagueState();
   const { authenticated } = useAuthState();
 
@@ -47,15 +45,13 @@ function BiddingWidget(props) {
 
   useEffect(() => {
     if (bidRulesReturnDate) {
-      console.log(bidRules);
-      computeMinBid();
       computeBidStep();
     }
   }, [bidRulesReturnDate]);
 
   useEffect(() => {
     if (price === 0) {
-      setBidVal(minRequiredBid);
+      setBidVal(0);
       computeBidStep();
     }
   }, [price]);
@@ -75,11 +71,13 @@ function BiddingWidget(props) {
   }
 
   const bidChange = (value) => {
-    if (bidRules && bidRules.length > 0) {
-      const minRange = bidRules.find(br => br.MinThresholdExclusive < value && br.MaxThresholdInclusive >= value)?.MinThresholdExclusive;
-      const increment = bidRules.find(br => br.MinThresholdExclusive < value && br.MaxThresholdInclusive >= value)?.MinIncrement || 1;
+    const newVal = value == null ? null : Math.floor(value);
 
-      const validationRemainder = (value - minRange ) % increment;
+    if (bidRules && bidRules.length > 0) {
+      const newMin = bidRules.find(br => br.MinThresholdExclusive < newVal && (br.MaxThresholdInclusive >= newVal || br.MaxThresholdInclusive == null))?.MinThresholdExclusive;
+      const newIncrement = bidRules.find(br => br.MinThresholdExclusive < newVal && (br.MaxThresholdInclusive >= newVal || br.MaxThresholdInclusive == null))?.MinIncrement || 1;
+
+      const validationRemainder = (newVal - newMin) % newIncrement;
 
       if (validationRemainder > 0) {
         setBidStatus('error');
@@ -88,8 +86,8 @@ function BiddingWidget(props) {
       }
     }
 
-    computeBidStep(Math.floor(value));
-    setBidVal(Math.floor(value));
+    computeBidStep(newVal);
+    setBidVal(newVal);
   }
 
   const placeBid = (value) => {
@@ -100,21 +98,6 @@ function BiddingWidget(props) {
     } else {
       props.placeBid(value);
     }
-  }
-
-  const placeMinimumBid = () => {
-    placeBid(Number(props.highBid + 1));
-  }
-
-  const computeMinBid = () => {
-    let minBid = 1;
-
-    if (bidRules && bidRules.length > 0) {
-      const minIncrement = bidRules.find(br => br.MinThresholdExclusive < props.highBid && br.MaxThresholdInclusive >= props.highBid)?.MinIncrement || 1;
-
-    }
-
-    setMinRequiredBid(minBid);
   }
 
   const computeBidStep = (val) => {
@@ -131,17 +114,35 @@ function BiddingWidget(props) {
     <Card size='small' className='flex-growVert-child'>
       <Row type='flex' justify='space-around' gutter={8}>
         <InputNumber
-          min={minRequiredBid}
+          min={0}
           addonBefore='$'
           parser={value => value.replace(/\$\s?/g, '')}
           onChange={bidChange}
+          onPressEnter={placeCustomBid}
           precision={0}
           step={bidStep}
           value={bidVal}
           status={bidStatus}
+          // size='small'
           style={{ width: '70%' }}
         />
-        <Button type='primary' style={{ width: '30%' }} disabled={props.biddingDisabled} onClick={placeCustomBid}>Bid</Button>
+        <Button
+          type='primary'
+          // size='small'
+          style={{ width: '30%' }}
+          disabled={props.biddingDisabled}
+          onClick={placeCustomBid}
+        >
+          Bid
+        </Button>
+      </Row>
+      <Row type='flex' justify='center' style={{ textAlign: 'center', marginTop: '6px' }} gutter={8}>
+        <Button
+          type='primary'
+          style={{ width: '100%' }}
+        >
+          Show Rules
+        </Button>
       </Row>
       {/* <Row type='flex' justify='center' style={{ textAlign: 'center', marginTop: '6px' }} gutter={8}>
         <Button type='primary' disabled={props.biddingDisabled} style={{ width: '90%' }} onClick={placeMinimumBid}>
