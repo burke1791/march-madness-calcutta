@@ -183,14 +183,14 @@ function LeagueAuction(props) {
   return (
     // @TODO refactor this styling after implementing a toggle functionality for the league navigation
     <Row style={sidebarInUse ? { height: 'calc(100vh - 64px)' } : { height: 'calc(100vh - 114px)' }}>
-      <Col span={8}>
+      <Col xs={0} md={0} lg={8}>
         <AuctionTeams teams={teams.current} prizepool={prizepool} loading={auctionTeamsLoading} />
       </Col>
-      <Col span={10} className='flex-growVert-parent'>
+      <Col xs={24} md={24} lg={10} className='flex-growVert-parent'>
         <AuctionActions totalSpent={myTotalBuyIn} sendSocketMessage={props.sendSocketMessage} />
         <AuctionChat sendSocketMessage={props.sendSocketMessage} />
       </Col>
-      <Col span={6}>
+      <Col xs={0} md={0} lg={6}>
         <MyTeams myTeams={myTeams} myTax={myTax} />
         <MemberList users={leagueUsers} />
       </Col>

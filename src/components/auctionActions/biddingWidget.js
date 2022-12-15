@@ -123,12 +123,13 @@ function BiddingWidget(props) {
           step={bidStep}
           value={bidVal}
           status={bidStatus}
-          // size='small'
+          size='small'
           style={{ width: '70%' }}
+          type='tel'
         />
         <Button
           type='primary'
-          // size='small'
+          size='small'
           style={{ width: '30%' }}
           disabled={props.biddingDisabled}
           onClick={placeCustomBid}
@@ -139,6 +140,7 @@ function BiddingWidget(props) {
       <Row type='flex' justify='center' style={{ textAlign: 'center', marginTop: '6px' }} gutter={8}>
         <Button
           type='primary'
+          size='small'
           style={{ width: '100%' }}
         >
           Show Rules
