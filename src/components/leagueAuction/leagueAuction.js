@@ -7,7 +7,7 @@ import { Row, Col, message } from 'antd';
 import 'antd/dist/antd.css';
 import MyTeams from '../myTeams/myTeams';
 import MemberList from '../memberList/memberList';
-import { AUCTION_SERVICE_ENDPOINTS, SOCKETS, AUCTION_STATUS, API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { AUCTION_SERVICE_ENDPOINTS, SOCKETS, API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
 import AuctionService from '../../services/autction/auction.service';
