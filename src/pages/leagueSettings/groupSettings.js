@@ -3,10 +3,13 @@ import { Button, Col, Row } from 'antd';
 import AuctionGroupTable from '../../components/auctionRulesGroup/auctionGroupTable';
 import AuctionGroupModal from '../../components/auctionRulesGroup/auctionGroupModal';
 import SettingsDivider from '../../components/settingsDivider/settingsDivider';
+import { useLeagueState } from '../../context/leagueContext';
 
 function GroupSettings() {
 
   const [modalVisible, setModalVisible] = useState(false);
+
+  const { roleId } = useLeagueState();
 
   const showGroupModal = () => {
     setModalVisible(true);
@@ -24,16 +27,21 @@ function GroupSettings() {
           <AuctionGroupTable />
         </Col>
       </Row>
-      <Row justify='center'>
-        <Button
-          type='primary'
-          onClick={showGroupModal}
-          style={{ marginTop: 8 }}
-        >
-          New Group
-        </Button>
-      </Row>
-      <AuctionGroupModal visible={modalVisible} dismiss={hideGroupModal} />
+      { roleId == 1 || roleId == 2 ? (
+        <Fragment>
+          <Row justify='center'>
+            <Button
+              type='primary'
+              onClick={showGroupModal}
+              style={{ marginTop: 8 }}
+            >
+              New Group
+            </Button>
+          </Row>
+          <AuctionGroupModal visible={modalVisible} dismiss={hideGroupModal} />
+        </Fragment>
+      ) : null
+      }
     </Fragment>
   );
 }

@@ -19,7 +19,7 @@ function TaxRules() {
 
   const [ruleChangedEvent, setRuleChangedEvent] = useState(null);
 
-  const { leagueId } = useLeagueState();
+  const { leagueId, roleId } = useLeagueState();
 
   const rulesRef = useRef({});
 
@@ -136,9 +136,13 @@ function TaxRules() {
         dataIndex='TaxRate'
         render={(text, record) => renderRuleValueCell(record.AuctionTaxRuleId, 'taxRate', +record.TaxRate * 100)}
       />
-      <Column
-        render={(text, record) => renderRuleDeleteCell(record.AuctionTaxRuleId, record.IsNewRule, record.deleteNewRule)}
-      />
+      { roleId == 1 || roleId == 2 ?
+        <Column
+          render={(text, record) => renderRuleDeleteCell(record.AuctionTaxRuleId, record.IsNewRule, record.deleteNewRule)}
+        />
+        :
+        null
+      }
     </AuctionRules>
   );
 }

@@ -15,7 +15,7 @@ function AuctionGroupTable() {
 
   const [loading, setLoading] = useState(true);
 
-  const { leagueId, seedGroupsRefresh } = useLeagueState();
+  const { leagueId, seedGroupsRefresh, roleId } = useLeagueState();
   const { authenticated } = useAuthState();
 
   const [groups, groupsReturnDate, fetchGroups] = useData({
@@ -72,14 +72,18 @@ function AuctionGroupTable() {
           );
         }}
       />
-      <Column
-        key='delete'
-        render={(text, record) => {
-          return (
-            <AuctionGroupDeleteButtonCell groupId={record.groupId} />
-          );
-        }}
-      />
+      { roleId == 1 || roleId == 2 ?
+        <Column
+          key='delete'
+          render={(text, record) => {
+            return (
+              <AuctionGroupDeleteButtonCell groupId={record.groupId} />
+            );
+          }}
+        />
+        :
+        null
+      }
     </Table>
   )
 }

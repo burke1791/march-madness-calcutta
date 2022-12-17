@@ -19,7 +19,7 @@ function BiddingRules() {
 
   const [ruleChangedEvent, setRuleChangedEvent] = useState(null);
 
-  const { leagueId } = useLeagueState();
+  const { leagueId, roleId } = useLeagueState();
 
   const rulesRef = useRef({});
 
@@ -134,9 +134,13 @@ function BiddingRules() {
         dataIndex='MinIncrement'
         render={(text, record) => renderRuleValueCell(record.AuctionBidRuleId, 'minIncrement', record.MinIncrement)}
       />
-      <Column
-        render={(text, record) => renderRuleDeleteCell(record.AuctionBidRuleId, record.IsNewRule, record.deleteNewRule)}
-      />
+      { roleId == 1 || roleId == 2 ?
+        <Column
+          render={(text, record) => renderRuleDeleteCell(record.AuctionBidRuleId, record.IsNewRule, record.deleteNewRule)}
+        />
+        :
+        null
+      }
     </AuctionRules>
   )
 }

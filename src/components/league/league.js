@@ -142,7 +142,7 @@ function League(props) {
       <Layout style={{ minHeight: 'calc(100vh - 64px)', height: '100%' }}>
         <LeagueNav />
         <Layout>
-          <Content>
+          <Content style={{ minHeight: 'calc(100vh - 64px)', height: '100%', overflow: 'auto' }}>
             <Routes>
               <Route path='/' element={<LeagueHome />} />
               <Route path='auction' element={
