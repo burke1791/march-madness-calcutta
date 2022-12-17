@@ -39,7 +39,6 @@ function LeagueModal() {
   const fetchTournamentOptions = () => {
     if (authenticated) {
       LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.TOURNAMENT_OPTIONS).then(response => {
-        console.log(response);
         let [tournaments, tournamentScopes] = tournamentOptionsParser(response.data);
         setTournamentOptionsInContext(tournaments, tournamentScopes);
       }).catch(error => {

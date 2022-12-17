@@ -42,7 +42,8 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   SET_LEAGUE_TEAM_PAYOUTS: '/setLeagueTeamPayouts',
   GET_LEAGUE_ROSTER: '/getLeagueRoster',
   SET_LEAGUE_MEMBER_ROLES: '/setLeagueMemberRoles',
-  DELETE_LEAGUE: '/deleteLeague'
+  DELETE_LEAGUE: '/deleteLeague',
+  LEAVE_LEAGUE: '/leaveLeague'
 }
 
 export const AUCTION_SERVICE_ENDPOINTS = {
