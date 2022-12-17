@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Layout, Button, message } from 'antd';
+import { Menu, Layout, Button, message, Popconfirm } from 'antd';
 import 'antd/dist/antd.css';
 import { useLeagueState } from '../../context/leagueContext';
 import { parseLeaguePathName } from '../../utilities/helper';
@@ -145,18 +145,24 @@ function LeaveButton (props) {
   }
 
   return (
-    <Button
-      type='primary'
-      danger
-      onClick={sendLeaveLeagueRequest}
-      hidden={props.hidden}
-      loading={loading}
-      style={{
-        width: '100%'
-      }}
+    <Popconfirm
+      title='Are you sure?'
+      onConfirm={sendLeaveLeagueRequest}
+      okText='Leave'
+      okButtonProps={{ danger: true }}
     >
-      Leave
-    </Button>
+      <Button
+        type='primary'
+        danger
+        hidden={props.hidden}
+        loading={loading}
+        style={{
+          width: '100%'
+        }}
+      >
+        Leave
+      </Button>
+    </Popconfirm>
   );
 }
 

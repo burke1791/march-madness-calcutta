@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Col, message, Popconfirm, Row, Typography } from 'antd';
 import useData from '../../hooks/useData';
 import { API_CONFIG, AUCTION_SERVICE_ENDPOINTS } from '../../utilities/constants';
-import { useLeagueState } from '../../context/leagueContext';
+import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
 
 const { Title } = Typography;
@@ -13,6 +13,8 @@ function AuctionSettingsReset(props) {
 
   const { leagueId } = useLeagueState();
   const { authenticated } = useAuthState();
+
+  const leagueDispatch = useLeagueDispatch();
 
   const [resetAuctionResponse, resetAuctionReturnDate, resetAuction] = useData({
     baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
@@ -28,6 +30,7 @@ function AuctionSettingsReset(props) {
       if (resetAuctionResponse?.error) {
         message.error(resetAuctionResponse.error);
       } else if (resetAuctionResponse?.message) {
+        leagueDispatch({ type: 'update', key: 'leagueMetadataRefresh', value: new Date().valueOf() });
         message.success(resetAuctionResponse.message);
       }
 
