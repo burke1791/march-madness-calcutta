@@ -139,7 +139,6 @@ function LeaveButton (props) {
   }, [leaveLeagueReturnDate])
 
   const sendLeaveLeagueRequest = () => {
-    console.log('sending leave request');
     setLoading(true);
     leaveLeague();
   }

@@ -87,7 +87,7 @@ function PayoutRulesText(props) {
   return (
     <Fragment>
       <Row justify='center'>
-        <Col xxl={12} xl={14} lg={16} md={18} sm={24}>
+        <Col xxl={12} xl={14} lg={16} md={18} xs={24}>
           {
             loading ?
               <Skeleton active />

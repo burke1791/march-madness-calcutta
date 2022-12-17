@@ -16,7 +16,7 @@ function SettingsRow(props) {
 
   return (
     <Row justify={props.justify || 'center'}>
-      <Col xxl={12} xl={14} lg={16} md={18} sm={20} xs={22}>
+      <Col xxl={12} xl={14} lg={16} md={18} sm={20} xs={24}>
         {props.children}
       </Col>
     </Row>

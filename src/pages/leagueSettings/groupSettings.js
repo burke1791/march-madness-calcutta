@@ -23,7 +23,7 @@ function GroupSettings() {
     <Fragment>
       <SettingsDivider justify='center' dividerOrientation='left'>Auction Groups</SettingsDivider>
       <Row justify='center'>
-        <Col xxl={12} xl={14} lg={16} md={18} sm={20} xs={22}>
+        <Col xxl={12} xl={14} lg={16} md={18} sm={20} xs={24}>
           <AuctionGroupTable />
         </Col>
       </Row>

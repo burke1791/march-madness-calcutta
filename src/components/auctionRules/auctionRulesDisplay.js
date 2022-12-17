@@ -76,7 +76,7 @@ function AuctionRulesDisplay(props) {
   return (
     <Fragment>
       <Row justify='center'>
-        <Col xxl={12} xl={14} lg={16} md={18} sm={20} xs={22}>
+        <Col xxl={12} xl={14} lg={16} md={18} sm={20} xs={24}>
           <Table
             loading={props.tableLoading}
             dataSource={tableData}
