@@ -38,7 +38,8 @@ function AuctionGroupDeleteButtonCell(props) {
     }
   }, [deleteGroupReturnDate]);
 
-  const onClick = () => {
+  const onClick = (event) => {
+    event.stopPropagation();
     setLoading(true);
     const payload = {
       leagueId: leagueId,

@@ -3,11 +3,10 @@ import { Button, Form, Input, Select } from 'antd';
 import 'antd/dist/antd.css';
 import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
-import { AUCTION_SERVICE_ENDPOINTS, LEAGUE_SERVICE_ENDPOINTS, NOTIF } from '../../utilities/constants';
+import { AUCTION_SERVICE_ENDPOINTS, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import AuctionService from '../../services/autction/auction.service';
 import { auctionServiceHelper } from '../../services/autction/helper';
 import LeagueService from '../../services/league/league.service';
-import Pubsub from '../../utilities/pubsub';
 
 const layout = {
   labelCol: {
@@ -72,7 +71,6 @@ function NewSeedGroup(props) {
         setErrorMessage(response.data[0].Error);
       } else {
         form.resetFields();
-        Pubsub.publish(NOTIF.SEED_GROUP_MODAL_DISMISS, null);
       }
     }).catch(error => {
       console.log(error);
