@@ -24,7 +24,6 @@ function withAuctionWebsocket(WrappedComponent, config) {
       }
 
       return(() => {
-        console.log(socket.current);
         if (socket.current !== null) {
           socket.current.close(1000);
         }
@@ -32,7 +31,6 @@ function withAuctionWebsocket(WrappedComponent, config) {
     }, [token, leagueId]);
 
     useEffect(() => {
-      console.log('reconnect triggered');
       if (authenticated && leagueId && token && (socket.current === null || socket.current.readyState == 3)) {
         connect();
       }
@@ -45,7 +43,6 @@ function withAuctionWebsocket(WrappedComponent, config) {
        * @todo send feedback to the user
        */
       socket.current.onopen = function(event) {
-        console.log(event);
         auctionDispatch({ type: 'update', key: 'connected', value: true });
         Pubsub.publish(NOTIF.AUCTION_MODAL_DISMISS);
       }
@@ -59,14 +56,11 @@ function withAuctionWebsocket(WrappedComponent, config) {
 
       socket.current.onmessage = function(event) {
         let { msgType, msgObj, message } = JSON.parse(event.data);
-        console.log(msgType);
-        console.log(msgObj);
 
         emit(msgType, msgObj, message);
       }
 
       socket.current.onclose = function(event) {
-        console.log(event);
         auctionDispatch({ type: 'update', key: 'connected', value: false });
 
         // if the socket was closed for any reason other than navigating away from the page
@@ -85,7 +79,6 @@ function withAuctionWebsocket(WrappedComponent, config) {
         auctionDispatch({ type: 'update', key: 'prevUpdate', value: new Date().valueOf() });
       } else {
         let messageObj = generateMessageObj(action, payload);
-        console.log(messageObj);
 
         socket.current.send(messageObj);
       }
@@ -102,7 +95,6 @@ function withAuctionWebsocket(WrappedComponent, config) {
 
     const emit = (msgType, msgObj, messageText) => {
       if (msgType === 'chat') {
-        console.log(msgObj);
         Pubsub.publish(NOTIF.NEW_CHAT_MESSAGE, parseChatMessage(msgObj));
       } else if (msgType === 'auction') {
         // parse auction obj then publish

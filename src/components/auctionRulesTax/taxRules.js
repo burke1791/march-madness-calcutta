@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Table } from 'antd';
+import { Table, Typography } from 'antd';
 import { useLeagueState } from '../../context/leagueContext';
 import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import AuctionRules from '../auctionRules/auctionRules';
@@ -7,6 +7,7 @@ import { AuctionTaxRuleInputNumberCell } from './auctionTaxRuleInputNumberCell';
 import { AuctionTaxRuleDeleteCell } from './auctionTaxRuleDeleteCell';
 
 const { Column } = Table;
+const { Text } = Typography;
 
 const taxRuleTemplate = {
   MinThresholdExclusive: null,
@@ -19,7 +20,7 @@ function TaxRules() {
 
   const [ruleChangedEvent, setRuleChangedEvent] = useState(null);
 
-  const { leagueId } = useLeagueState();
+  const { leagueId, roleId } = useLeagueState();
 
   const rulesRef = useRef({});
 
@@ -34,18 +35,37 @@ function TaxRules() {
   }
 
   const renderRuleValueCell = (ruleId, name, value) => {
-    return (
-      <AuctionTaxRuleInputNumberCell
-        ruleId={ruleId}
-        name={name}
-        value={value}
-        addonBefore={name == 'taxRate' ? null : '$'}
-        addonAfter={name =='taxRate' ? '%' : null}
-        precision={2}
-        isDeleted={rulesRef.current[ruleId]?.isDeleted || false}
-        onChange={ruleValueChanged}
-      />
-    )
+    const changedRule = rulesRef.current[ruleId];
+    let ruleValue = value;
+
+    if (changedRule !== undefined && changedRule[name] !== undefined) {
+      ruleValue = changedRule[name];
+    }
+
+    const precision = ruleValue % 1 == 0 ? 0 : 2;
+
+    if (roleId == 1 || roleId == 2) {
+      return (
+        <AuctionTaxRuleInputNumberCell
+          ruleId={ruleId}
+          name={name}
+          value={ruleValue}
+          addonBefore={name == 'taxRate' ? null : '$'}
+          addonAfter={name =='taxRate' ? '%' : null}
+          precision={precision}
+          isDeleted={rulesRef.current[ruleId]?.isDeleted || false}
+          onChange={ruleValueChanged}
+        />
+      );
+    } else {
+      let ruleText = '';
+      if (name != 'taxRate') ruleText += '$';
+      ruleText += `${Number(ruleValue).toFixed(precision)}`;
+      if (name == 'taxRate') ruleText += ' %';
+
+      return <Text>{ruleText}</Text>;
+    }
+  
   }
 
   const renderRuleDeleteCell = (ruleId, isNewRule, deleteNewRule) => {
@@ -74,11 +94,15 @@ function TaxRules() {
     const keys = Object.keys(rulesRef.current);
 
     const newRules = keys.map(ruleId => {
+      const minThreshold = rulesRef.current[ruleId].minThresholdExclusive !== null ? rulesRef.current[ruleId].minThresholdExclusive : 0;
+      const maxThreshold = rulesRef.current[ruleId].maxThresholdInclusive !== null ? rulesRef.current[ruleId].maxThresholdInclusive : 0;
+      const taxRate = rulesRef.current[ruleId]?.taxRate !== null ? +rulesRef.current[ruleId]?.taxRate / 100 : null;
+      
       return {
         auctionTaxRuleId: ruleId.includes('newRule') ? null : ruleId,
-        minThreshold: rulesRef.current[ruleId].minThresholdExclusive != undefined ? rulesRef.current[ruleId].minThresholdExclusive : null,
-        maxThreshold: rulesRef.current[ruleId].maxThresholdInclusive != undefined ? rulesRef.current[ruleId].maxThresholdInclusive : null,
-        taxRate: +rulesRef.current[ruleId]?.taxRate != undefined ? +rulesRef.current[ruleId]?.taxRate / 100 : null,
+        minThreshold: minThreshold == 0 ? -1 : minThreshold,
+        maxThreshold: maxThreshold == 0 ? -1 : maxThreshold,
+        taxRate: taxRate,
         isDeleted: !!rulesRef.current[ruleId].isDeleted
       };
     });
@@ -94,6 +118,8 @@ function TaxRules() {
     } else {
       rulesRef.current = {};
     }
+
+    setRuleChangedEvent(null);
   }
 
   return (
@@ -123,9 +149,13 @@ function TaxRules() {
         dataIndex='TaxRate'
         render={(text, record) => renderRuleValueCell(record.AuctionTaxRuleId, 'taxRate', +record.TaxRate * 100)}
       />
-      <Column
-        render={(text, record) => renderRuleDeleteCell(record.AuctionTaxRuleId, record.IsNewRule, record.deleteNewRule)}
-      />
+      { roleId == 1 || roleId == 2 ?
+        <Column
+          render={(text, record) => renderRuleDeleteCell(record.AuctionTaxRuleId, record.IsNewRule, record.deleteNewRule)}
+        />
+        :
+        null
+      }
     </AuctionRules>
   );
 }

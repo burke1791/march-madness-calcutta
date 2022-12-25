@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { message, Table, Typography } from 'antd';
 import 'antd/dist/antd.css';
+import './leagueHome.css';
 
 import AlivePie from '../alivePie/alivePie';
 import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
@@ -13,6 +14,7 @@ import { leagueServiceHelper } from '../../services/league/helper';
 import { useNavigate } from 'react-router-dom';
 
 const { Text } = Typography;
+const { Column } = Table;
 
 function LeagueHomeStandings(props) {
 
@@ -48,130 +50,17 @@ function LeagueHomeStandings(props) {
     }
   }
 
-  const userColumns = [
-    {
-      title: 'Rank',
-      dataIndex: 'rank',
-      align: 'center',
-      width: 75,
-      render: (text, record) => {
-        if (record.id == userId) {
-          return {
-            props: {
-              style: {
-                backgroundColor: '#b7daff'
-              }
-            },
-            children: <Text>{text}</Text>
-          }
-        }
-        return <Text>{text}</Text>;
-      }
-    },
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      align: 'center',
-      width: 250,
-      render: (text, record) => {
-        if (record.id == userId) {
-          return {
-            props: {
-              style: {
-                backgroundColor: '#b7daff'
-              }
-            },
-            children: <Text>{text}</Text>
-          }
-        }
-        return <Text>{text}</Text>;
-      }
-    },
-    {
-      title: 'Buy In',
-      dataIndex: 'buyIn',
-      align: 'center',
-      width: 150,
-      render: (text, record) => {
-        if (record.id == userId) {
-          return {
-            props: {
-              style: {
-                backgroundColor: '#b7daff'
-              }
-            },
-            children: <Text>{formatMoney(record.buyIn)}</Text>
-          }
-        }
-        return <Text>{formatMoney(record.buyIn)}</Text>;
-      }
-    },
-    {
-      title: 'Current Payout',
-      dataIndex: 'payout',
-      align: 'center',
-      width: 150,
-      render: (text, record) => {
-        if (record.id == userId) {
-          return {
-            props: {
-              style: {
-                backgroundColor: '#b7daff'
-              }
-            },
-            children: <Text>{formatMoney(record.payout)}</Text>
-          }
-        }
-        return <Text>{formatMoney(record.payout)}</Text>;
-      }
-    },
-    {
-      title: 'Net Return',
-      dataIndex: 'return',
-      align: 'center',
-      width: 150,
-      responsive: ['xl'],
-      render: (text, record) => {
-        if (record.id == userId) {
-          return {
-            props: {
-              style: {
-                backgroundColor: '#b7daff'
-              }
-            },
-            children: <Text type={record.return < 0 ? 'danger' : ''}>{formatMoney(record.return)}</Text>
-          }
-        }
-        return <Text type={record.return < 0 ? 'danger' : ''}>{formatMoney(record.return)}</Text>
-      }
-    },
-    {
-      dataIndex: 'teamsAlive',
-      align: 'center',
-      width: 75,
-      responsive: ['xxl'],
-      render: (text, record) => {
-        if (record.id == userId) {
-          return {
-            props: {
-              style: {
-                backgroundColor: '#b7daff'
-              }
-            },
-            children: <AlivePie numTeamsAlive={record.numTeamsAlive} numTeams={record.numTeams} />
-          }
-        }
-        return <AlivePie numTeamsAlive={record.numTeamsAlive} numTeams={record.numTeams} />;
-      }
-    }
-  ];
+  const getRowClassName = (record) => {
+    if (record.id == userId) return 'pointer current-user-row';
+    return 'pointer';
+  }
 
   return (
     <Table
-      columns={userColumns}
+      // columns={userColumns}
       dataSource={userList}
       rowKey='id'
-      rowClassName='pointer'
+      rowClassName={getRowClassName}
       size='small'
       pagination={false}
       loading={loading}
@@ -188,7 +77,64 @@ function LeagueHomeStandings(props) {
           };
         }
       }
-    />
+    >
+      <Column
+        title='Rank'
+        dataIndex='rank'
+        align='center'
+        width={75}
+      />
+      <Column
+        title='Name'
+        dataIndex='name'
+        align='center'
+        width={250}
+      />
+      <Column
+        title='Buy In'
+        dataIndex='buyIn'
+        align='center'
+        width={150}
+        render={(text) => formatMoney(text)}
+      />
+      <Column
+        title='CurrentPayout'
+        dataIndex='payout'
+        align='center'
+        width={150}
+        render={(text) => formatMoney(text)}
+      />
+      <Column
+        title='Net Return'
+        dataIndex='return'
+        align='center'
+        width={150}
+        responsive={['xl']}
+        render={(text, record) => {
+          return (
+            <Text
+              type={record.return < 0 ? 'danger' : ''}
+            >
+              {formatMoney(record.return)}
+            </Text>
+          );
+        }}
+      />
+      <Column
+        dataIndex='teamsAlive'
+        align='center'
+        width={75}
+        responsive={['xxl']}
+        render={(text, record) => {
+          return (
+            <AlivePie
+              numTeamsAlive={record.numTeamsAlive}
+              numTeams={record.numTeams}
+            />
+          );
+        }}
+      />
+    </Table>
   );
 }
 

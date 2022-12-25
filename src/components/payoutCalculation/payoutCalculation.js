@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState, useRef } from 'react';
-import { Card, Col, Radio, Row, Select, Button, message } from 'antd';
+import { Card, Col, Radio, Row, Select, Button, message, Typography } from 'antd';
 import CommissionerFeeInput from './commissionerFeeInput';
 import useData from '../../hooks/useData';
 import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
@@ -8,6 +8,7 @@ import { useLeagueState } from '../../context/leagueContext';
 import { useSettingsDispatch } from '../../context/leagueSettingsContext';
 
 const { Option } = Select;
+const { Text } = Typography;
 
 function PayoutCalculation() {
 
@@ -20,7 +21,7 @@ function PayoutCalculation() {
   const calcOptions = useRef([]);
 
   const { authenticated } = useAuthState();
-  const { leagueId } = useLeagueState();
+  const { leagueId, roleId } = useLeagueState();
 
   const settingsDispatch = useSettingsDispatch();
 
@@ -60,7 +61,6 @@ function PayoutCalculation() {
       if (payoutSettings.settings && payoutSettings.settings.length > 1) {
         // parse selected calculation option
         const selectedCalcOption = payoutSettings.settings.find(s => s.Code === 'PAYOUT_CALCULATION_MODE');
-        console.log(selectedCalcOption);
         setSelectedCalcOption(selectedCalcOption.SettingValue);
         settingsDispatch({ type: 'update', key: 'calcOption', value: selectedCalcOption.SettingValue });
 
@@ -77,8 +77,6 @@ function PayoutCalculation() {
         }
       }
     }
-
-    console.log(payoutSettings);
   }, [settingsFetchDate]);
 
   useEffect(() => {
@@ -150,44 +148,87 @@ function PayoutCalculation() {
       <Row justify='space-around'>
         <Col md={10} xs={12}>
           <Card title='Calculation Mode' style={{ height: '100%' }}>
-            <Select value={selectedCalcOption} style={{ width: '100%' }} onChange={calcOptionSelected}>
-              {generateCalcOptions()}
-            </Select>
+            { roleId == 1 || roleId == 2 ?
+              <Select value={selectedCalcOption} style={{ width: '100%' }} onChange={calcOptionSelected}>
+                {generateCalcOptions()}
+              </Select>
+              :
+              <Row justify='center'>
+                <Text>{selectedCalcOption}</Text>
+              </Row>
+            }
           </Card>
         </Col>
         <Col md={10} xs={12}>
           <Card title={'Commissioner\'s Fee'} style={{ height: '100%' }}>
-            <Row justify='center'>
-              <Radio.Group onChange={commissionerFeeTypeChange} value={commissionerFeeType}>
-                <Radio value='percent'>Percentage</Radio>
-                <Radio value='absolute'>Absolute</Radio>
-              </Radio.Group>
-            </Row>
-            <Row justify='center'>
-              <CommissionerFeeInput
-                inputType={commissionerFeeType}
-                minValue={null}
-                maxValue={null}
-                feeValue={commissionerFee}
-                feeValueChange={commissionerFeeChange}
-              />
-            </Row>
+            { roleId == 1 || roleId == 2 ?
+              <Fragment>
+                <Row justify='center'>
+                  <Radio.Group onChange={commissionerFeeTypeChange} value={commissionerFeeType}>
+                    <Radio value='percent'>Percentage</Radio>
+                    <Radio value='absolute'>Absolute</Radio>
+                  </Radio.Group>
+                </Row>
+                <Row justify='center'>
+                  <CommissionerFeeInput
+                    inputType={commissionerFeeType}
+                    minValue={null}
+                    maxValue={null}
+                    feeValue={commissionerFee}
+                    feeValueChange={commissionerFeeChange}
+                  />
+                </Row>
+              </Fragment>
+              :
+              <Row justify='center'>
+                <CommissionerFeeReadOnly type={commissionerFeeType} amount={commissionerFee} />
+              </Row>
+            }
           </Card>
         </Col>
       </Row>
-      <Row justify='center'>
-        <Button
-          type='primary'
-          style={{ marginTop: 8 }}
-          disabled={!isSettingChanged}
-          onClick={sendUpdatePayoutSettingsRequest}
-          loading={updateLoading}
-        >
-          Save Changes
-        </Button>
-      </Row>
+      { roleId == 1 || roleId == 2 ? 
+        <Row justify='center'>
+          <Button
+            type='primary'
+            style={{ marginTop: 8 }}
+            disabled={!isSettingChanged}
+            onClick={sendUpdatePayoutSettingsRequest}
+            loading={updateLoading}
+          >
+            Save Changes
+          </Button>
+        </Row>
+        :
+        null
+      }
     </Fragment>
   );
+}
+
+/**
+ * @typedef CommissionerFeeReadOnlyProps
+ * @property {('percent'|'absolute')} type
+ * @property {Number} amount
+ */
+
+/**
+ * @component
+ * @param {CommissionerFeeReadOnlyProps} props 
+ */
+function CommissionerFeeReadOnly(props) {
+
+  let feeText;
+
+  if (props.type == 'percent') {
+    feeText = `${props.amount} %`;
+  } else if (props.type == 'absolute') {
+    feeText = `$${props.amount}`;
+  } else {
+    feeText = `${props.amount}`;
+  }
+
+  return <Text>{feeText}</Text>;
 }
 
 export default PayoutCalculation;

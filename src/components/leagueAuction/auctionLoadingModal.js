@@ -74,7 +74,7 @@ function AuctionLoadingModal(props) {
 
   return (
     <Modal
-      visible={visible}
+      open={visible}
       closable={false}
       keyboard={false}
       maskClosable={false}

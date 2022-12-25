@@ -51,7 +51,7 @@ function MessageBoardModal() {
   return (
     <Modal
       title={'New Topic'}
-      visible={visible}
+      open={visible}
       onCancel={handleCancel}
       style={{ maxWidth: '500px', top: '50px' }}
       footer={null}

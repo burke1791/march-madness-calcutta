@@ -48,7 +48,7 @@ function AuctionModal(props) {
   return (
     <Modal
       title={title}
-      visible={visible}
+      open={visible}
       okText='Reconnect'
       onOk={submit}
       confirmLoading={loading}

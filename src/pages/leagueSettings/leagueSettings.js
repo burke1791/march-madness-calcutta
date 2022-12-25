@@ -8,6 +8,14 @@ import AuctionSettings from './auctionSettings';
 import GroupSettings from './groupSettings';
 import PayoutSettings from './payoutSettings';
 
+const menuItems = [
+  { key: 'general',  label: 'General' },
+  { key: 'roster', label: 'Roster' },
+  { key: 'auction', label: 'Auction' },
+  { key: 'auction-groups', label: 'Auction Groups' },
+  { key: 'payout-rules', label: 'Payout Rules' }
+];
+
 function LeagueSettings() {
 
   const [selectedKeys, setSelectedKeys] = useState([]);
@@ -23,7 +31,6 @@ function LeagueSettings() {
   const getSelectedMenuItem = () => {
     // cannot use lookbehind on mobile (ugh)
     const parsedSettingPath = location.pathname.match(/\/settings\/(\w|-){1,}($|(?=\/))/ig);
-    console.log(parsedSettingPath);
     if (!parsedSettingPath) {
       return 'general';
     }
@@ -45,23 +52,8 @@ function LeagueSettings() {
         defaultSelectedKeys={['general']}
         onClick={handleSettingMenuClick}
         selectedKeys={selectedKeys}
-      >
-        <Menu.Item key='general'>
-          General
-        </Menu.Item>
-        <Menu.Item key='roster'>
-          Roster
-        </Menu.Item>
-        <Menu.Item key='auction'>
-          Auction
-        </Menu.Item>
-        <Menu.Item key='auction-groups'>
-          Auction Groups
-        </Menu.Item>
-        <Menu.Item key='payout-rules'>
-          Payout Rules
-        </Menu.Item>
-      </Menu>
+        items={menuItems}
+      />
       <Routes>
         <Route path='/' element={<GeneralSettings />} />
         <Route path='/roster' element={<MembershipSettings />} />

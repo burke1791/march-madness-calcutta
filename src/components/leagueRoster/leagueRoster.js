@@ -53,13 +53,21 @@ function LeagueRoster() {
   }, [authenticated, leagueId]);
 
   useEffect(() => {
-    setLoading(false);
+    if (rosterFetchDate) {
+      console.log(roster);
+      setLoading(false);
+    }
   }, [rosterFetchDate]);
 
   useEffect(() => {
     if (rolesUpdateReturnDate) {
       setSaveLoading(false);
-      refreshRoster();
+
+      if (rolesUpdate && rolesUpdate.length > 0 && rolesUpdate[0]?.Error) {
+        message.error(rolesUpdate[0].Error);
+      } else {
+        refreshRoster();
+      }
     }
   }, [rolesUpdateReturnDate]);
 
@@ -123,12 +131,17 @@ function LeagueRoster() {
         <Column
           title='Username'
           dataIndex='Username'
-          width='60%'
+          width='50%'
+        />
+        <Column
+          title='Teams Purchased'
+          dataIndex='NumTeams'
+          width='20%'
         />
         <Column
           title='Role'
           dataIndex='RoleName'
-          width='40%'
+          width='30%'
           render={(text, record) => {
             return (
               <RoleSelection
@@ -141,38 +154,40 @@ function LeagueRoster() {
             );
           }}
         />
-        <Column
-          key='kick'
-          render={(text, record) => {
-            let disabled = true;
+        { roleId == 1 || roleId == 2 ? (
+          <Column
+            key='kick'
+            render={(text, record) => {
+              let disabled = true;
 
-            // Creator can remove anyone
-            if (roleId == 1) {
-              disabled = false;
-            } else if (roleId == 2 && record.RoleId > 2) {
-              // Admins can remove any non-admin (or creator)
-              disabled = false;
-            }
+              // Creator can remove anyone
+              if (roleId == 1) {
+                disabled = false;
+              } else if (roleId == 2 && record.RoleId > 2) {
+                // Admins can remove any non-admin (or creator)
+                disabled = false;
+              }
 
-            // User cannot kick themselves
-            if (+record.UserId == userId) {
-              disabled = true;
-            }
-            
-            return (
-              <ButtonCell
-                type='primary'
-                size='small'
-                danger
-                disabled={disabled}
-                onClick={() => kickLeagueMember(record.UserId)}
-                cancelLoading={kickMemberReturnDate}
-              >
-                Remove
-              </ButtonCell>
-            );
-          }}
-        />
+              // User cannot kick themselves
+              if (+record.UserId == userId) {
+                disabled = true;
+              }
+              
+              return (
+                <ButtonCell
+                  type='primary'
+                  size='small'
+                  danger
+                  disabled={disabled}
+                  onClick={() => kickLeagueMember(record.UserId)}
+                  cancelLoading={kickMemberReturnDate}
+                >
+                  Remove
+                </ButtonCell>
+              );
+            }}
+          />
+        ) : null}
       </Table>
       <Row justify='center'>
         <Button

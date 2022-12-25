@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Table } from 'antd';
+import { Table, Typography } from 'antd';
 import { useLeagueState } from '../../context/leagueContext';
 import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import AuctionRules from '../auctionRules/auctionRules';
@@ -7,6 +7,7 @@ import AuctionBidRuleInputNumberCell from './auctionBidRuleInputNumberCell';
 import AuctionBidRuleDeleteCell from './auctionBidRuleDeleteCell';
 
 const { Column } = Table;
+const { Text } = Typography;
 
 const bidRuleTemplate = {
   MinThresholdExclusive: null,
@@ -19,7 +20,7 @@ function BiddingRules() {
 
   const [ruleChangedEvent, setRuleChangedEvent] = useState(null);
 
-  const { leagueId } = useLeagueState();
+  const { leagueId, roleId } = useLeagueState();
 
   const rulesRef = useRef({});
 
@@ -34,16 +35,32 @@ function BiddingRules() {
   }
 
   const renderRuleValueCell = (ruleId, name, value) => {
-    return (
-      <AuctionBidRuleInputNumberCell
-        ruleId={ruleId}
-        name={name}
-        value={value}
-        addonBefore='$'
-        isDeleted={rulesRef.current[ruleId]?.isDeleted || false}
-        onChange={ruleValueChanged}
-      />
-    );
+    const changedRule = rulesRef.current[ruleId];
+    let ruleValue = value;
+
+    if (changedRule !== undefined && changedRule[name] !== undefined) {
+      ruleValue = changedRule[name];
+    }
+
+    const precision = ruleValue % 1 == 0 ? 0 : 2;
+
+    if (roleId == 1 || roleId == 2) {
+      return (
+        <AuctionBidRuleInputNumberCell
+          ruleId={ruleId}
+          name={name}
+          value={ruleValue}
+          addonBefore='$'
+          precision={precision}
+          isDeleted={rulesRef.current[ruleId]?.isDeleted || false}
+          onChange={ruleValueChanged}
+        />
+      );
+    } else {
+      const ruleText = `$${Number(ruleValue).toFixed(precision)}`;
+      return <Text>{ruleText}</Text>;
+    }
+    
   }
 
   const renderRuleDeleteCell = (ruleId, isNewRule, deleteNewRule) => {
@@ -72,11 +89,15 @@ function BiddingRules() {
     const keys = Object.keys(rulesRef.current);
 
     const newRules = keys.map(ruleId => {
+      const minThreshold = rulesRef.current[ruleId].minThresholdExclusive !== null ? rulesRef.current[ruleId].minThresholdExclusive : 0;
+      const maxThreshold = rulesRef.current[ruleId].maxThresholdInclusive !== null ? rulesRef.current[ruleId].maxThresholdInclusive : 0;
+      const minIncrement = rulesRef.current[ruleId].minIncrement !== null ? rulesRef.current[ruleId].minIncrement : 0;
+
       return {
         auctionBidRuleId: ruleId.includes('newRule') ? null : ruleId,
-        minThreshold: rulesRef.current[ruleId].minThresholdExclusive != undefined ? rulesRef.current[ruleId].minThresholdExclusive : null,
-        maxThreshold: rulesRef.current[ruleId].maxThresholdInclusive != undefined ? rulesRef.current[ruleId].maxThresholdInclusive : null,
-        minIncrement: rulesRef.current[ruleId].minIncrement != undefined ? rulesRef.current[ruleId].minIncrement : null,
+        minThreshold: minThreshold == 0 ? -1 : minThreshold,
+        maxThreshold: maxThreshold == 0 ? -1 : maxThreshold,
+        minIncrement: minIncrement == 0 ? -1 : minIncrement,
         isDeleted: !!rulesRef.current[ruleId].isDeleted
       };
     });
@@ -92,6 +113,8 @@ function BiddingRules() {
     } else {
       rulesRef.current = {};
     }
+
+    setRuleChangedEvent(null);
   }
 
   return (
@@ -121,9 +144,13 @@ function BiddingRules() {
         dataIndex='MinIncrement'
         render={(text, record) => renderRuleValueCell(record.AuctionBidRuleId, 'minIncrement', record.MinIncrement)}
       />
-      <Column
-        render={(text, record) => renderRuleDeleteCell(record.AuctionBidRuleId, record.IsNewRule, record.deleteNewRule)}
-      />
+      { roleId == 1 || roleId == 2 ?
+        <Column
+          render={(text, record) => renderRuleDeleteCell(record.AuctionBidRuleId, record.IsNewRule, record.deleteNewRule)}
+        />
+        :
+        null
+      }
     </AuctionRules>
   )
 }

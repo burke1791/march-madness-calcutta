@@ -11,11 +11,11 @@ import useData from '../../hooks/useData';
 
 const { Column } = Table;
 
-function AuctionGroupTable() {
+function AuctionGroupTable(props) {
 
   const [loading, setLoading] = useState(true);
 
-  const { leagueId, seedGroupsRefresh } = useLeagueState();
+  const { leagueId, seedGroupsRefresh, roleId } = useLeagueState();
   const { authenticated } = useAuthState();
 
   const [groups, groupsReturnDate, fetchGroups] = useData({
@@ -46,6 +46,11 @@ function AuctionGroupTable() {
       rowClassName='pointer'
       size='small'
       pagination={false}
+      onRow={(record) => {
+        return {
+          onClick: (event) => { props.showModal(record) }
+        }
+      }}
     >
       <Column
         title='Group Name'
@@ -72,14 +77,19 @@ function AuctionGroupTable() {
           );
         }}
       />
-      <Column
-        key='delete'
-        render={(text, record) => {
-          return (
-            <AuctionGroupDeleteButtonCell groupId={record.groupId} />
-          );
-        }}
-      />
+      { roleId == 1 || roleId == 2 ?
+        <Column
+          key='delete'
+          align='right'
+          render={(text, record) => {
+            return (
+              <AuctionGroupDeleteButtonCell groupId={record.groupId} />
+            );
+          }}
+        />
+        :
+        null
+      }
     </Table>
   )
 }
