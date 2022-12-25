@@ -20,7 +20,7 @@ function PayoutCalculation() {
   const calcOptions = useRef([]);
 
   const { authenticated } = useAuthState();
-  const { leagueId } = useLeagueState();
+  const { leagueId, roleId } = useLeagueState();
 
   const settingsDispatch = useSettingsDispatch();
 
@@ -60,7 +60,6 @@ function PayoutCalculation() {
       if (payoutSettings.settings && payoutSettings.settings.length > 1) {
         // parse selected calculation option
         const selectedCalcOption = payoutSettings.settings.find(s => s.Code === 'PAYOUT_CALCULATION_MODE');
-        console.log(selectedCalcOption);
         setSelectedCalcOption(selectedCalcOption.SettingValue);
         settingsDispatch({ type: 'update', key: 'calcOption', value: selectedCalcOption.SettingValue });
 
@@ -77,8 +76,6 @@ function PayoutCalculation() {
         }
       }
     }
-
-    console.log(payoutSettings);
   }, [settingsFetchDate]);
 
   useEffect(() => {
@@ -175,17 +172,21 @@ function PayoutCalculation() {
           </Card>
         </Col>
       </Row>
-      <Row justify='center'>
-        <Button
-          type='primary'
-          style={{ marginTop: 8 }}
-          disabled={!isSettingChanged}
-          onClick={sendUpdatePayoutSettingsRequest}
-          loading={updateLoading}
-        >
-          Save Changes
-        </Button>
-      </Row>
+      { roleId == 1 || roleId == 2 ? 
+        <Row justify='center'>
+          <Button
+            type='primary'
+            style={{ marginTop: 8 }}
+            disabled={!isSettingChanged}
+            onClick={sendUpdatePayoutSettingsRequest}
+            loading={updateLoading}
+          >
+            Save Changes
+          </Button>
+        </Row>
+        :
+        null
+      }
     </Fragment>
   );
 }

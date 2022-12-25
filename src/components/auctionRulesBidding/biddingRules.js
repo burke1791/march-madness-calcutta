@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Table } from 'antd';
+import { Table, Typography } from 'antd';
 import { useLeagueState } from '../../context/leagueContext';
 import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import AuctionRules from '../auctionRules/auctionRules';
@@ -7,6 +7,7 @@ import AuctionBidRuleInputNumberCell from './auctionBidRuleInputNumberCell';
 import AuctionBidRuleDeleteCell from './auctionBidRuleDeleteCell';
 
 const { Column } = Table;
+const { Text } = Typography;
 
 const bidRuleTemplate = {
   MinThresholdExclusive: null,
@@ -41,16 +42,25 @@ function BiddingRules() {
       ruleValue = changedRule[name];
     }
 
-    return (
-      <AuctionBidRuleInputNumberCell
-        ruleId={ruleId}
-        name={name}
-        value={ruleValue}
-        addonBefore='$'
-        isDeleted={rulesRef.current[ruleId]?.isDeleted || false}
-        onChange={ruleValueChanged}
-      />
-    );
+    const precision = ruleValue % 1 == 0 ? 0 : 2;
+
+    if (roleId == 1 || roleId == 2) {
+      return (
+        <AuctionBidRuleInputNumberCell
+          ruleId={ruleId}
+          name={name}
+          value={ruleValue}
+          addonBefore='$'
+          precision={precision}
+          isDeleted={rulesRef.current[ruleId]?.isDeleted || false}
+          onChange={ruleValueChanged}
+        />
+      );
+    } else {
+      const ruleText = `$${Number(ruleValue).toFixed(precision)}`;
+      return <Text>{ruleText}</Text>;
+    }
+    
   }
 
   const renderRuleDeleteCell = (ruleId, isNewRule, deleteNewRule) => {

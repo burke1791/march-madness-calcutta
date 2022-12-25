@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Table } from 'antd';
+import { Table, Typography } from 'antd';
 import { useLeagueState } from '../../context/leagueContext';
 import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import AuctionRules from '../auctionRules/auctionRules';
@@ -7,6 +7,7 @@ import { AuctionTaxRuleInputNumberCell } from './auctionTaxRuleInputNumberCell';
 import { AuctionTaxRuleDeleteCell } from './auctionTaxRuleDeleteCell';
 
 const { Column } = Table;
+const { Text } = Typography;
 
 const taxRuleTemplate = {
   MinThresholdExclusive: null,
@@ -41,18 +42,30 @@ function TaxRules() {
       ruleValue = changedRule[name];
     }
 
-    return (
-      <AuctionTaxRuleInputNumberCell
-        ruleId={ruleId}
-        name={name}
-        value={ruleValue}
-        addonBefore={name == 'taxRate' ? null : '$'}
-        addonAfter={name =='taxRate' ? '%' : null}
-        precision={2}
-        isDeleted={rulesRef.current[ruleId]?.isDeleted || false}
-        onChange={ruleValueChanged}
-      />
-    )
+    const precision = ruleValue % 1 == 0 ? 0 : 2;
+
+    if (roleId == 1 || roleId == 2) {
+      return (
+        <AuctionTaxRuleInputNumberCell
+          ruleId={ruleId}
+          name={name}
+          value={ruleValue}
+          addonBefore={name == 'taxRate' ? null : '$'}
+          addonAfter={name =='taxRate' ? '%' : null}
+          precision={precision}
+          isDeleted={rulesRef.current[ruleId]?.isDeleted || false}
+          onChange={ruleValueChanged}
+        />
+      );
+    } else {
+      let ruleText = '';
+      if (name != 'taxRate') ruleText += '$';
+      ruleText += `${Number(ruleValue).toFixed(precision)}`;
+      if (name == 'taxRate') ruleText += ' %';
+
+      return <Text>{ruleText}</Text>;
+    }
+  
   }
 
   const renderRuleDeleteCell = (ruleId, isNewRule, deleteNewRule) => {

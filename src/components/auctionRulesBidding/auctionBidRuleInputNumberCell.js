@@ -27,7 +27,16 @@ function AuctionBidRuleInputNumberCell(props) {
   }
 
   const formatter = (value) => {
-    return value;
+    let formattedValue = Number(value);
+    if (props.formatter) {
+      formattedValue = props.formatter(formattedValue);
+    }
+
+    if (props.precision) {
+      formattedValue = formattedValue.toFixed(props.precision);
+    }
+
+    return formattedValue;
   }
 
   const parser = (value) => {
@@ -39,8 +48,7 @@ function AuctionBidRuleInputNumberCell(props) {
       status={props.isDeleted ? 'warning' : null}
       prefix={props.isDeleted ? <DeleteTwoTone /> : null}
       value={props.value}
-      precision={props.precision || 0}
-      formatter={props.formatter || formatter}
+      formatter={formatter}
       parser={props.parser || parser}
       addonBefore={props.addonBefore}
       addonAfter={props.addonAfter}

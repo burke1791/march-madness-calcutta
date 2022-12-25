@@ -45,7 +45,6 @@ function PayoutRulesText(props) {
 
   useEffect(() => {
     if (payoutInfoReturnDate) {
-      console.log(payoutInfo);
       const payoutText = payoutInfo.length == 0 ? '' : payoutInfo[0].PayoutInfo;
       setValue(payoutText);
       setLoading(false);
@@ -55,7 +54,6 @@ function PayoutRulesText(props) {
 
   useEffect(() => {
     if (setPayoutInfoReturnDate) {
-      console.log(payoutInfoSet);
       if (payoutInfoSet?.length > 0 && payoutInfoSet[0]?.Error) {
         message.error(payoutInfoSet[0].Error);
       } else {
@@ -101,17 +99,21 @@ function PayoutRulesText(props) {
           }
         </Col>
       </Row>
-      <Row justify='center'>
-        <Button
-          disabled={!isChanged}
-          type='primary'
-          loading={buttonLoading}
-          onClick={updatePayoutInfo}
-          style={{ marginTop: 8 }}
-        >
-          Save Payout Info
-        </Button>
-      </Row>
+      { roleId == 1 || roleId == 2 ?
+        <Row justify='center'>
+          <Button
+            disabled={!isChanged}
+            type='primary'
+            loading={buttonLoading}
+            onClick={updatePayoutInfo}
+            style={{ marginTop: 8 }}
+          >
+            Save Payout Info
+          </Button>
+        </Row>
+        :
+        null
+      }
     </Fragment>
   )
 }
