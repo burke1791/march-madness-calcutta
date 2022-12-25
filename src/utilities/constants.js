@@ -41,7 +41,11 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   GET_LEAGUE_TEAM_PAYOUTS: '/getLeagueTeamPayouts',
   SET_LEAGUE_TEAM_PAYOUTS: '/setLeagueTeamPayouts',
   GET_LEAGUE_ROSTER: '/getLeagueRoster',
-  SET_LEAGUE_MEMBER_ROLES: '/setLeagueMemberRoles'
+  SET_LEAGUE_MEMBER_ROLES: '/setLeagueMemberRoles',
+  DELETE_LEAGUE: '/deleteLeague',
+  LEAVE_LEAGUE: '/leaveLeague',
+  UPDATE_SEED_GROUP: '/updateLeagueSeedGroup',
+  GET_LEAGUE_TEAMS: '/getLeagueTeams'
 }
 
 export const AUCTION_SERVICE_ENDPOINTS = {
@@ -50,7 +54,8 @@ export const AUCTION_SERVICE_ENDPOINTS = {
   FETCH_AUCTION_STATUS: '/getAuctionStatus',
   FETCH_AUCTION_TEAMS: '/getAuctionTeams',
   FETCH_AUCTION_BUYINS: '/getAuctionMemberBuyIns',
-  START_AUCTION: '/startAuction'
+  START_AUCTION: '/startAuction',
+  RESET_AUCTION: '/resetAuction'
 }
 
 export const USER_SERVICE_ENDPOINTS = {

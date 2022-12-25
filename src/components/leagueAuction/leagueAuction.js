@@ -7,7 +7,7 @@ import { Row, Col, message } from 'antd';
 import 'antd/dist/antd.css';
 import MyTeams from '../myTeams/myTeams';
 import MemberList from '../memberList/memberList';
-import { AUCTION_SERVICE_ENDPOINTS, SOCKETS, AUCTION_STATUS, API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { AUCTION_SERVICE_ENDPOINTS, SOCKETS, API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
 import AuctionService from '../../services/autction/auction.service';
@@ -111,7 +111,6 @@ function LeagueAuction(props) {
   const fetchAuctionStatus = () => {
     AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_STATUS, { leagueId }).then(response => {
       let statusObj = auctionServiceHelper.updateAuctionStatus(response.data[0]);
-      console.log(statusObj);
       updateAuctionStatusInContext(statusObj);
     });
   }
@@ -184,14 +183,14 @@ function LeagueAuction(props) {
   return (
     // @TODO refactor this styling after implementing a toggle functionality for the league navigation
     <Row style={sidebarInUse ? { height: 'calc(100vh - 64px)' } : { height: 'calc(100vh - 114px)' }}>
-      <Col span={8}>
+      <Col xs={0} md={0} lg={8}>
         <AuctionTeams teams={teams.current} prizepool={prizepool} loading={auctionTeamsLoading} />
       </Col>
-      <Col span={10} className='flex-growVert-parent'>
+      <Col xs={24} md={24} lg={10} className='flex-growVert-parent'>
         <AuctionActions totalSpent={myTotalBuyIn} sendSocketMessage={props.sendSocketMessage} />
         <AuctionChat sendSocketMessage={props.sendSocketMessage} />
       </Col>
-      <Col span={6}>
+      <Col xs={0} md={0} lg={6}>
         <MyTeams myTeams={myTeams} myTax={myTax} />
         <MemberList users={leagueUsers} />
       </Col>

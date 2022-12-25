@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Layout } from 'antd';
+import { Menu, Layout, Button, message, Popconfirm } from 'antd';
 import 'antd/dist/antd.css';
 import { useLeagueState } from '../../context/leagueContext';
 import { parseLeaguePathName } from '../../utilities/helper';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuthState } from '../../context/authContext';
+import useData from '../../hooks/useData';
+import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 
 const menuItems = {
   start: [
@@ -23,7 +26,7 @@ function LeagueNav() {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState([]);
 
-  const { leagueId, hasBracketPage, supplementalPages, supplementalPagesSync } = useLeagueState();
+  const { leagueId, supplementalPages } = useLeagueState();
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -51,23 +54,11 @@ function LeagueNav() {
     handleCollapse(true, 'menuClick');
     // setSelectedKeys([event.key]);
 
-    if (leagueId) {
+    if (leagueId && event.key != 'leave') {
       navigate(`/leagues/${leagueId}/${event.key}`);
     } else {
       console.debug('LeagueNav: leagueId is falsy');
     }
-  }
-
-  const generateBracketMenuItem = () => {
-    if (hasBracketPage) {
-      return (
-        <Menu.Item key='bracket'>
-          Bracket
-        </Menu.Item>
-      );
-    }
-
-    return null;
   }
 
   const generateSupplementalPageMenuItems = () => {
@@ -87,12 +78,14 @@ function LeagueNav() {
       return [
         ...menuItems.start,
         ...supplementalItems,
-        ...menuItems.tail
+        ...menuItems.tail,
+        { key: 'leave', label: <LeaveButton hidden={collapsed} />, style: { position: 'absolute', bottom: 8, padding: '0px 16px 0px 16px' } }
       ];
     } else {
       return [
         ...menuItems.start,
-        ...menuItems.tail
+        ...menuItems.tail,
+        { key: 'leave', label: <LeaveButton hidden={collapsed} />, style: { position: 'absolute', bottom: 8, padding: '0px 16px 0px 16px' } }
       ];
     }
   }
@@ -114,19 +107,61 @@ function LeagueNav() {
         defaultOpenKeys={['settingSub']}
         selectedKeys={selectedKeys}
         items={getMenuItems()}
-      >
-        {/* <Menu.Item key=''>
-          League Home
-        </Menu.Item>
-        <Menu.Item key='auction'>
-          Auction Room
-        </Menu.Item>
-        {generateSupplementalPageMenuItems()}
-        <Menu.Item key='settings'>
-          Settings
-        </Menu.Item> */}
-      </Menu>
+      />
     </Sider>
+  );
+}
+
+function LeaveButton (props) {
+
+  const [loading, setLoading] = useState(false);
+
+  const { leagueId } = useLeagueState();
+  const { authenticated } = useAuthState();
+  const navigate = useNavigate();
+
+  const [leaveLeagueResponse, leaveLeagueReturnDate, leaveLeague] = useData({
+    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
+    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.LEAVE_LEAGUE}/${leagueId}`,
+    method: 'POST',
+    conditions: [authenticated, leagueId]
+  });
+
+  useEffect(() => {
+    if (leaveLeagueReturnDate) {
+      setLoading(false);
+      if (leaveLeagueResponse && leaveLeagueResponse.length > 0 && leaveLeagueResponse[0]?.Error) {
+        message.error(leaveLeagueResponse[0].Error);
+      } else {
+        navigate('/home');
+      }
+    }
+  }, [leaveLeagueReturnDate])
+
+  const sendLeaveLeagueRequest = () => {
+    setLoading(true);
+    leaveLeague();
+  }
+
+  return (
+    <Popconfirm
+      title='Are you sure?'
+      onConfirm={sendLeaveLeagueRequest}
+      okText='Leave'
+      okButtonProps={{ danger: true }}
+    >
+      <Button
+        type='primary'
+        danger
+        hidden={props.hidden}
+        loading={loading}
+        style={{
+          width: '100%'
+        }}
+      >
+        Leave
+      </Button>
+    </Popconfirm>
   );
 }
 

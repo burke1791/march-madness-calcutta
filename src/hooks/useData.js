@@ -11,6 +11,7 @@ import { useAuthState } from '../context/authContext';
  * @param {Object} options.headers - HTTP headers
  * @param {Function} options.processData - function for processing data returned by the API
  * @param {Array} options.conditions - a list of conditions that must evaluate to true in order to make the api call
+ * @returns {[Array<Any>, Date, Function]}
  */
 function useData({ baseUrl, endpoint, method, headers = {}, processData, conditions = [] }) {
 

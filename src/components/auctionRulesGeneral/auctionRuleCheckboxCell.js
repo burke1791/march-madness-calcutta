@@ -1,6 +1,17 @@
 import React from 'react';
 import { Checkbox } from 'antd';
 
+/**
+ * @typedef AuctionRuleCheckboxCellProps
+ * @property {import('./auctionRuleInputNumberCell').AuctionRule} rule
+ * @property {Function} onChange
+ * @property {Boolean} disabled
+ */
+
+/**
+ * @component
+ * @param {AuctionRuleCheckboxCellProps} props 
+ */
 function AuctionRuleCheckboxCell(props) {
 
   const getDefaultChecked = () => {
@@ -21,6 +32,7 @@ function AuctionRuleCheckboxCell(props) {
   return (
     <Checkbox
       defaultChecked={getDefaultChecked()}
+      disabled={props.disabled}
       onChange={onChange}
     />
   );

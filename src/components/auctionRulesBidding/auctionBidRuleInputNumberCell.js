@@ -23,12 +23,20 @@ import { InputNumber } from 'antd';
 function AuctionBidRuleInputNumberCell(props) {
 
   const onChange = (value) => {
-    console.log(value || -1);
-    props.onChange(props.ruleId, props.name, value || -1);
+    props.onChange(props.ruleId, props.name, value);
   }
 
   const formatter = (value) => {
-    return value;
+    let formattedValue = Number(value);
+    if (props.formatter) {
+      formattedValue = props.formatter(formattedValue);
+    }
+
+    if (props.precision) {
+      formattedValue = formattedValue.toFixed(props.precision);
+    }
+
+    return formattedValue;
   }
 
   const parser = (value) => {
@@ -39,9 +47,8 @@ function AuctionBidRuleInputNumberCell(props) {
     <InputNumber
       status={props.isDeleted ? 'warning' : null}
       prefix={props.isDeleted ? <DeleteTwoTone /> : null}
-      defaultValue={props.value}
-      precision={props.precision || 0}
-      formatter={props.formatter || formatter}
+      value={props.value}
+      formatter={formatter}
       parser={props.parser || parser}
       addonBefore={props.addonBefore}
       addonAfter={props.addonAfter}

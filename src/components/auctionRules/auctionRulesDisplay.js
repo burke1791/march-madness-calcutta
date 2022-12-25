@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { Row, Col, Table, Button } from 'antd';
+import { useLeagueState } from '../../context/leagueContext';
 
 /**
  * @typedef AuctionRulesDisplayProps
@@ -25,9 +26,13 @@ function AuctionRulesDisplay(props) {
   const [tableData, setTableData] = useState([]);
   const [newRuleNumber, setNewRuleNumber] = useState(0);
 
+  const { roleId } = useLeagueState();
+
   useEffect(() => {
     if (props.dataSource?.length > 0) {
       setTableData([...props.dataSource]);
+    } else {
+      setTableData([]);
     }
   }, [props.dataSourceChanged]);
 
@@ -71,7 +76,7 @@ function AuctionRulesDisplay(props) {
   return (
     <Fragment>
       <Row justify='center'>
-        <Col xxl={12} xl={14} lg={16} md={18} sm={20} xs={22}>
+        <Col xxl={12} xl={14} lg={16} md={18} sm={20} xs={24}>
           <Table
             loading={props.tableLoading}
             dataSource={tableData}
@@ -85,16 +90,23 @@ function AuctionRulesDisplay(props) {
         </Col>
       </Row>
       <Row justify='center'>
-        {renderNewRuleButton() || null}
-        <Button
-          type='primary'
-          style={{ marginTop: 8 }}
-          disabled={!props.isRuleChanged}
-          onClick={props.sendUpdateRulesRequest}
-          loading={props.updateLoading}
-        >
-          Save Changes
-        </Button>
+        { roleId == 1 || roleId == 2 ? (
+            <Fragment>
+              {renderNewRuleButton()}
+              <Button
+                type='primary'
+                style={{ marginTop: 8 }}
+                disabled={!props.isRuleChanged}
+                onClick={props.sendUpdateRulesRequest}
+                loading={props.updateLoading}
+              >
+                Save Changes
+              </Button>
+            </Fragment>
+          )
+          :
+          null
+        }
       </Row>
     </Fragment>
   )

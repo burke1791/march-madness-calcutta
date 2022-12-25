@@ -1,5 +1,5 @@
 import React, { Fragment, useRef, useState } from 'react';
-import { Table, Tooltip } from 'antd';
+import { Table, Tooltip, Typography } from 'antd';
 import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
 import { QuestionCircleTwoTone } from '@ant-design/icons';
@@ -8,12 +8,13 @@ import AuctionRuleCheckboxCell from './auctionRuleCheckboxCell';
 import AuctionRules from '../auctionRules/auctionRules';
 
 const { Column } = Table;
+const { Text } = Typography;
 
 function GeneralRules() {
 
   const [ruleChangedEvent, setRuleChangedEvent] = useState(null);
 
-  const { leagueId } = useLeagueState();
+  const { leagueId, roleId } = useLeagueState();
 
   const rulesRef = useRef({});
 
@@ -24,19 +25,38 @@ function GeneralRules() {
 
   const renderRuleValueCell = (text, record) => {
     if (record.DataType == 'Number') {
-      return (
-        <AuctionRuleInputNumberCell
-          rule={record}
-          onChange={ruleValueChanged}
-        />
-      );
+      if (roleId == 1 || roleId == 2) {
+        return (
+          <AuctionRuleInputNumberCell
+            rule={record}
+            onChange={ruleValueChanged}
+          />
+        );
+      } else {
+        let ruleText = '';
+        if (record.DisplayPrefix) ruleText += record.DisplayPrefix;
+        ruleText += `${Number(record.SettingValue)}`;
+        if (record.DisplaySuffix) ruleText += record.DisplaySuffix;
+        if (record.TrailingText) ruleText += ` ${record.TrailingText}`;
+        // const ruleText = `${record.DisplayPrefix}${Number(record.SettingValue).toFixed(record.DecimalPrecision || 0)}${record.DisplaySuffix} ${record.TrailingText}`;
+        return (
+          <Text>{ruleText}</Text>
+        );
+      }
     } else if (record.DataType == 'Boolean') {
-      return (
-        <AuctionRuleCheckboxCell
-          rule={record}
-          onChange={ruleValueChanged}
-        />
-      );
+      if (roleId == 1 || roleId == 2) {
+        return (
+          <AuctionRuleCheckboxCell
+            rule={record}
+            onChange={ruleValueChanged}
+          />
+        );
+      } else {
+        const ruleText = record.SettingValue == 'false' || record.SettingValue == undefined ? 'No' : 'Yes';
+        return (
+          <Text>{ruleText}</Text>
+        )
+      }
     } else {
       return text;
     }

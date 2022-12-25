@@ -69,8 +69,6 @@ function AuctionTeamsList(props) {
 
     auctionTeams.sort((a, b) => a.displayOrder - b.displayOrder);
 
-    console.log(auctionTeams);
-
     return auctionTeams
   }
 

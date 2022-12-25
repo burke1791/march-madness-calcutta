@@ -3,7 +3,7 @@ import './auctionActions.css';
 
 import AuctionAdmin from '../auctionAdmin/auctionAdmin';
 
-import { Button, Card, Statistic, Row, Col, InputNumber, message } from 'antd';
+import { Button, Card, Statistic, Row, Col, message } from 'antd';
 import 'antd/dist/antd.css';
 
 import { formatMoney } from '../../utilities/helper';
@@ -14,7 +14,6 @@ import { useAuthState } from '../../context/authContext';
 import { useAuctionState } from '../../context/auctionContext';
 import { auctionServiceHelper } from '../../services/autction/helper';
 import Team from '../team/team';
-import { useSettingsState } from '../../context/leagueSettingsContext';
 import BiddingWidget from './biddingWidget';
 
 const { Countdown } = Statistic;
@@ -74,7 +73,6 @@ function AuctionActions(props) {
 
   const getServerOffset = () => {
     AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.SERVER_TIMESTAMP, {}).then(response => {
-      console.log(response);
       let clockOffset = auctionServiceHelper.updateServerPing(response.data[0].ServerTimestamp);
       updateOffset(clockOffset);
     });
@@ -93,7 +91,6 @@ function AuctionActions(props) {
   }
 
   const updateBidButtonState = () => {
-    console.log(status);
     if (status === AUCTION_STATUS.BIDDING && connected) {
       setBiddingDisabled(false);
     } else {
