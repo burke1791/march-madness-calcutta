@@ -27,7 +27,6 @@ function LeagueAuction(props) {
   const [prizepool, setPrizepool] = useState(0);
   const [myTeams, setMyTeams] = useState([]);
   const [myTax, setMyTax] = useState(0);
-  const [myTaxBrackets, setMyTaxBrackets] = useState([]);
   const [myTotalBuyIn, setMyTotalBuyIn] = useState(0);
   const [leagueUsers, setLeagueUsers] = useState([]);
   const [sidebarInUse, setSidebarInUse] = useState(true);
@@ -134,12 +133,6 @@ function LeagueAuction(props) {
     let userBuyIns = auctionServiceHelper.packageUserBuyIns(buyIns);
 
     updateUserSummaries(userBuyIns);
-  }
-
-  const processMyTaxBrackets = (taxBrackets) => {
-    if (taxBrackets != undefined) {
-      setMyTaxBrackets(taxBrackets);
-    }
   }
 
   const updateAuctionStatusInContext = (statusObj) => {
