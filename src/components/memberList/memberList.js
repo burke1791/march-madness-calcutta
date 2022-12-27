@@ -2,10 +2,16 @@ import React from 'react';
 
 import { Row, Col, Card, Table } from 'antd';
 import 'antd/dist/antd.css';
+import './memberList.css';
 
 import { formatMoney } from '../../utilities/helper';
 
 const columns = [
+  {
+    align: 'left',
+    width: 20,
+    render: () => <PulseCircle color='green' />
+  },
   {
     title: 'Member',
     dataIndex: 'alias',
@@ -46,3 +52,19 @@ function MemberList(props) {
 }
 
 export default MemberList;
+
+/**
+ * @typedef PulseCircleProps
+ * @property {('green'|'orange'|'blue'|'rose')} color
+ */
+
+/**
+ * @component
+ * @param {PulseCircleProps} props 
+ */
+function PulseCircle(props) {
+
+  return (
+    <div className={`circle pulse ${props.color || 'green'}`}></div>
+  );
+}

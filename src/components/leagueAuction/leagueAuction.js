@@ -22,8 +22,6 @@ import { parseAuctionSettings } from './helper';
 
 function LeagueAuction(props) {
 
-  // const [teams, setTeams] = useState([]);
-  const [auctionTeamsLoading, setAuctionTeamsLoading] = useState(true);
   const [prizepool, setPrizepool] = useState(0);
   const [myTeams, setMyTeams] = useState([]);
   const [myTax, setMyTax] = useState(0);
@@ -35,7 +33,7 @@ function LeagueAuction(props) {
 
   const { leagueId } = useLeagueState();
   const { userId, authenticated } = useAuthState();
-  const { newItemTimestamp, errorMessage, prevUpdate, connected } = useAuctionState();
+  const { newItemTimestamp, errorMessage, connected } = useAuctionState();
 
   const auctionDispatch = useAuctionDispatch();
 
@@ -119,7 +117,6 @@ function LeagueAuction(props) {
     // setTeams(auctionTeams);
     // teams.current = auctionTeams;
     auctionDispatch({ type: 'update', key: 'teams', value: auctionTeams });
-    setAuctionTeamsLoading(false);
     
     const myTeamsArr = auctionTeams.filter(team => {
       if (team.owner == userId) {
@@ -177,7 +174,7 @@ function LeagueAuction(props) {
     // @TODO refactor this styling after implementing a toggle functionality for the league navigation
     <Row style={sidebarInUse ? { height: 'calc(100vh - 64px)' } : { height: 'calc(100vh - 114px)' }}>
       <Col xs={0} md={0} lg={8}>
-        <AuctionTeams teams={teams.current} prizepool={prizepool} loading={auctionTeamsLoading} />
+        <AuctionTeams prizepool={prizepool} />
       </Col>
       <Col xs={24} md={24} lg={10} className='flex-growVert-parent'>
         <AuctionActions totalSpent={myTotalBuyIn} sendSocketMessage={props.sendSocketMessage} />

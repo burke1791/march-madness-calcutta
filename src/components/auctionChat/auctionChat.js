@@ -52,6 +52,7 @@ function AuctionChat(props) {
 
   const handleNewMessage = (newMessage) => {
     const newList = [...messagesRef.current, ...newMessage];
+    // const newList = [...messages, ...newMessage];
 
     messagesRef.current = newList;
     setMessages(newList);

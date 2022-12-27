@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import './auctionTeams.css';
 
 import { Row, List } from 'antd';
@@ -7,6 +7,15 @@ import { formatMoney } from '../../utilities/helper';
 import Team from '../team/team';
 import { useAuctionState } from '../../context/auctionContext';
 
+/**
+ * @typedef AuctionTeamsProps
+ * @property {Number} prizepool
+ */
+
+/**
+ * @component
+ * @param {AuctionTeamsProps} props 
+ */
 function AuctionTeams(props) {
 
   return (
@@ -18,16 +27,13 @@ function AuctionTeams(props) {
         </h3>
       </Row>
       <Row>
-        <AuctionTeamsList
-          teams={props.teams}
-          loading={props.loading}
-        />
+        <AuctionTeamsList />
       </Row>
     </div>
   );
 }
 
-function AuctionTeamsList(props) {
+function AuctionTeamsList() {
 
   const [loading, setLoading] = useState(true);
   const [teamsList, setTeamsList] = useState([]);
