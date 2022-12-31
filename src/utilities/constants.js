@@ -103,7 +103,11 @@ export const AUCTION_STATUS = {
   SOLD: 'sold',
   CONFIRMED_SOLD: 'confirmed-sold',
   END: 'end'
-}
+};
+
+export const AUCTION_NOTIF = {
+  CONNECTION: 'connection'
+};
 
 export const NOTIF = {
   AUTH: 'auth',

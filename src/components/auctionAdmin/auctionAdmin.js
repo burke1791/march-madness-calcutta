@@ -127,7 +127,7 @@ function AuctionAdmin(props) {
   }
 
   const resetAuctionClock = (event) => {
-    if (status === AUCTION_STATUS.SOLD || status === AUCTION_STATUS.BIDDING || AUCTION_STATUS.CONFIRMED_SOLD) {
+    if (status === AUCTION_STATUS.SOLD || status === AUCTION_STATUS.BIDDING || status === AUCTION_STATUS.CONFIRMED_SOLD) {
       setResetClockLoading(true);
 
       // resetClock(leagueId);

@@ -23,6 +23,14 @@ export const auctionServiceHelper = {
     return msgArr;
   },
 
+  parseAuctionStatus: function(data) {
+    if (Array.isArray(data)) {
+      return {
+
+      }
+    }
+  },
+
   updateAuctionStatus: function(status) {
     return {
       status: status.Status,

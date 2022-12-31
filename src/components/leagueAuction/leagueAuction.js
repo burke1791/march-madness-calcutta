@@ -26,7 +26,7 @@ function LeagueAuction(props) {
   const [myTeams, setMyTeams] = useState([]);
   const [myTax, setMyTax] = useState(0);
   const [myTotalBuyIn, setMyTotalBuyIn] = useState(0);
-  const [leagueUsers, setLeagueUsers] = useState([]);
+  // const [leagueUsers, setLeagueUsers] = useState([]);
   const [sidebarInUse, setSidebarInUse] = useState(true);
 
   const teams = useRef([]);
@@ -64,7 +64,7 @@ function LeagueAuction(props) {
   useEffect(() => {
     if (leagueId && newItemTimestamp) {
       fetchAuctionTeams();
-      fetchAuctionBuyIns();
+      // fetchAuctionBuyIns();
     }
   }, [newItemTimestamp]);
 
@@ -80,8 +80,8 @@ function LeagueAuction(props) {
 
   const fetchAllAuctionData = () => {
     fetchAuctionTeams();
-    fetchAuctionBuyIns();
-    fetchAuctionStatus();
+    // fetchAuctionBuyIns();
+    // fetchAuctionStatus();
     fetchAuctionSettings();
   }
 
@@ -94,23 +94,26 @@ function LeagueAuction(props) {
     });
   }
 
-  const fetchAuctionBuyIns = () => {
-    AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_BUYINS, { leagueId }).then(response => {
-      processAuctionBuyIns(response.data);
-      // processAuctionBuyIns(response.data?.buyIns);
-      // processMyTaxBrackets(response.data?.tax);
-      auctionDispatch({ type: 'update', key: 'auctionBuyInsDownloadedDate', value: new Date().valueOf() });
-    }).catch(error => {
-      console.log(error);
-    });
-  }
+  // const fetchAuctionBuyIns = () => {
+  //   AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_BUYINS, { leagueId }).then(response => {
+  //     processAuctionBuyIns(response.data);
+  //     // processAuctionBuyIns(response.data?.buyIns);
+  //     // processMyTaxBrackets(response.data?.tax);
+  //     auctionDispatch({ type: 'update', key: 'auctionBuyInsDownloadedDate', value: new Date().valueOf() });
+  //   }).catch(error => {
+  //     console.log(error);
+  //   });
+  // }
 
-  const fetchAuctionStatus = () => {
-    AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_STATUS, { leagueId }).then(response => {
-      let statusObj = auctionServiceHelper.updateAuctionStatus(response.data[0]);
-      updateAuctionStatusInContext(statusObj);
-    });
-  }
+  // const fetchAuctionStatus = () => {
+  //   AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_STATUS, { leagueId }).then(response => {
+  //     console.log(response.data);
+  //     if (response?.data) {
+  //       let statusObj = auctionServiceHelper.updateAuctionStatus(response.data[0]);
+  //       updateAuctionStatusInContext(statusObj);
+  //     }
+  //   });
+  // }
 
   const processAuctionTeams = (data) => {
     let auctionTeams = auctionServiceHelper.packageAuctionTeams(data);
@@ -126,23 +129,23 @@ function LeagueAuction(props) {
     setMyTeams(myTeamsArr);
   }
 
-  const processAuctionBuyIns = (buyIns) => {
-    let userBuyIns = auctionServiceHelper.packageUserBuyIns(buyIns);
+  // const processAuctionBuyIns = (buyIns) => {
+  //   let userBuyIns = auctionServiceHelper.packageUserBuyIns(buyIns);
 
-    updateUserSummaries(userBuyIns);
-  }
+  //   updateUserSummaries(userBuyIns);
+  // }
 
-  const updateAuctionStatusInContext = (statusObj) => {
-    let keys = Object.keys(statusObj);
+  // const updateAuctionStatusInContext = (statusObj) => {
+  //   let keys = Object.keys(statusObj);
 
-    for (var key of keys) {
-      if (statusObj[key] !== undefined) {
-        auctionDispatch({ type: 'update', key: key, value: statusObj[key] });
-      }
-    }
+  //   for (var key of keys) {
+  //     if (statusObj[key] !== undefined) {
+  //       auctionDispatch({ type: 'update', key: key, value: statusObj[key] });
+  //     }
+  //   }
 
-    auctionDispatch({ type: 'update', key: 'auctionStatusDownloadedDate', value: new Date().valueOf() });
-  }
+  //   auctionDispatch({ type: 'update', key: 'auctionStatusDownloadedDate', value: new Date().valueOf() });
+  // }
 
   const updateUserSummaries = (userBuyIns) => {
     const myBuyIn = userBuyIns.find(user => user.userId == userId);
@@ -160,7 +163,7 @@ function LeagueAuction(props) {
 
     setMyTotalBuyIn(currentUserTotalBuyIn);
     setMyTax(myTaxBurden);
-    setLeagueUsers(userBuyIns);
+    // setLeagueUsers(userBuyIns);
     setPrizepool(prizepool);
   }
 
@@ -182,7 +185,7 @@ function LeagueAuction(props) {
       </Col>
       <Col xs={0} md={0} lg={6}>
         <MyTeams myTeams={myTeams} myTax={myTax} />
-        <MemberList users={leagueUsers} />
+        <MemberList sendSocketMessage={props.sendSocketMessage} />
       </Col>
       <AuctionModal title='Connection to Auction Service Closed' />
       <AuctionLoadingModal errorTimer={15} />

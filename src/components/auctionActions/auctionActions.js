@@ -8,17 +8,17 @@ import 'antd/dist/antd.css';
 
 import { formatMoney } from '../../utilities/helper';
 import AuctionService from '../../services/autction/auction.service';
-import { AUCTION_STATUS, AUCTION_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { AUCTION_STATUS, AUCTION_SERVICE_ENDPOINTS, API_CONFIG } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
-import { useAuctionState } from '../../context/auctionContext';
+import { useAuctionDispatch, useAuctionState } from '../../context/auctionContext';
 import { auctionServiceHelper } from '../../services/autction/helper';
 import Team from '../team/team';
 import BiddingWidget from './biddingWidget';
+import useData from '../../hooks/useData';
 
 const { Countdown } = Statistic;
 
-// @TODO this component does wayyyyy too much - break it up please!
 function AuctionActions(props) {
   
   const [teamName, setTeamName] = useState('');
@@ -33,6 +33,35 @@ function AuctionActions(props) {
   const { roleId, leagueId } = useLeagueState();
   const { userId, authenticated } = useAuthState();
   const { auctionInterval, status, displayName, currentItemId, itemTypeId, price, winnerId, winnerAlias, lastBid, prevUpdate, teamLogoUrl, connected } = useAuctionState();
+
+  const auctionDispatch = useAuctionDispatch();
+
+  const [auctionStatus, statusReturnDate, fetchAuctionStatus] = useData({
+    baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
+    endpoint: `${AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_STATUS}/${leagueId}`,
+    method: 'GET',
+    processData: auctionServiceHelper.updateAuctionStatus,
+    conditions: [authenticated, leagueId, connected]
+  });
+
+  useEffect(() => {
+    if (authenticated && leagueId && connected) {
+      fetchAuctionStatus();
+    }
+  }, [authenticated, leagueId, connected]);
+
+  useEffect(() => {
+    if (statusReturnDate) {
+      console.log(auctionStatus);
+      const keys = Object.keys(auctionStatus);
+
+      for (let key of keys) {
+        auctionDispatch({ type: 'update', key: key, value: auctionStatus[key] });
+      }
+
+      auctionDispatch({ type: 'update', key: 'auctionStatusDownloadedDate', value: new Date().valueOf() });
+    }
+  }, [statusReturnDate]);
 
   useEffect(() => {
     updateBidButtonState();
@@ -107,11 +136,6 @@ function AuctionActions(props) {
       disabled = false;
     }
 
-    // Admins can always undo bids
-    // if (status === AUCTION_STATUS.BIDDING && roleId <= 2) {
-    //   disabled = false;
-    // }
-
     setUndoDisable(disabled);
   }
 
@@ -125,16 +149,6 @@ function AuctionActions(props) {
     setBiddingDisabled(true);
 
     props.sendSocketMessage('PLACE_BID', { leagueId: leagueId, amount: value, itemId: currentItemId, itemTypeId: itemTypeId });
-  }
-
-  const generateAdminButtons = () => {
-    if (roleId == 1 || roleId == 2) {
-      return (
-        <AuctionAdmin sendSocketMessage={props.sendSocketMessage} />
-      );
-    } else {
-      return null;
-    }
   }
 
   const getInterval = () => {
@@ -156,7 +170,11 @@ function AuctionActions(props) {
     <Row>
       <Card size='small' style={{ width: '100%' }}>
         <Team name={teamName} imageSrc={teamLogoUrl} imgStyle={{ maxHeight: 48, maxWidth: 48 }} />
-        {generateAdminButtons()}
+        {roleId == 1 || roleId == 2 ?
+          <AuctionAdmin sendSocketMessage={props.sendSocketMessage} />
+          :
+          null
+        }
         <Row type='flex' justify='space-between' gutter={8} style={{ marginTop: '6px' }}>
           <Col span={12} className='flex-growVert-parent'>
             <Card size='small' bodyStyle={{ textAlign: 'center' }} className='flex-growVert-child'>

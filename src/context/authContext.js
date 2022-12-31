@@ -67,6 +67,17 @@ function AuthProvider({children}) {
   );
 }
 
+/**
+ * @typedef AuthState
+ * @property {String} authStatus
+ * @property {Boolean} authenticated
+ * @property {String} token
+ */
+
+/**
+ * @function
+ * @returns {AuthState}
+ */
 function useAuthState() {
   const context = useContext(AuthStateContext);
   if (context === undefined) {
