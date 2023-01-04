@@ -24,11 +24,25 @@ export const auctionServiceHelper = {
   },
 
   parseAuctionStatus: function(data) {
+    console.log(data);
     if (Array.isArray(data)) {
       return {
-
-      }
+        status: data[0].Status,
+        currentItemId: data[0].CurrentItemId,
+        teamLogoUrl: data[0].TeamLogoUrl,
+        itemTypeId: data[0].ItemTypeId,
+        itemName: data[0].ItemName,
+        itemSeed: data[0].Seed,
+        displayName: data[0].DisplayName,
+        price: +data[0].CurrentItemPrice,
+        winnerId: data[0].CurrentItemWinner,
+        winnerAlias: data[0].Alias,
+        lastBid: isNaN(+data[0].LastBidTimestamp) ? new Date(data[0].LastBidTimestamp) : new Date(+data[0].LastBidTimestamp),
+        errorMessage: null
+      };
     }
+
+    return {};
   },
 
   updateAuctionStatus: function(status) {

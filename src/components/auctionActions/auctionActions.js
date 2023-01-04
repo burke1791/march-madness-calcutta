@@ -40,7 +40,7 @@ function AuctionActions(props) {
     baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
     endpoint: `${AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_STATUS}/${leagueId}`,
     method: 'GET',
-    processData: auctionServiceHelper.updateAuctionStatus,
+    processData: auctionServiceHelper.parseAuctionStatus,
     conditions: [authenticated, leagueId, connected]
   });
 
