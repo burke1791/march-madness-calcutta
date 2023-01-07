@@ -55,7 +55,8 @@ export const AUCTION_SERVICE_ENDPOINTS = {
   FETCH_AUCTION_TEAMS: '/getAuctionTeams',
   FETCH_AUCTION_BUYINS: '/getAuctionMemberBuyIns',
   START_AUCTION: '/startAuction',
-  RESET_AUCTION: '/resetAuction'
+  RESET_AUCTION: '/resetAuction',
+  FETCH_AUCTION_SUMMARY: '/getAuctionSummary'
 }
 
 export const USER_SERVICE_ENDPOINTS = {

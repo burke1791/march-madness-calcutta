@@ -72,6 +72,8 @@ function AuthProvider({children}) {
  * @property {String} authStatus
  * @property {Boolean} authenticated
  * @property {String} token
+ * @property {Number} userId
+ * @property {String} alias
  */
 
 /**

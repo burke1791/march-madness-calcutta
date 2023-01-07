@@ -58,8 +58,11 @@ function MemberList(props) {
   }, [usersReturnDate, connectedUsersUpdated]);
 
   useEffect(() => {
+    console.log(connected, leagueId);
     if (connected && leagueId) {
       props.sendSocketMessage('CONNECTED_USERS', { leagueId: leagueId });
+    } else if (connected === false) {
+      handleConnection([{ userId: userId, isConnected: connected }]);
     }
   }, [connected, leagueId]);
 
@@ -110,19 +113,19 @@ function MemberList(props) {
   }
 
   const handleConnection = (newConnectedUsers) => {
+    console.log(newConnectedUsers);
     const currentConnectedUsers = [...connectedUsers.current];
 
     for (let user of newConnectedUsers) {
       const connectedUser = currentConnectedUsers.find(u => +u.userId == +user.userId);
       if (connectedUser == undefined) {
         currentConnectedUsers.push(user);
-      } else if (connectedUser.userId == userId) {
-        connectedUser.isConnected = connected;
       } else {
         connectedUser.isConnected = user.isConnected;
       }
     }
 
+    console.log(currentConnectedUsers);
     connectedUsers.current = currentConnectedUsers;
     setConnectedUsersUpdated(new Date().valueOf());
   }

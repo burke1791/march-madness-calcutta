@@ -32,7 +32,7 @@ function AuctionActions(props) {
   
   const { roleId, leagueId } = useLeagueState();
   const { userId, authenticated } = useAuthState();
-  const { auctionInterval, status, displayName, currentItemId, itemTypeId, price, winnerId, winnerAlias, lastBid, prevUpdate, teamLogoUrl, connected } = useAuctionState();
+  const { auctionInterval, status, displayName, currentItemId, itemTypeId, price, winnerId, winnerAlias, lastBid, prevUpdate, teamLogoUrl, connected, auctionClosed } = useAuctionState();
 
   const auctionDispatch = useAuctionDispatch();
 
@@ -49,6 +49,12 @@ function AuctionActions(props) {
       fetchAuctionStatus();
     }
   }, [authenticated, leagueId, connected]);
+
+  useEffect(() => {
+    if (!!auctionClosed) {
+      fetchAuctionStatus();
+    }
+  }, [auctionClosed]);
 
   useEffect(() => {
     if (statusReturnDate) {

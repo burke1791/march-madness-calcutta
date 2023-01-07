@@ -5,7 +5,12 @@ import { Row, List } from 'antd';
 import 'antd/dist/antd.css';
 import { formatMoney } from '../../utilities/helper';
 import Team from '../team/team';
-import { useAuctionState } from '../../context/auctionContext';
+import { useAuctionDispatch, useAuctionState } from '../../context/auctionContext';
+import useData from '../../hooks/useData';
+import { API_CONFIG, AUCTION_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { useLeagueState } from '../../context/leagueContext';
+import { useAuthState } from '../../context/authContext';
+import { parseAuctionTeams } from '../../parsers/auction';
 
 /**
  * @typedef AuctionTeamsProps
@@ -36,47 +41,40 @@ function AuctionTeams(props) {
 function AuctionTeamsList() {
 
   const [loading, setLoading] = useState(true);
-  const [teamsList, setTeamsList] = useState([]);
 
-  const { teams, teamsDownloadedDate } = useAuctionState();
+  const { authenticated } = useAuthState()
+  const { leagueId } = useLeagueState();
+  const { connected, newItemTimestamp } = useAuctionState();
+
+  const autctionDispatch = useAuctionDispatch();
+
+  const [teams, teamsReturnDate, fetchTeams] = useData({
+    baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
+    endpoint: `${AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_TEAMS}/${leagueId}`,
+    method: 'GET',
+    processData: parseAuctionTeams,
+    conditions: [authenticated, leagueId, connected]
+  });
 
   useEffect(() => {
-    if (teamsDownloadedDate && teams.length) {
-      setTeamsList(parseTeams(teams));
+    if (authenticated && leagueId && connected) {
+      fetchTeams();
+    }
+  }, [authenticated, leagueId, connected]);
+
+  useEffect(() => {
+    if (leagueId && newItemTimestamp) {
+      fetchTeams();
+    }
+  }, [newItemTimestamp])
+
+  useEffect(() => {
+    if (teamsReturnDate) {
+      console.log(teams);
       setLoading(false);
+      autctionDispatch({ type: 'update', key: 'teamsDownloadedDate', value: new Date().valueOf() });
     }
-  }, [teamsDownloadedDate])
-
-  const getDisplayType = (isComplete, price) => {
-    let displayClass = 'active';
-    let displayOrder = 1;
-
-    if (isComplete && price == 0) {
-      displayClass = 'no-sell';
-      displayOrder = 3;
-    } else if (isComplete && price > 0) {
-      displayClass = 'purchased';
-      displayOrder = 2;
-    }
-
-    return {
-      displayClass: displayClass,
-      displayOrder: displayOrder
-    };
-  }
-
-  const parseTeams = (teams) => {
-    const auctionTeams = teams.map(team => {
-      return {
-        ...team,
-        ...getDisplayType(team.isComplete, team.price)
-      }
-    });
-
-    auctionTeams.sort((a, b) => a.displayOrder - b.displayOrder);
-
-    return auctionTeams
-  }
+  }, [teamsReturnDate]);
 
   const getStatusText = (displayClass, price) => {
     if (displayClass === 'no-sell') {
@@ -94,7 +92,7 @@ function AuctionTeamsList() {
     <List
       bordered={true}
       itemLayout='horizontal'
-      dataSource={teamsList}
+      dataSource={teams || []}
       loading={loading}
       size='small'
       style={{ padding: '6px 10px', maxHeight: 'calc(100vh - 160px)', overflow: 'auto', width: '100%' }}
