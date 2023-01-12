@@ -1,76 +1,81 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import './auctionTeams.css';
 
 import { Row, List } from 'antd';
 import 'antd/dist/antd.css';
 import { formatMoney } from '../../utilities/helper';
 import Team from '../team/team';
-import { useAuctionState } from '../../context/auctionContext';
+import { useAuctionDispatch, useAuctionState } from '../../context/auctionContext';
+import useData from '../../hooks/useData';
+import { API_CONFIG, AUCTION_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { useLeagueState } from '../../context/leagueContext';
+import { useAuthState } from '../../context/authContext';
+import { parseAuctionTeams } from '../../parsers/auction';
 
-function AuctionTeams(props) {
+/**
+ * @typedef AuctionTeamsProps
+ * @property {Number} prizepool
+ */
+
+/**
+ * @component
+ * @param {AuctionTeamsProps} props 
+ */
+function AuctionTeams() {
+
+  const { prizepool } = useAuctionState();
 
   return (
     <div style={{ padding: '0 6px' }}>
       <Row type='flex' justify='space-between' style={{ padding: '6px 10px' }}>
         <h3>Auction Items</h3>
         <h3>
-          Prizepool: {props.prizepool ? formatMoney(props.prizepool) : '$0.00'}
+          Prizepool: {formatMoney(prizepool || 0)}
         </h3>
       </Row>
       <Row>
-        <AuctionTeamsList
-          teams={props.teams}
-          loading={props.loading}
-        />
+        <AuctionTeamsList />
       </Row>
     </div>
   );
 }
 
-function AuctionTeamsList(props) {
+function AuctionTeamsList() {
 
   const [loading, setLoading] = useState(true);
-  const [teamsList, setTeamsList] = useState([]);
 
-  const { teams, teamsDownloadedDate } = useAuctionState();
+  const { authenticated } = useAuthState()
+  const { leagueId } = useLeagueState();
+  const { connected, newItemTimestamp } = useAuctionState();
+
+  const autctionDispatch = useAuctionDispatch();
+
+  const [teams, teamsReturnDate, fetchTeams] = useData({
+    baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
+    endpoint: `${AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_TEAMS}/${leagueId}`,
+    method: 'GET',
+    processData: parseAuctionTeams,
+    conditions: [authenticated, leagueId, connected]
+  });
 
   useEffect(() => {
-    if (teamsDownloadedDate && teams.length) {
-      setTeamsList(parseTeams(teams));
+    if (authenticated && leagueId && connected) {
+      fetchTeams();
+    }
+  }, [authenticated, leagueId, connected]);
+
+  useEffect(() => {
+    if (leagueId && newItemTimestamp) {
+      fetchTeams();
+    }
+  }, [newItemTimestamp])
+
+  useEffect(() => {
+    if (teamsReturnDate) {
       setLoading(false);
+      autctionDispatch({ type: 'update', key: 'teamsDownloadedDate', value: new Date().valueOf() });
     }
-  }, [teamsDownloadedDate])
-
-  const getDisplayType = (isComplete, price) => {
-    let displayClass = 'active';
-    let displayOrder = 1;
-
-    if (isComplete && price == 0) {
-      displayClass = 'no-sell';
-      displayOrder = 3;
-    } else if (isComplete && price > 0) {
-      displayClass = 'purchased';
-      displayOrder = 2;
-    }
-
-    return {
-      displayClass: displayClass,
-      displayOrder: displayOrder
-    };
-  }
-
-  const parseTeams = (teams) => {
-    const auctionTeams = teams.map(team => {
-      return {
-        ...team,
-        ...getDisplayType(team.isComplete, team.price)
-      }
-    });
-
-    auctionTeams.sort((a, b) => a.displayOrder - b.displayOrder);
-
-    return auctionTeams
-  }
+  }, [teamsReturnDate]);
 
   const getStatusText = (displayClass, price) => {
     if (displayClass === 'no-sell') {
@@ -88,7 +93,7 @@ function AuctionTeamsList(props) {
     <List
       bordered={true}
       itemLayout='horizontal'
-      dataSource={teamsList}
+      dataSource={teams || []}
       loading={loading}
       size='small'
       style={{ padding: '6px 10px', maxHeight: 'calc(100vh - 160px)', overflow: 'auto', width: '100%' }}

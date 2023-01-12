@@ -27,6 +27,8 @@ function AuctionBidRuleInputNumberCell(props) {
   }
 
   const formatter = (value) => {
+    if (value == '') return value;
+
     let formattedValue = Number(value);
     if (props.formatter) {
       formattedValue = props.formatter(formattedValue);

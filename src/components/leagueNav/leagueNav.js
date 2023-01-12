@@ -79,13 +79,13 @@ function LeagueNav() {
         ...menuItems.start,
         ...supplementalItems,
         ...menuItems.tail,
-        { key: 'leave', label: <LeaveButton hidden={collapsed} />, style: { position: 'absolute', bottom: 8, padding: '0px 16px 0px 16px' } }
+        { key: 'leave', label: <LeaveButton hidden={collapsed} />, style: { position: 'absolute', bottom: 8, paddingTop: 0, paddingRight: 16, paddingBottom: 0, paddingLeft: 16 } }
       ];
     } else {
       return [
         ...menuItems.start,
         ...menuItems.tail,
-        { key: 'leave', label: <LeaveButton hidden={collapsed} />, style: { position: 'absolute', bottom: 8, padding: '0px 16px 0px 16px' } }
+        { key: 'leave', label: <LeaveButton hidden={collapsed} />, style: { position: 'absolute', bottom: 8, paddingTop: 0, paddingRight: 16, paddingBottom: 0, paddingLeft: 16 } }
       ];
     }
   }
