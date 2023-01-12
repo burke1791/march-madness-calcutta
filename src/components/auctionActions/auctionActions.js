@@ -29,10 +29,11 @@ function AuctionActions(props) {
   const [offset, setOffset] = useState(0);
   const [undoDisable, setUndoDisable] = useState(true);
   const [undoLoading, setUndoLoading] = useState(false);
+  const [totalSpent, setTotalSpent] = useState(0);
   
   const { roleId, leagueId } = useLeagueState();
   const { userId, authenticated } = useAuthState();
-  const { auctionInterval, status, displayName, currentItemId, itemTypeId, price, winnerId, winnerAlias, lastBid, prevUpdate, teamLogoUrl, connected, auctionClosed } = useAuctionState();
+  const { auctionInterval, status, displayName, currentItemId, itemTypeId, price, winnerId, winnerAlias, lastBid, prevUpdate, teamLogoUrl, connected, auctionClosed, naturalBuyIn, taxBuyIn } = useAuctionState();
 
   const auctionDispatch = useAuctionDispatch();
 
@@ -58,7 +59,6 @@ function AuctionActions(props) {
 
   useEffect(() => {
     if (statusReturnDate) {
-      console.log(auctionStatus);
       const keys = Object.keys(auctionStatus);
 
       for (let key of keys) {
@@ -105,6 +105,10 @@ function AuctionActions(props) {
       setBiddingDisabled(false);
     }
   }, [lastBid]);
+
+  useEffect(() => {
+    setTotalSpent((naturalBuyIn || 0) + (taxBuyIn || 0));
+  }, [naturalBuyIn, taxBuyIn]);
 
   const getServerOffset = () => {
     AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.SERVER_TIMESTAMP, {}).then(response => {
@@ -198,7 +202,7 @@ function AuctionActions(props) {
         <Row type='flex' justify='space-between' gutter={8} style={{ marginTop: '6px' }}>
           <Col span={12} className='flex-growVert-parent'>
             <Card size='small' bodyStyle={{ textAlign: 'center' }} className='flex-growVert-child'>
-              <Statistic title='Total Spent' value={formatMoney(props.totalSpent)} />
+              <Statistic title='Total Spent' value={formatMoney(totalSpent)} />
             </Card>
           </Col>
           <Col span={12} className='flex-growVert-parent'>
@@ -206,7 +210,7 @@ function AuctionActions(props) {
               biddingDisabled={biddingDisabled}
               placeBid={placeBid}
               highBid={highBid}
-              totalSpent={props.totalSpent}
+              totalSpent={totalSpent}
             />
           </Col>
         </Row>

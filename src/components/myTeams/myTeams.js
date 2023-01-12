@@ -14,7 +14,7 @@ import { useAuctionState } from '../../context/auctionContext';
 const { Column } = Table;
 
 // @TODO (Tracked by MMC-105) add some sort of animation on the table rows that update, e.g. highlight then fade
-function MyTeams(props) {
+function MyTeams() {
 
   const [loading, setLoading] = useState(true);
   const [teamsArr, setTeamsArr] = useState([]);
@@ -45,8 +45,7 @@ function MyTeams(props) {
   }, [newItemTimestamp])
 
   useEffect(() => {
-    if (teamsReturnDate) {
-      console.log(teams);
+    if (teamsReturnDate && teams?.length) {
       setLoading(false);
       if (taxBuyIn > 0) {
         const taxArray = [{

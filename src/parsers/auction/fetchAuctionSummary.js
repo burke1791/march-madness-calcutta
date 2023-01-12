@@ -27,7 +27,12 @@ export function parseAuctionSummary(data) {
 
   const summary = data[0];
 
-  const parsedSummary = {};
+  const parsedSummary = {
+    leagueId: null,
+    naturalBuyIn: 0,
+    taxBuyIn: 0,
+    prizepool: 0
+  };
 
   if (summary.LeagueId) parsedSummary.leagueId = Number(summary.LeagueId);
   if (summary.NaturalBuyIn) parsedSummary.naturalBuyIn = Number(summary.NaturalBuyIn);

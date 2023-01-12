@@ -20,7 +20,6 @@ import { parseAuctionSummary } from '../../parsers/auction';
 
 function LeagueAuction(props) {
 
-  const [prizepool, setPrizepool] = useState(0);
   const [naturalBuyIn, setNaturalBuyIn] = useState(0);
   const [taxBuyIn, setTaxBuyIn] = useState(0);
 
@@ -77,14 +76,14 @@ function LeagueAuction(props) {
   }, [auctionSettingsReturnDate]);
 
   useEffect(() => {
-    if (auctionSummaryReturnDate) {
-      if (auctionSummary && auctionSummary.prizepool) {
+    if (auctionSummaryReturnDate && auctionSummary) {
+      if (auctionSummary.prizepool !== undefined) {
         auctionDispatch({ type: 'update', key: 'prizepool', value: auctionSummary.prizepool });
       }
-      if (auctionSummary && auctionSummary.naturalBuyIn) {
+      if (auctionSummary.naturalBuyIn !== undefined) {
         auctionDispatch({ type: 'update', key: 'naturalBuyIn', value: auctionSummary.naturalBuyIn });
       }
-      if (auctionSummary && auctionSummary.taxBuyIn) {
+      if (auctionSummary.taxBuyIn !== undefined) {
         auctionDispatch({ type: 'update', key: 'taxBuyIn', value: auctionSummary.taxBuyIn });
       }
     }
@@ -96,7 +95,6 @@ function LeagueAuction(props) {
   }
 
   const handleAuctionError = (errorMessage) => {
-    console.log(errorMessage);
     message.error(errorMessage);
   }
 
@@ -104,14 +102,14 @@ function LeagueAuction(props) {
     // @TODO refactor this styling after implementing a toggle functionality for the league navigation
     <Row style={sidebarInUse ? { height: 'calc(100vh - 64px)' } : { height: 'calc(100vh - 114px)' }}>
       <Col xs={0} md={0} lg={8}>
-        <AuctionTeams prizepool={prizepool} />
+        <AuctionTeams />
       </Col>
       <Col xs={24} md={24} lg={10} className='flex-growVert-parent'>
-        <AuctionActions totalSpent={naturalBuyIn + taxBuyIn} sendSocketMessage={props.sendSocketMessage} />
+        <AuctionActions sendSocketMessage={props.sendSocketMessage} />
         <AuctionChat sendSocketMessage={props.sendSocketMessage} />
       </Col>
       <Col xs={0} md={0} lg={6}>
-        <MyTeams myTeams={[]} />
+        <MyTeams />
         <MemberList sendSocketMessage={props.sendSocketMessage} />
       </Col>
       <AuctionModal title='Connection to Auction Service Closed' />

@@ -21,14 +21,16 @@ import { parseAuctionTeams } from '../../parsers/auction';
  * @component
  * @param {AuctionTeamsProps} props 
  */
-function AuctionTeams(props) {
+function AuctionTeams() {
+
+  const { prizepool } = useAuctionState();
 
   return (
     <div style={{ padding: '0 6px' }}>
       <Row type='flex' justify='space-between' style={{ padding: '6px 10px' }}>
         <h3>Auction Items</h3>
         <h3>
-          Prizepool: {props.prizepool ? formatMoney(props.prizepool) : '$0.00'}
+          Prizepool: {formatMoney(prizepool || 0)}
         </h3>
       </Row>
       <Row>
@@ -70,7 +72,6 @@ function AuctionTeamsList() {
 
   useEffect(() => {
     if (teamsReturnDate) {
-      console.log(teams);
       setLoading(false);
       autctionDispatch({ type: 'update', key: 'teamsDownloadedDate', value: new Date().valueOf() });
     }
