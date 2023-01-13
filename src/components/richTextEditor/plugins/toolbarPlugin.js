@@ -538,7 +538,7 @@ export default function ToolbarPlugin() {
 
   return (
     <div className='toolbar' ref={toolbarRef}>
-      <button
+      {/* <button
         disabled={!canUndo}
         onClick={() => {
           editor.dispatchCommand(UNDO_COMMAND);
@@ -558,7 +558,7 @@ export default function ToolbarPlugin() {
       >
         <i className='format redo' />
       </button>
-      <Divider />
+      <Divider /> */}
       {supportedBlockTypes.has(blockType) && (
         <>
           <button
@@ -653,7 +653,7 @@ export default function ToolbarPlugin() {
           </button>
           {isLink &&
             createPortal(<FloatingLinkEditor editor={editor} />, document.body)}
-          <Divider />
+          {/* <Divider />
           <button
             onClick={() => {
               editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'left');
@@ -689,7 +689,7 @@ export default function ToolbarPlugin() {
             aria-label='Justify Align'
           >
             <i className='format justify-align' />
-          </button>{' '}
+          </button>{' '} */}
         </>
       )}
     </div>
