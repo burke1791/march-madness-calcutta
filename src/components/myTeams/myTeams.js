@@ -33,16 +33,10 @@ function MyTeams() {
 
   useEffect(() => {
     if (authenticated && leagueId && userId) {
-      fetchTeams();
-    }
-  }, [authenticated, leagueId, connected, userId]);
-
-  useEffect(() => {
-    if (authenticated && leagueId && userId) {
       setLoading(true);
       fetchTeams();
     }
-  }, [newItemTimestamp])
+  }, [authenticated, leagueId, connected, userId, newItemTimestamp]);
 
   useEffect(() => {
     if (teamsReturnDate) setLoading(false);
