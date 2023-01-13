@@ -6,6 +6,7 @@ import PayoutCalculation from '../../components/payoutCalculation/payoutCalculat
 import PayoutRules from '../../components/leagueRulesPayout/payoutRules';
 import { useSettingsState } from '../../context/leagueSettingsContext';
 import PayoutRulesText from '../../components/leagueRulesPayout/payoutRulesText';
+import { Editor } from '../../components/richTextEditor';
 
 const { Content } = Layout;
 
@@ -20,7 +21,9 @@ function PayoutSettings() {
         <PayoutCalculation />
       </SettingsRow>
       <SettingsDivider dividerOrientation='left'>Payout Rules</SettingsDivider>
-      {calcOption?.toLowerCase() === 'automatic' ? <PayoutRules /> : <PayoutRulesText />}
+      {calcOption?.toLowerCase() === 'automatic' ? <PayoutRules /> : <Editor />
+        // <PayoutRulesText />
+      }
     </Content>
   )
 }
