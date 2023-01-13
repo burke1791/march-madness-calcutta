@@ -6,6 +6,7 @@ import useData from '../../hooks/useData';
 import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
+import AuctionRulesModal from './auctionRulesModal';
 
 /**
  * @typedef BiddingWidgetProps
@@ -25,6 +26,8 @@ function BiddingWidget(props) {
   const [bidVal, setBidVal] = useState(0);
   const [bidStep, setBidStep] = useState(1);
   const [bidStatus, setBidStatus] = useState(null);
+
+  const [rulesModalOpen, setRulesModalOpen] = useState(false);
 
   const { price, maxBuyin } = useAuctionState();
   const { leagueId } = useLeagueState();
@@ -110,6 +113,14 @@ function BiddingWidget(props) {
     setBidStep(step);
   }
 
+  const showRulesModal = () => {
+    setRulesModalOpen(true);
+  }
+
+  const dismissRulesModal = () => {
+    setRulesModalOpen(false);
+  }
+
   return (
     <Card size='small' className='flex-growVert-child'>
       <Row type='flex' justify='space-around' gutter={8}>
@@ -142,6 +153,7 @@ function BiddingWidget(props) {
           type='primary'
           size='small'
           style={{ width: '100%' }}
+          onClick={showRulesModal}
         >
           Show Rules
         </Button>
@@ -151,6 +163,7 @@ function BiddingWidget(props) {
           ${props.highBid + 1 >= minBid ? props.highBid + 1 : minBid} (Min Legal Bid)
         </Button>
       </Row> */}
+      <AuctionRulesModal open={rulesModalOpen} dismiss={dismissRulesModal} />
     </Card>
   );
 }
