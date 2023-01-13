@@ -66,6 +66,7 @@ function AuctionTeamsList() {
 
   useEffect(() => {
     if (leagueId && newItemTimestamp) {
+      setLoading(true);
       fetchTeams();
     }
   }, [newItemTimestamp])

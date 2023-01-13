@@ -45,8 +45,9 @@ function MyTeams() {
   }, [newItemTimestamp])
 
   useEffect(() => {
+    if (teamsReturnDate) setLoading(false);
+
     if (teamsReturnDate && teams?.length) {
-      setLoading(false);
       if (taxBuyIn > 0) {
         const taxArray = [{
           displayName: 'Tax',
