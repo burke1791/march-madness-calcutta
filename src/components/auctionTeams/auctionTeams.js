@@ -60,16 +60,10 @@ function AuctionTeamsList() {
 
   useEffect(() => {
     if (authenticated && leagueId && connected) {
-      fetchTeams();
-    }
-  }, [authenticated, leagueId, connected]);
-
-  useEffect(() => {
-    if (leagueId && newItemTimestamp) {
       setLoading(true);
       fetchTeams();
     }
-  }, [newItemTimestamp])
+  }, [authenticated, leagueId, connected, newItemTimestamp]);
 
   useEffect(() => {
     if (teamsReturnDate) {

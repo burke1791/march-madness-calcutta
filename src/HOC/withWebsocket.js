@@ -134,20 +134,6 @@ function withAuctionWebsocket(WrappedComponent, config) {
           console.log('unknown auction websocket message');
           console.log(msgType);
       }
-
-      // if (msgType === 'chat') {
-      //   // Pubsub.publish(NOTIF.NEW_CHAT_MESSAGE, parseChatMessage(msgObj));
-      // } else if (msgType === 'auction') {
-      //   // parse auction obj then publish
-      //   processAuctionStatus(msgObj);
-      //   Pubsub.publish(NOTIF.NEW_AUCTION_DATA, null);
-      // } else if (msgType === 'auction_close') {
-      //   message.info(messageText);
-      //   auctionDispatch({ type: 'update', key: 'auctionClosed', value: true });
-      // } else if (msgType === 'auction_error') {
-      //   // Pubsub.publish(NOTIF.AUCTION_ERROR, messageText);
-      //   processAuctionError(messageText);
-      // }
     }
 
     const processAuctionStatus = (data) => {
