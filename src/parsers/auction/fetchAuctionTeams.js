@@ -8,6 +8,7 @@
  * @property {String} DisplayName
  * @property {Number} Seed
  * @property {Number} UserId
+ * @property {String} Alias
  * @property {Number} Price
  * @property {Boolean} IsComplete
  */
@@ -33,6 +34,7 @@ export function parseAuctionTeams(teams) {
       displayName: teamObj.DisplayName,
       seed: teamObj.Seed,
       owner: Number(teamObj.UserId),
+      ownerAlias: teamObj.Alias,
       price: teamObj.Price,
       isComplete: teamObj.IsComplete,
       ...getDisplayType(teamObj.IsComplete, teamObj.Price)

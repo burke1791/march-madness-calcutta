@@ -48,7 +48,7 @@ function AuctionTeamsList() {
   const { leagueId } = useLeagueState();
   const { connected, newItemTimestamp } = useAuctionState();
 
-  const autctionDispatch = useAuctionDispatch();
+  const auctionDispatch = useAuctionDispatch();
 
   const [teams, teamsReturnDate, fetchTeams] = useData({
     baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
@@ -67,8 +67,10 @@ function AuctionTeamsList() {
 
   useEffect(() => {
     if (teamsReturnDate) {
+      console.log(teams);
       setLoading(false);
-      autctionDispatch({ type: 'update', key: 'teamsDownloadedDate', value: new Date().valueOf() });
+      auctionDispatch({ type: 'update', key: 'teams', value: teams });
+      auctionDispatch({ type: 'update', key: 'teamsDownloadedDate', value: new Date().valueOf() });
     }
   }, [teamsReturnDate]);
 
