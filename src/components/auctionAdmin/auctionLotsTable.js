@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Popconfirm, Table, Button } from 'antd';
 import { useAuctionState } from '../../context/auctionContext';
 import { useLeagueState } from '../../context/leagueContext';
-import { AUCTION_STATUS } from '../../utilities/constants';
+import { API_CONFIG, AUCTION_SERVICE_ENDPOINTS, AUCTION_STATUS } from '../../utilities/constants';
 import { formatMoney } from '../../utilities/helper';
+import useData from '../../hooks/useData';
+import { useAuthState } from '../../context/authContext';
 
 const { Column } = Table;
 
@@ -24,6 +26,7 @@ function AuctionLotsTable(props) {
         const teamArr = teams.map(team => {
           return {
             itemId: team.itemId,
+            itemTypeId: team.itemTypeId,
             displayName: team.displayName,
             ownerAlias: team.ownerAlias,
             price: team.price,
@@ -36,8 +39,18 @@ function AuctionLotsTable(props) {
     }
   }, [teamsDownloadedDate]);
 
-  const setNextItem = (itemId) => {
+  const setNextItem = (itemId, itemTypeId) => {
 
+  }
+
+  const resetItem = (itemId, itemTypeId) => {
+    const payload = {
+      leagueId: leagueId,
+      itemId: itemId,
+      itemTypeId: itemTypeId
+    }
+    
+    props.sendSocketMessage('RESET_ITEM', payload);
   }
 
   return (
@@ -70,12 +83,15 @@ function AuctionLotsTable(props) {
             return (
               <ResetItemButton
                 itemId={record.itemId}
+                itemTypeId={record.itemTypeId}
+                onClick={resetItem}
               />
             );
           } else {
             return (
               <SetNextItemButton
                 itemId={record.itemId}
+                itemTypeId={record.itemTypeId}
                 onClick={setNextItem}
               />
             )
@@ -91,6 +107,7 @@ export default AuctionLotsTable;
 /**
  * @typedef SetNextItemButtonProps
  * @property {Number} itemId
+ * @property {Number} itemTypeId
  * @property {Function} onClick
  */
 
@@ -116,7 +133,7 @@ function SetNextItemButton(props) {
   }, [status]);
 
   const onClick = () => {
-    props.onClick(props.itemId);
+    props.onClick(props.itemId, props.itemTypeId);
   }
 
   return (
@@ -135,6 +152,8 @@ function SetNextItemButton(props) {
 /**
  * @typedef ResetItemButtonProps
  * @property {Number} itemId
+ * @property {Number} itemTypeId
+ * @property {Function} onClick
  */
 
 /**
@@ -146,7 +165,9 @@ function ResetItemButton(props) {
   const [loading, setLoading] = useState(false);
 
   const onClick = () => {
+    setLoading(true);
 
+    props.onClick(props.itemId, props.itemTypeId);
   }
   
   return (
