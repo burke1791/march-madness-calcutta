@@ -48,8 +48,8 @@ function AuctionLotsTable(props) {
       leagueId: leagueId,
       itemId: itemId,
       itemTypeId: itemTypeId
-    }
-    
+    };
+
     props.sendSocketMessage('RESET_ITEM', payload);
   }
 

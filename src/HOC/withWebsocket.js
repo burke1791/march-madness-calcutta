@@ -96,6 +96,22 @@ function withAuctionWebsocket(WrappedComponent, config) {
       return JSON.stringify(obj);
     }
 
+    const showNotifMessage = (notifLevel, notifMessage) => {
+      switch (notifLevel) {
+        case 'info':
+          message.info(notifMessage);
+          break;
+        case 'error':
+          message.error(notifMessage);
+          break;
+        case 'success':
+          message.success(notifMessage);
+          break;
+        default:
+          console.log('unknown notifLevel: ' + notifLevel);
+      }
+    }
+
     const emit = (msgType, msgObj, messageText) => {
       switch (msgType) {
         case 'auction_open':
@@ -119,6 +135,8 @@ function withAuctionWebsocket(WrappedComponent, config) {
           break;
         case 'auction_info':
           // misc info that doesn't affect core auction functionality
+          showNotifMessage(msgObj.notifLevel, msgObj.notifMessage);
+          
           break;
         case 'connection':
           Pubsub.publish(AUCTION_NOTIF.CONNECTION, msgObj);
