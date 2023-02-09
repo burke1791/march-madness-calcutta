@@ -21,7 +21,7 @@ function MyTeams() {
 
   const { authenticated, userId } = useAuthState();
   const { leagueId } = useLeagueState();
-  const { connected, newItemTimestamp, taxBuyIn } = useAuctionState();
+  const { connected, newItemTimestamp, taxBuyIn, refreshData } = useAuctionState();
 
   const [teams, teamsReturnDate, fetchTeams] = useData({
     baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
@@ -37,6 +37,12 @@ function MyTeams() {
       fetchTeams();
     }
   }, [authenticated, leagueId, connected, userId, newItemTimestamp]);
+
+  useEffect(() => {
+    if (refreshData) {
+      fetchTeams();
+    }
+  }, [refreshData]);
 
   useEffect(() => {
     if (teamsReturnDate) setLoading(false);

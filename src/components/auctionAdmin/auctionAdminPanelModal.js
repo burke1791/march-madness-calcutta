@@ -99,7 +99,7 @@ function AuctionAdminPanel(props) {
             After a team is selected, automatically close the admin panel
       */}
       <Divider orientation='left'>Auction Lots</Divider>
-      <AuctionLotsTable />
+      <AuctionLotsTable sendSocketMessage={props.sendSocketMessage} />
       {/* Table of all users - AuctionPermission interface (new DB tables)
             This will also require changes to the websocket handling for all users
       */}

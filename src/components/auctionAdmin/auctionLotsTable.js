@@ -15,7 +15,7 @@ function AuctionLotsTable(props) {
   const [tableData, setTableData] = useState([]);
 
   const { leagueId } = useLeagueState();
-  const { teams, teamsDownloadedDate } = useAuctionState();
+  const { teams, teamsDownloadedDate, resetItemTriggered } = useAuctionState();
 
   useEffect(() => {
     if (teamsDownloadedDate) {
@@ -38,6 +38,12 @@ function AuctionLotsTable(props) {
       }
     }
   }, [teamsDownloadedDate]);
+
+  useEffect(() => {
+    if (resetItemTriggered) {
+      setLoading(false);
+    }
+  }, [resetItemTriggered]);
 
   const setNextItem = (itemId, itemTypeId) => {
 
@@ -78,6 +84,7 @@ function AuctionLotsTable(props) {
         render={(text, record) => formatMoney(text)}
       />
       <Column
+        align='right'
         render={(text, record) => {
           if (record.displayClass == 'purchased' || record.displayClass == 'unsold') {
             return (
@@ -163,6 +170,14 @@ function SetNextItemButton(props) {
 function ResetItemButton(props) {
 
   const [loading, setLoading] = useState(false);
+
+  const { resetItemTriggered } = useAuctionState();
+
+  useEffect(() => {
+    if (resetItemTriggered) {
+      setLoading(false);
+    }
+  }, [resetItemTriggered]);
 
   const onClick = () => {
     setLoading(true);

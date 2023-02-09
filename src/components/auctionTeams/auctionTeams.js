@@ -46,7 +46,7 @@ function AuctionTeamsList() {
 
   const { authenticated } = useAuthState()
   const { leagueId } = useLeagueState();
-  const { connected, newItemTimestamp } = useAuctionState();
+  const { connected, newItemTimestamp, refreshData } = useAuctionState();
 
   const auctionDispatch = useAuctionDispatch();
 
@@ -64,6 +64,12 @@ function AuctionTeamsList() {
       fetchTeams();
     }
   }, [authenticated, leagueId, connected, newItemTimestamp]);
+
+  useEffect(() => {
+    if (refreshData) {
+      fetchTeams();
+    }
+  }, [refreshData]);
 
   useEffect(() => {
     if (teamsReturnDate) {
