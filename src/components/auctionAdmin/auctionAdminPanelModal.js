@@ -3,7 +3,7 @@ import { Divider, Modal, Row } from 'antd';
 import { useAuctionState } from '../../context/auctionContext';
 import { AUCTION_STATUS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
-import { OpenAuctionButton, CloseAuctionButton, NextItemButton, ResetClockButton } from './buttons';
+import { OpenAuctionButton, CloseAuctionButton, NextItemButton, ResetClockButton, ResetAuctionButton } from './buttons';
 import AuctionLotsTable from './auctionLotsTable';
 
 const ADMIN_BUTTONS = {
@@ -72,6 +72,7 @@ function AuctionAdminPanel(props) {
   const [adminButtonClicked, setAdminButtonClicked] = useState(null);
 
   const { status } = useAuctionState();
+  const { leagueId } = useLeagueState();
 
   useEffect(() => {
     if (adminButtonClicked && status === AUCTION_STATUS.BIDDING) {
@@ -83,6 +84,12 @@ function AuctionAdminPanel(props) {
 
   const onAdminButtonClicked = (name) => {
     setAdminButtonClicked(name);
+  }
+
+  const onResetAuctionClicked = () => {
+    console.log('Reset full auction');
+
+    props.sendSocketMessage('RESET_AUCTION', { leagueId });
   }
 
   return (
@@ -104,6 +111,8 @@ function AuctionAdminPanel(props) {
             This will also require changes to the websocket handling for all users
       */}
       {/* Reset entire auction button */}
+      <Divider orientation='left'>Reset Auction</Divider>
+      <ResetAuctionButton onClick={onResetAuctionClicked} />
     </Fragment>
   );
 }
