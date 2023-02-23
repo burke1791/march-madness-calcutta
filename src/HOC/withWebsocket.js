@@ -197,6 +197,9 @@ function withAuctionWebsocket(WrappedComponent, config) {
         case 'RESET_ITEM':
           auctionDispatch({ type: 'update', key: 'resetItemTriggered', value: new Date().valueOf() });
           break;
+        case 'RESET_AUCTION':
+          auctionDispatch({ type: 'update', key: 'resetAuctionTriggered', value: new Date().valueOf() });
+          break;
       }
     }
 
