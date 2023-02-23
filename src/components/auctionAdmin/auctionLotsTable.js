@@ -46,7 +46,13 @@ function AuctionLotsTable(props) {
   }, [resetItemTriggered]);
 
   const setNextItem = (itemId, itemTypeId) => {
+    const payload = {
+      leagueId: leagueId,
+      itemId: itemId,
+      itemTypeId: itemTypeId
+    };
 
+    props.sendSocketMessage('NEXT_ITEM', payload);
   }
 
   const resetItem = (itemId, itemTypeId) => {
@@ -140,6 +146,7 @@ function SetNextItemButton(props) {
   }, [status]);
 
   const onClick = () => {
+    setLoading(true);
     props.onClick(props.itemId, props.itemTypeId);
   }
 
