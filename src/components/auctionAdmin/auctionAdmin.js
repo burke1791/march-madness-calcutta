@@ -5,6 +5,7 @@ import 'antd/dist/antd.css';
 import { AUCTION_STATUS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuctionState } from '../../context/auctionContext';
+import AuctionAdminPanelModal from './auctionAdminPanelModal';
 
 const btnStyle = {
   marginTop: '4px'
@@ -20,6 +21,7 @@ function AuctionAdmin(props) {
   const [startLoading, setStartLoading] = useState(false);
   const [nextLoading, setNextLoading] = useState(false);
   const [resetClockLoading, setResetClockLoading] = useState(false);
+  const [adminPanelOpen, setAdminPanelOpen] = useState(false);
 
   const { leagueId } = useLeagueState();
   const { status, prevUpdate } = useAuctionState();
@@ -33,6 +35,14 @@ function AuctionAdmin(props) {
     setResetClockLoading(false);
     setNextLoading(false);
     setStartLoading(false);
+  }
+
+  const showAdminPanel = () => {
+    setAdminPanelOpen(true);
+  }
+
+  const dismissAdminPanel = () => {
+    setAdminPanelOpen(false);
   }
   
   const generateStartStopButton = () => {
@@ -78,7 +88,7 @@ function AuctionAdmin(props) {
   }
 
   const endAuction = (event) => {
-    if (status === AUCTION_STATUS.BIDDING || status === AUCTION_STATUS.SOLD || AUCTION_STATUS.CONFIRMED_SOLD) {
+    if (status === AUCTION_STATUS.BIDDING || status === AUCTION_STATUS.SOLD || status === AUCTION_STATUS.CONFIRMED_SOLD) {
       setStartLoading(true);
 
       props.sendSocketMessage('CLOSE_AUCTION', { leagueId });
@@ -103,9 +113,21 @@ function AuctionAdmin(props) {
   
   return (
     <div className='admin-actions' style={containerStyle}>
-      {generateStartStopButton()}
+      {/* {generateStartStopButton()} */}
+      <Button
+        type='primary'
+        style={btnStyle}
+        onClick={showAdminPanel}
+      >
+        Admin Panel
+      </Button>
       <Button type='primary' style={btnStyle} loading={nextLoading} onClick={nextAuctionItem}>Next Item</Button>
       <Button type='primary' style={btnStyle} loading={resetClockLoading} onClick={resetAuctionClock}>Reset Clock</Button>
+      <AuctionAdminPanelModal
+        open={adminPanelOpen}
+        dismiss={dismissAdminPanel}
+        sendSocketMessage={props.sendSocketMessage}
+      />
     </div>
   );
 }

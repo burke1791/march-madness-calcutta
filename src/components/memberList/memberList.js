@@ -24,7 +24,7 @@ function MemberList(props) {
 
   const connectedUsers = useRef([]);
 
-  const { connected, newItemTimestamp } = useAuctionState();
+  const { connected, newItemTimestamp, refreshData } = useAuctionState();
   const { leagueId } = useLeagueState();
   const { authenticated, userId } = useAuthState();
 
@@ -43,6 +43,12 @@ function MemberList(props) {
       getUsers();
     }
   }, [authenticated, leagueId, newItemTimestamp]);
+
+  useEffect(() => {
+    if (refreshData) {
+      getUsers();
+    }
+  }, [refreshData]);
 
   useEffect(() => {
     if (usersReturnDate) {

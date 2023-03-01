@@ -50,6 +50,7 @@ function AuctionBidRuleInputNumberCell(props) {
       status={props.isDeleted ? 'warning' : null}
       prefix={props.isDeleted ? <DeleteTwoTone /> : null}
       value={props.value}
+      precision={0}
       formatter={formatter}
       parser={props.parser || parser}
       addonBefore={props.addonBefore}
