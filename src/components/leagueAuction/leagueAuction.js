@@ -27,7 +27,7 @@ function LeagueAuction(props) {
 
   const { leagueId } = useLeagueState();
   const { authenticated } = useAuthState();
-  const { newItemTimestamp, errorMessage, connected } = useAuctionState();
+  const { newItemTimestamp, errorMessage, connected, refreshData } = useAuctionState();
 
   const auctionDispatch = useAuctionDispatch();
 
@@ -64,6 +64,12 @@ function LeagueAuction(props) {
       fetchAuctionSummary();
     }
   }, [newItemTimestamp]);
+
+  useEffect(() => {
+    if (refreshData) {
+      fetchAuctionSummary();
+    }
+  }, [refreshData]);
 
   useEffect(() => {
     if (auctionSettingsReturnDate && auctionSettings) {

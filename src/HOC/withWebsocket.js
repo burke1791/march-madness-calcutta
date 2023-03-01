@@ -96,6 +96,22 @@ function withAuctionWebsocket(WrappedComponent, config) {
       return JSON.stringify(obj);
     }
 
+    const showNotifMessage = (notifLevel, notifMessage) => {
+      switch (notifLevel) {
+        case 'info':
+          message.info(notifMessage);
+          break;
+        case 'error':
+          message.error(notifMessage);
+          break;
+        case 'success':
+          message.success(notifMessage);
+          break;
+        default:
+          console.log('unknown notifLevel: ' + notifLevel);
+      }
+    }
+
     const emit = (msgType, msgObj, messageText) => {
       switch (msgType) {
         case 'auction_open':
@@ -119,6 +135,14 @@ function withAuctionWebsocket(WrappedComponent, config) {
           break;
         case 'auction_info':
           // misc info that doesn't affect core auction functionality
+          showNotifMessage(msgObj.notifLevel, msgObj.notifMessage);
+          console.log(msgObj);
+
+          auctionInfoUpdateContext(msgObj.action);
+          
+          if (msgObj.refreshData) {
+            auctionDispatch({ type: 'update', key: 'refreshData', value: new Date().valueOf() });
+          }
           break;
         case 'connection':
           Pubsub.publish(AUCTION_NOTIF.CONNECTION, msgObj);
@@ -166,6 +190,17 @@ function withAuctionWebsocket(WrappedComponent, config) {
       }
 
       auctionDispatch({ type: 'update', key: 'prevUpdate', value: new Date().valueOf() });
+    }
+
+    const auctionInfoUpdateContext = (action) => {
+      switch (action) {
+        case 'RESET_ITEM':
+          auctionDispatch({ type: 'update', key: 'resetItemTriggered', value: new Date().valueOf() });
+          break;
+        case 'RESET_AUCTION':
+          auctionDispatch({ type: 'update', key: 'resetAuctionTriggered', value: new Date().valueOf() });
+          break;
+      }
     }
 
     return (

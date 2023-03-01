@@ -59,7 +59,7 @@ function AuctionRulesModal(props) {
  */
 function RulesTableWrapper(props) {
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const { leagueId } = useLeagueState();
   const { authenticated } = useAuthState();
