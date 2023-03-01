@@ -40,6 +40,8 @@ function MyTeams() {
 
   useEffect(() => {
     if (refreshData) {
+      setTeamsArr([]);
+      setLoading(true);
       fetchTeams();
     }
   }, [refreshData]);
