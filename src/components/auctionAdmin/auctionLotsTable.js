@@ -72,7 +72,7 @@ function AuctionLotsTable(props) {
       pagination={false}
       size='small'
       scroll={{ y: 400 }}
-      rowKey='itemId'
+      rowKey={(record) => `${record.itemId}_${record.itemTypeId}`}
     >
       <Column
         title='Name'
