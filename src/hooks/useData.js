@@ -11,12 +11,14 @@ import { useAuthState } from '../context/authContext';
  * @param {Object} options.headers - HTTP headers
  * @param {Function} options.processData - function for processing data returned by the API
  * @param {Array} options.conditions - a list of conditions that must evaluate to true in order to make the api call
- * @returns {[Array<Any>, Date, Function]}
+ * @returns {[Array<Any>, Date, Function, Any, Date]}
  */
 function useData({ baseUrl, endpoint, method, headers = {}, processData, conditions = [] }) {
 
   const [data, setData] = useState();
   const [fetchDate, setFetchDate] = useState();
+  const [err, setErr] = useState();
+  const [errDate, setErrDate] = useState();
   const [isValid, setIsValid] = useState(false);
   const requestQueue = useRef([]);
 
@@ -88,16 +90,21 @@ function useData({ baseUrl, endpoint, method, headers = {}, processData, conditi
   const callApi = (payload) => {
     if (isValid) {
       setData(null);
+      setErr(null);
       fetchApi(payload).then(data => {
         setData(data);
         setFetchDate(new Date());
+      }).catch(err => {
+        console.log(err);
+        setErr(err);
+        setErrDate(new Date());
       })
     } else {
       requestQueue.current = [...requestQueue.current, { payload }];
     }
   }
 
-  return [data, fetchDate, callApi];
+  return [data, fetchDate, callApi, err, errDate];
 };
 
 export default useData;

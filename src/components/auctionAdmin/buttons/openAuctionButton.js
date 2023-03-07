@@ -41,7 +41,7 @@ function OpenAuctionButton(props) {
       loading={loading}
       onClick={openAuction}
     >
-      Open Auction
+      Open Auction (Random Item)
     </Button>
   )
 }

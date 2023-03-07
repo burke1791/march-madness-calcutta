@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-import { Row, Col, Card, Table } from 'antd';
+import { Row, Col, Card, Table, message } from 'antd';
 import 'antd/dist/antd.css';
 import './memberList.css';
 
@@ -15,7 +15,9 @@ import { DisconnectOutlined } from '@ant-design/icons';
 
 const { Column } = Table;
 
-// @TODO add some sort of animation on the table rows that update, e.g. highlight then fade
+const MAX_RETRIES = 3;
+
+// @TODO (Tracked by MMC-105) add some sort of animation on the table rows that update, e.g. highlight then fade
 function MemberList(props) {
 
   const [loading, setLoading] = useState(true);
@@ -23,6 +25,7 @@ function MemberList(props) {
   const [userList, setUserList] = useState([]);
 
   const connectedUsers = useRef([]);
+  const retryCountRef = useRef(0);
 
   const { connected, newItemTimestamp, refreshData } = useAuctionState();
   const { leagueId } = useLeagueState();
@@ -30,7 +33,7 @@ function MemberList(props) {
 
   const auctionDispatch = useAuctionDispatch();
 
-  const [users, usersReturnDate, getUsers] = useData({
+  const [users, usersReturnDate, getUsers, err, errDate] = useData({
     baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
     endpoint: `${AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_BUYINS}/${leagueId}`,
     method: 'GET',
@@ -39,20 +42,20 @@ function MemberList(props) {
 
   useEffect(() => {
     if (authenticated && leagueId) {
-      setLoading(true);
-      getUsers();
+      downloadData();
     }
   }, [authenticated, leagueId, newItemTimestamp]);
 
   useEffect(() => {
     if (refreshData) {
-      getUsers();
+      downloadData();
     }
   }, [refreshData]);
 
   useEffect(() => {
     if (usersReturnDate) {
       setLoading(false);
+      retryCountRef.current = 0;
       auctionDispatch({ type: 'update', key: 'auctionBuyInsDownloadedDate', value: new Date().valueOf() });
     }
   }, [usersReturnDate]);
@@ -62,6 +65,19 @@ function MemberList(props) {
       updateUsersList();
     }
   }, [usersReturnDate, connectedUsersUpdated]);
+
+  useEffect(() => {
+    if (errDate) {
+      if (retryCountRef.current < MAX_RETRIES) {
+        downloadData();
+        retryCountRef.current = retryCountRef.current + 1;
+        console.log('MemberList retry:', retryCountRef.current);
+      } else {
+        setLoading(false);
+        message.error('Error updating Member List');
+      }
+    }
+  }, [errDate]);
 
   useEffect(() => {
     if (connected && leagueId) {
@@ -78,6 +94,11 @@ function MemberList(props) {
       Pubsub.unsubscribe(AUCTION_NOTIF.CONNECTION, MemberList);
     })
   }, []);
+
+  const downloadData = () => {
+    setLoading(true);
+    getUsers();
+  }
 
   const updateUsersList = () => {
 

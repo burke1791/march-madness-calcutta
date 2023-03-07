@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-import { Row, Col, Card, Table } from 'antd';
+import { Row, Col, Card, Table, message } from 'antd';
 import 'antd/dist/antd.css';
 
 import { formatMoney } from '../../utilities/helper';
@@ -13,17 +13,21 @@ import { useAuctionState } from '../../context/auctionContext';
 
 const { Column } = Table;
 
+const MAX_RETRIES = 3;
+
 // @TODO (Tracked by MMC-105) add some sort of animation on the table rows that update, e.g. highlight then fade
 function MyTeams() {
 
   const [loading, setLoading] = useState(true);
   const [teamsArr, setTeamsArr] = useState([]);
+  
+  const retryCountRef = useRef(0);
 
   const { authenticated, userId } = useAuthState();
   const { leagueId } = useLeagueState();
   const { connected, newItemTimestamp, taxBuyIn, refreshData } = useAuctionState();
 
-  const [teams, teamsReturnDate, fetchTeams] = useData({
+  const [teams, teamsReturnDate, fetchTeams, err, errDate] = useData({
     baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
     endpoint: `${AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_TEAMS}/${leagueId}?userId=${userId}`,
     method: 'GET',
@@ -33,8 +37,7 @@ function MyTeams() {
 
   useEffect(() => {
     if (authenticated && leagueId && userId) {
-      setLoading(true);
-      fetchTeams();
+      downloadData();
     }
   }, [authenticated, leagueId, connected, userId, newItemTimestamp]);
 
@@ -47,7 +50,10 @@ function MyTeams() {
   }, [refreshData]);
 
   useEffect(() => {
-    if (teamsReturnDate) setLoading(false);
+    if (teamsReturnDate) {
+      setLoading(false);
+      retryCountRef.current = 0;
+    }
 
     if (teamsReturnDate && teams?.length) {
       if (taxBuyIn > 0) {
@@ -62,6 +68,24 @@ function MyTeams() {
       }
     }
   }, [teamsReturnDate, taxBuyIn]);
+
+  useEffect(() => {
+    if (errDate) {
+      if (retryCountRef.current < MAX_RETRIES) {
+        downloadData();
+        retryCountRef.current = retryCountRef.current + 1;
+        console.log('MyTeams retry:', retryCountRef.current);
+      } else {
+        setLoading(false);
+        message.error('Error downloading My Teams');
+      }
+    }
+  }, [errDate]);
+
+  const downloadData = () => {
+    setLoading(true);
+    fetchTeams();
+  }
 
   return (
     <Row style={{ height: 'calc(50vh - 70px)' }}>
