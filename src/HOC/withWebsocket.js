@@ -117,7 +117,6 @@ function withAuctionWebsocket(WrappedComponent, config) {
         case 'auction_open':
           // open auction
           processAuctionStatus(msgObj);
-          Pubsub.publish(NOTIF.NEW_AUCTION_DATA, null);
           break;
         case 'auction_close':
           message.info(messageText);
@@ -126,12 +125,10 @@ function withAuctionWebsocket(WrappedComponent, config) {
         case 'auction_bid':
           // handle bid
           processAuctionStatus(msgObj);
-          Pubsub.publish(NOTIF.NEW_AUCTION_DATA, null);
           break;
         case 'auction_sale':
           // handles all sale types: sold, not purchased, unsold (?)
           processAuctionStatus(msgObj);
-          Pubsub.publish(NOTIF.NEW_AUCTION_DATA, null);
           break;
         case 'auction_info':
           // misc info that doesn't affect core auction functionality
@@ -161,19 +158,19 @@ function withAuctionWebsocket(WrappedComponent, config) {
     }
 
     const processAuctionStatus = (data) => {
-      let itemSoldFlag = data.Status === AUCTION_STATUS.CONFIRMED_SOLD;
+      const itemSoldFlag = data.Status === AUCTION_STATUS.CONFIRMED_SOLD;
 
       // indicate to listeners that an item was sold
       if (itemSoldFlag) {
         auctionDispatch({ type: 'update', key: 'newItemTimestamp', value: new Date().valueOf() });
       }
 
-      let statusObj = parseAuctionMessage(data);
+      const statusObj = parseAuctionMessage(data);
       updateAuctionStatusInContext(statusObj);
     }
 
     const processAuctionError = (error) => {
-      let obj = {
+      const obj = {
         errorMessage: error
       };
 
@@ -181,7 +178,7 @@ function withAuctionWebsocket(WrappedComponent, config) {
     }
 
     const updateAuctionStatusInContext = (statusObj) => {
-      let keys = Object.keys(statusObj);
+      const keys = Object.keys(statusObj);
 
       for (var key of keys) {
         if (statusObj[key] !== undefined) {
