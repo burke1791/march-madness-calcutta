@@ -20,9 +20,6 @@ import { parseAuctionSummary } from '../../parsers/auction';
 
 function LeagueAuction(props) {
 
-  const [naturalBuyIn, setNaturalBuyIn] = useState(0);
-  const [taxBuyIn, setTaxBuyIn] = useState(0);
-
   const [sidebarInUse, setSidebarInUse] = useState(true);
 
   const { leagueId } = useLeagueState();

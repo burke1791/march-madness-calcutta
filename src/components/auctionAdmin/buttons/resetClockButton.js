@@ -17,7 +17,7 @@ function ResetClockButton(props) {
   const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(true);
 
-  const { status } = useAuctionState();
+  const { status, prevUpdate } = useAuctionState();
 
   useEffect(() => {
     if (status === AUCTION_STATUS.INITIAL || status === AUCTION_STATUS.END) {
@@ -27,7 +27,7 @@ function ResetClockButton(props) {
     }
 
     setLoading(false);
-  }, [status]);
+  }, [status, prevUpdate]);
 
   const onClick = () => {
     setLoading(true);
