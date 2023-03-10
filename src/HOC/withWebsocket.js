@@ -141,10 +141,6 @@ function withAuctionWebsocket(WrappedComponent, config) {
           console.log(msgObj);
 
           auctionInfoUpdateContext(msgObj.action);
-          
-          if (msgObj.refreshData) {
-            auctionDispatch({ type: 'update', key: 'refreshData', value: new Date().valueOf() });
-          }
           break;
         case 'connection':
           Pubsub.publish(AUCTION_NOTIF.CONNECTION, msgObj);
