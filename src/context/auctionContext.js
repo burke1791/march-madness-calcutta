@@ -35,7 +35,7 @@ function AuctionProvider({children}) {
 /**
  * @typedef AuctionState
  * @property {Boolean} [connected]
- * @property {Number} [newItemTimestamp] - updated every time a new Item is put up for auction
+ * @property {Number} [confirmedSoldTimestamp] - updated every time a new Item is put up for auction
  * @property {String} [errorMessage] - global error message for the auction
  * @property {Number} auctionInterval - number of seconds to wait for a bid
  * @property {('initial'|'bidding'|'sold'|'confirmed-sold'|'end')} status

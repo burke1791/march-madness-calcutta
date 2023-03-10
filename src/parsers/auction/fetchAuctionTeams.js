@@ -25,6 +25,8 @@
  * @returns {Array<ParsedAuctionTeam>}
  */
 export function parseAuctionTeams(teams) {
+  if (!teams?.length) return [];
+  
   const teamArr = teams.map(teamObj => {
     return {
       itemId: Number(teamObj.ItemId),

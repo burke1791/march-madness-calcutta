@@ -16,7 +16,7 @@ import AuctionModal from './auctionModal';
 import AuctionLoadingModal from './auctionLoadingModal';
 import useData from '../../hooks/useData';
 import { parseAuctionSettings } from './helper';
-import { parseAuctionSummary } from '../../parsers/auction';
+import { parseAuctionSummary, parseAuctionTeams } from '../../parsers/auction';
 
 function LeagueAuction(props) {
 
@@ -24,7 +24,7 @@ function LeagueAuction(props) {
 
   const { leagueId } = useLeagueState();
   const { authenticated } = useAuthState();
-  const { newItemTimestamp, errorMessage, connected, refreshData } = useAuctionState();
+  const { errorMessage, connected } = useAuctionState();
 
   const auctionDispatch = useAuctionDispatch();
 
@@ -44,6 +44,14 @@ function LeagueAuction(props) {
     conditions: [authenticated, leagueId]
   });
 
+  const [teams, teamsReturnDate, fetchTeams] = useData({
+    baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
+    endpoint: `${AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_TEAMS}/${leagueId}`,
+    method: 'GET',
+    processData: parseAuctionTeams,
+    conditions: [authenticated, leagueId, connected]
+  });
+
   useEffect(() => {
     if (errorMessage !== null && errorMessage !== undefined) {
       handleAuctionError(errorMessage);
@@ -55,18 +63,6 @@ function LeagueAuction(props) {
       fetchAllAuctionData();
     }
   }, [leagueId, authenticated, connected]);
-
-  useEffect(() => {
-    if (leagueId && newItemTimestamp) {
-      fetchAuctionSummary();
-    }
-  }, [newItemTimestamp]);
-
-  useEffect(() => {
-    if (refreshData) {
-      fetchAuctionSummary();
-    }
-  }, [refreshData]);
 
   useEffect(() => {
     if (auctionSettingsReturnDate && auctionSettings) {
@@ -83,18 +79,21 @@ function LeagueAuction(props) {
       if (auctionSummary.prizepool !== undefined) {
         auctionDispatch({ type: 'update', key: 'prizepool', value: auctionSummary.prizepool });
       }
-      if (auctionSummary.naturalBuyIn !== undefined) {
-        auctionDispatch({ type: 'update', key: 'naturalBuyIn', value: auctionSummary.naturalBuyIn });
-      }
-      if (auctionSummary.taxBuyIn !== undefined) {
-        auctionDispatch({ type: 'update', key: 'taxBuyIn', value: auctionSummary.taxBuyIn });
-      }
     }
   }, [auctionSummaryReturnDate]);
+
+  useEffect(() => {
+    if (teamsReturnDate) {
+      console.log(teams);
+      auctionDispatch({ type: 'update', key: 'teams', value: teams });
+      auctionDispatch({ type: 'update', key: 'teamsDownloadedDate', value: new Date().valueOf() });
+    }
+  }, [teamsReturnDate]);
 
   const fetchAllAuctionData = () => {
     fetchAuctionSettings();
     fetchAuctionSummary();
+    fetchTeams();
   }
 
   const handleAuctionError = (errorMessage) => {

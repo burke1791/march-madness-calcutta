@@ -1,91 +1,48 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { Row, Col, Card, Table, message } from 'antd';
+import { Row, Col, Card, Table } from 'antd';
 import 'antd/dist/antd.css';
 
 import { formatMoney } from '../../utilities/helper';
-import useData from '../../hooks/useData';
-import { API_CONFIG, AUCTION_SERVICE_ENDPOINTS } from '../../utilities/constants';
-import { parseAuctionTeams } from '../../parsers/auction';
 import { useAuthState } from '../../context/authContext';
-import { useLeagueState } from '../../context/leagueContext';
 import { useAuctionState } from '../../context/auctionContext';
 
 const { Column } = Table;
 
-const MAX_RETRIES = 3;
 
 // @TODO (Tracked by MMC-105) add some sort of animation on the table rows that update, e.g. highlight then fade
 function MyTeams() {
 
   const [loading, setLoading] = useState(true);
   const [teamsArr, setTeamsArr] = useState([]);
-  
-  const retryCountRef = useRef(0);
 
-  const { authenticated, userId } = useAuthState();
-  const { leagueId } = useLeagueState();
-  const { connected, newItemTimestamp, taxBuyIn, refreshData } = useAuctionState();
-
-  const [teams, teamsReturnDate, fetchTeams, err, errDate] = useData({
-    baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
-    endpoint: `${AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_TEAMS}/${leagueId}?userId=${userId}`,
-    method: 'GET',
-    processData: parseAuctionTeams,
-    conditions: [authenticated, leagueId, userId]
-  });
+  const { userId } = useAuthState();
+  const { taxBuyIn, teams, teamsDownloadedDate, confirmedSoldTimestamp } = useAuctionState();
 
   useEffect(() => {
-    if (authenticated && leagueId && userId) {
-      downloadData();
-    }
-  }, [authenticated, leagueId, connected, userId, newItemTimestamp]);
+    if (teamsDownloadedDate) setLoading(false);
 
-  useEffect(() => {
-    if (refreshData) {
-      setTeamsArr([]);
-      setLoading(true);
-      fetchTeams();
-    }
-  }, [refreshData]);
+    if (teamsDownloadedDate && teams?.length) {
+      const myTeams = teams.filter(t => t.owner == userId);
 
-  useEffect(() => {
-    if (teamsReturnDate) {
-      setLoading(false);
-      retryCountRef.current = 0;
-    }
-
-    if (teamsReturnDate && teams?.length) {
       if (taxBuyIn > 0) {
         const taxArray = [{
           displayName: 'Tax',
           price: taxBuyIn,
           itemId: -1
         }];
-        setTeamsArr([...teams, ...taxArray]);
+        setTeamsArr([...myTeams, ...taxArray]);
       } else {
-        setTeamsArr([...teams]);
+        setTeamsArr([...myTeams]);
       }
     }
-  }, [teamsReturnDate, taxBuyIn]);
+  }, [teamsDownloadedDate, taxBuyIn]);
 
   useEffect(() => {
-    if (errDate) {
-      if (retryCountRef.current < MAX_RETRIES) {
-        downloadData();
-        retryCountRef.current = retryCountRef.current + 1;
-        console.log('MyTeams retry:', retryCountRef.current);
-      } else {
-        setLoading(false);
-        message.error('Error downloading My Teams');
-      }
+    if (confirmedSoldTimestamp && confirmedSoldTimestamp > teamsDownloadedDate) {
+      setLoading(true);
     }
-  }, [errDate]);
-
-  const downloadData = () => {
-    setLoading(true);
-    fetchTeams();
-  }
+  }, [confirmedSoldTimestamp, teamsDownloadedDate]);
 
   return (
     <Row style={{ height: 'calc(50vh - 70px)' }}>

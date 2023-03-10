@@ -1,18 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import './auctionTeams.css';
 
-import { Row, List, message } from 'antd';
+import { Row, List } from 'antd';
 import 'antd/dist/antd.css';
 import { formatMoney } from '../../utilities/helper';
 import Team from '../team/team';
-import { useAuctionDispatch, useAuctionState } from '../../context/auctionContext';
-import useData from '../../hooks/useData';
-import { API_CONFIG, AUCTION_SERVICE_ENDPOINTS } from '../../utilities/constants';
-import { useLeagueState } from '../../context/leagueContext';
-import { useAuthState } from '../../context/authContext';
-import { parseAuctionTeams } from '../../parsers/auction';
-
-const MAX_RETRIES = 3;
+import { useAuctionState } from '../../context/auctionContext';
 
 /**
  * @typedef AuctionTeamsProps
@@ -46,61 +39,17 @@ function AuctionTeamsList() {
 
   const [loading, setLoading] = useState(true);
 
-  const retryCountRef = useRef(0);
-
-  const { authenticated } = useAuthState()
-  const { leagueId } = useLeagueState();
-  const { connected, newItemTimestamp, refreshData } = useAuctionState();
-
-  const auctionDispatch = useAuctionDispatch();
-
-  const [teams, teamsReturnDate, fetchTeams, err, errDate] = useData({
-    baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
-    endpoint: `${AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_TEAMS}/${leagueId}`,
-    method: 'GET',
-    processData: parseAuctionTeams,
-    conditions: [authenticated, leagueId, connected]
-  });
+  const { teams, teamsDownloadedDate, confirmedSoldTimestamp } = useAuctionState();
 
   useEffect(() => {
-    if (authenticated && leagueId && connected) {
-      downloadData();
-    }
-  }, [authenticated, leagueId, connected, newItemTimestamp]);
+    if (teamsDownloadedDate) setLoading(false);
+  }, [teamsDownloadedDate]);
 
   useEffect(() => {
-    if (refreshData) {
-      downloadData();
+    if (confirmedSoldTimestamp && confirmedSoldTimestamp > teamsDownloadedDate) {
+      setLoading(true);
     }
-  }, [refreshData]);
-
-  useEffect(() => {
-    if (teamsReturnDate) {
-      console.log(teams);
-      retryCountRef.current = 0;
-      setLoading(false);
-      auctionDispatch({ type: 'update', key: 'teams', value: teams });
-      auctionDispatch({ type: 'update', key: 'teamsDownloadedDate', value: new Date().valueOf() });
-    }
-  }, [teamsReturnDate]);
-
-  useEffect(() => {
-    if (errDate) {
-      if (retryCountRef.current < MAX_RETRIES) {
-        downloadData();
-        retryCountRef.current = retryCountRef.current + 1;
-        console.log('AuctionTeams retry:', retryCountRef.current);
-      } else {
-        setLoading(false);
-        message.error('Error updating Teams List');
-      }
-    }
-  }, [errDate]);
-
-  const downloadData = () => {
-    setLoading(true);
-    fetchTeams();
-  }
+  }, [confirmedSoldTimestamp, teamsDownloadedDate]);
 
   const getStatusText = (displayClass, price) => {
     if (displayClass === 'no-sell') {

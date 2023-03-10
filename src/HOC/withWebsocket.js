@@ -3,14 +3,15 @@ import React, { useEffect, useRef } from 'react';
 import { useAuctionDispatch, useAuctionState } from '../context/auctionContext';
 import { useAuthState } from '../context/authContext';
 import { useLeagueState } from '../context/leagueContext';
-import { AUCTION_NOTIF, AUCTION_STATUS, NOTIF } from '../utilities/constants';
+import { parseAuctionSummary, parseAuctionTeams } from '../parsers/auction';
+import { AUCTION_NOTIF, AUCTION_STATUS, AUCTION_WEBSOCKET_MSG_TYPE, NOTIF } from '../utilities/constants';
 import Pubsub from '../utilities/pubsub';
 import { parseChatMessage, parseAuctionMessage } from './websocketHelper';
 
 
 function withAuctionWebsocket(WrappedComponent, config) {
   return function(props) {
-    const { authenticated, token, userId, alias } = useAuthState();
+    const { authenticated, token, userId } = useAuthState();
     const { leagueId } = useLeagueState();
     const { reconnectTrigger } = useAuctionState();
 
@@ -130,6 +131,10 @@ function withAuctionWebsocket(WrappedComponent, config) {
           // handles all sale types: sold, not purchased, unsold (?)
           processAuctionStatus(msgObj);
           break;
+        case AUCTION_WEBSOCKET_MSG_TYPE.SYNC:
+          // this msgType indicates a full data update was sent with the websocket payload
+          fullAuctionDataSync(msgObj);
+          break;
         case 'auction_info':
           // misc info that doesn't affect core auction functionality
           showNotifMessage(msgObj.notifLevel, msgObj.notifMessage);
@@ -162,7 +167,7 @@ function withAuctionWebsocket(WrappedComponent, config) {
 
       // indicate to listeners that an item was sold
       if (itemSoldFlag) {
-        auctionDispatch({ type: 'update', key: 'newItemTimestamp', value: new Date().valueOf() });
+        auctionDispatch({ type: 'update', key: 'confirmedSoldTimestamp', value: new Date().valueOf() });
       }
 
       const statusObj = parseAuctionMessage(data);
@@ -175,6 +180,27 @@ function withAuctionWebsocket(WrappedComponent, config) {
       };
 
       updateAuctionStatusInContext(obj);
+    }
+
+    const fullAuctionDataSync = (data) => {
+      const parsedSummary = parseAuctionSummary(data?.summary);
+      console.log(parsedSummary);
+
+      if (parsedSummary.prizepool !== undefined) {
+        auctionDispatch({ type: 'update', key: 'prizepool', value: parsedSummary.prizepool });
+      }
+
+      const parsedTeams = parseAuctionTeams(data?.teams);
+      console.log(parsedTeams);
+
+      auctionDispatch({ type: 'update', key: 'teams', value: parsedTeams });
+      auctionDispatch({ type: 'update', key: 'teamsDownloadedDate', value: new Date().valueOf() });
+
+      const parsedMemberBuyIns = data?.memberBuyIns // no parser at the moment
+      console.log(parsedMemberBuyIns);
+
+      auctionDispatch({ type: 'update', key: 'memberBuyIns', value: parsedMemberBuyIns });
+      auctionDispatch({ type: 'update', key: 'auctionBuyInsDownloadedDate', value: new Date().valueOf() });
     }
 
     const updateAuctionStatusInContext = (statusObj) => {
