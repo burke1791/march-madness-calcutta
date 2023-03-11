@@ -59,9 +59,12 @@ function TaxRules() {
       );
     } else {
       let ruleText = '';
-      if (name != 'taxRate') ruleText += '$';
-      ruleText += `${Number(ruleValue).toFixed(precision)}`;
-      if (name == 'taxRate') ruleText += ' %';
+
+      if (ruleValue !== null) {
+        if (name != 'taxRate') ruleText += '$';
+        ruleText += `${Number(ruleValue).toFixed(precision)}`;
+        if (name == 'taxRate') ruleText += ' %';
+      }
 
       return <Text>{ruleText}</Text>;
     }
