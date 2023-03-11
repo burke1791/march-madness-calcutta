@@ -57,7 +57,7 @@ function BiddingRules() {
         />
       );
     } else {
-      const ruleText = `$${Number(ruleValue).toFixed(precision)}`;
+      const ruleText = ruleValue !== null ? `$${Number(ruleValue).toFixed(precision)}` : '';
       return <Text>{ruleText}</Text>;
     }
     

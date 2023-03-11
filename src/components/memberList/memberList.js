@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-import { Row, Col, Card, Table, message } from 'antd';
+import { Row, Col, Card, Table } from 'antd';
 import 'antd/dist/antd.css';
 import './memberList.css';
 
@@ -15,8 +15,6 @@ import { DisconnectOutlined } from '@ant-design/icons';
 
 const { Column } = Table;
 
-const MAX_RETRIES = 3;
-
 // @TODO (Tracked by MMC-105) add some sort of animation on the table rows that update, e.g. highlight then fade
 function MemberList(props) {
 
@@ -25,15 +23,14 @@ function MemberList(props) {
   const [userList, setUserList] = useState([]);
 
   const connectedUsers = useRef([]);
-  const retryCountRef = useRef(0);
 
-  const { connected, newItemTimestamp, refreshData } = useAuctionState();
+  const { connected, memberBuyIns, auctionBuyInsDownloadedDate, confirmedSoldTimestamp } = useAuctionState();
   const { leagueId } = useLeagueState();
   const { authenticated, userId } = useAuthState();
 
   const auctionDispatch = useAuctionDispatch();
 
-  const [users, usersReturnDate, getUsers, err, errDate] = useData({
+  const [users, usersReturnDate, getUsers] = useData({
     baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
     endpoint: `${AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_BUYINS}/${leagueId}`,
     method: 'GET',
@@ -44,40 +41,33 @@ function MemberList(props) {
     if (authenticated && leagueId) {
       downloadData();
     }
-  }, [authenticated, leagueId, newItemTimestamp]);
+  }, [authenticated, leagueId]);
 
   useEffect(() => {
-    if (refreshData) {
-      downloadData();
+    if (confirmedSoldTimestamp && confirmedSoldTimestamp > auctionBuyInsDownloadedDate) {
+      setLoading(true);
+    } else if (auctionBuyInsDownloadedDate && auctionBuyInsDownloadedDate > confirmedSoldTimestamp) {
+      setLoading(false);
     }
-  }, [refreshData]);
+  }, [confirmedSoldTimestamp, auctionBuyInsDownloadedDate]);
 
   useEffect(() => {
     if (usersReturnDate) {
       setLoading(false);
-      retryCountRef.current = 0;
+      auctionDispatch({ type: 'update', key: 'memberBuyIns', value: users });
       auctionDispatch({ type: 'update', key: 'auctionBuyInsDownloadedDate', value: new Date().valueOf() });
     }
   }, [usersReturnDate]);
 
   useEffect(() => {
-    if (usersReturnDate || connectedUsersUpdated) {
+    if (connectedUsersUpdated || auctionBuyInsDownloadedDate) {
       updateUsersList();
     }
-  }, [usersReturnDate, connectedUsersUpdated]);
+  }, [connectedUsersUpdated, auctionBuyInsDownloadedDate]);
 
   useEffect(() => {
-    if (errDate) {
-      if (retryCountRef.current < MAX_RETRIES) {
-        downloadData();
-        retryCountRef.current = retryCountRef.current + 1;
-        console.log('MemberList retry:', retryCountRef.current);
-      } else {
-        setLoading(false);
-        message.error('Error updating Member List');
-      }
-    }
-  }, [errDate]);
+    updateMyNaturalAndTaxBuyIn();
+  }, [auctionBuyInsDownloadedDate]);
 
   useEffect(() => {
     if (connected && leagueId) {
@@ -104,8 +94,8 @@ function MemberList(props) {
 
     const list = [];
 
-    if (users?.length) {
-      for (let u of users) {
+    if (memberBuyIns?.length) {
+      for (let u of memberBuyIns) {
         list.push({
           userId: +u.UserId,
           alias: u.Alias,
@@ -136,6 +126,20 @@ function MemberList(props) {
     list.sort((a, b) => b.totalBuyIn - a.totalBuyIn);
 
     setUserList(list);
+  }
+
+  const updateMyNaturalAndTaxBuyIn = () => {
+    if (memberBuyIns && memberBuyIns.length) {
+      const currentUser = memberBuyIns.find(u => u.UserId == userId);
+
+      if (currentUser) {
+        const naturalBuyIn = currentUser.NaturalBuyIn || 0;
+        const taxBuyIn = currentUser.TaxBuyIn || 0;
+
+        auctionDispatch({ type: 'update', key: 'naturalBuyIn', value: naturalBuyIn });
+        auctionDispatch({ type: 'update', key: 'taxBuyIn', value: taxBuyIn });
+      }
+    }
   }
 
   const handleConnection = (newConnectedUsers) => {

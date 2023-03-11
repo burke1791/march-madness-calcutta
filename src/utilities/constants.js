@@ -106,6 +106,18 @@ export const AUCTION_STATUS = {
   END: 'end'
 };
 
+export const AUCTION_WEBSOCKET_MSG_TYPE = {
+  OPEN: 'auction_open',
+  CLOSE: 'auction_close',
+  BID: 'auction_bid',
+  SALE: 'auction_sale',
+  SYNC: 'auction_sync',
+  INFO: 'auction_info',
+  CONNECTION: 'connection',
+  ERROR: 'auction_error',
+  CHAT: 'chat'
+};
+
 export const AUCTION_NOTIF = {
   CONNECTION: 'connection'
 };
