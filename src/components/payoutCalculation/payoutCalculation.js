@@ -153,7 +153,7 @@ function PayoutCalculation() {
                 {generateCalcOptions()}
               </Select>
               :
-              <Row justify='center'>
+              <Row justify='left'>
                 <Text>{selectedCalcOption}</Text>
               </Row>
             }
@@ -218,17 +218,21 @@ function PayoutCalculation() {
  */
 function CommissionerFeeReadOnly(props) {
 
-  let feeText;
+  if (props.amount) {
+    let feeText;
 
-  if (props.type == 'percent') {
-    feeText = `${props.amount} %`;
-  } else if (props.type == 'absolute') {
-    feeText = `$${props.amount}`;
+    if (props.type == 'percent') {
+      feeText = `${props.amount} %`;
+    } else if (props.type == 'absolute') {
+      feeText = `$${props.amount}`;
+    } else {
+      feeText = `${props.amount}`;
+    }
+
+    return <Text>{feeText}</Text>;
   } else {
-    feeText = `${props.amount}`;
+    return <Text></Text>;
   }
-
-  return <Text>{feeText}</Text>;
 }
 
 export default PayoutCalculation;
