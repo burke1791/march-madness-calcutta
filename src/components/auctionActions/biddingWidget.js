@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './auctionActions.css';
-import { Button, Card, Row, InputNumber, message } from 'antd';
+import { Button, Card, Row, InputNumber, message, Checkbox } from 'antd';
 import { useAuctionState } from '../../context/auctionContext';
 import useData from '../../hooks/useData';
 import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
 import AuctionRulesModal from './auctionRulesModal';
+
+const AUTOFILL_MIN_BID_LOCALSTORAGE_KEY = 'autoFillMinBidCheckbox';
 
 /**
  * @typedef BiddingWidgetProps
@@ -26,6 +28,7 @@ function BiddingWidget(props) {
   const [bidVal, setBidVal] = useState(0);
   const [bidStep, setBidStep] = useState(1);
   const [bidStatus, setBidStatus] = useState(null);
+  const [autoFillMinBid, setAutoFillMinBid] = useState(false);
 
   const [rulesModalOpen, setRulesModalOpen] = useState(false);
 
@@ -41,23 +44,42 @@ function BiddingWidget(props) {
   });
 
   useEffect(() => {
+    const autoFill = JSON.parse(localStorage.getItem(AUTOFILL_MIN_BID_LOCALSTORAGE_KEY));
+    setAutoFillMinBid(autoFill);
+  }, []);
+
+  useEffect(() => {
+    if (autoFillMinBid) {
+      updateStepAndMinBid(price);
+    }
+  }, [autoFillMinBid]);
+
+  useEffect(() => {
     if (leagueId && authenticated) {
       getBidRules();
     }
   }, [leagueId, authenticated]);
 
   useEffect(() => {
-    if (bidRulesReturnDate) {
-      computeBidStep();
-    }
-  }, [bidRulesReturnDate]);
+    updateStepAndMinBid(price);
+  }, [price, bidRulesReturnDate]);
 
   useEffect(() => {
-    if (price === 0) {
-      setBidVal(0);
-      computeBidStep();
+    if (bidRules && bidRules.length > 0) {
+      const newMin = bidRules.find(br => br.MinThresholdExclusive <= bidVal && (br.MaxThresholdInclusive > bidVal || br.MaxThresholdInclusive == null))?.MinThresholdExclusive;
+      const newIncrement = bidRules.find(br => br.MinThresholdExclusive <= bidVal && (br.MaxThresholdInclusive > bidVal || br.MaxThresholdInclusive == null))?.MinIncrement || 1;
+
+      const validationRemainder = (bidVal - newMin) % newIncrement;
+
+      if (validationRemainder > 0 || bidVal <= price) {
+        setBidStatus('error');
+      } else {
+        setBidStatus(null);
+      }
+    } else {
+      setBidStatus(null);
     }
-  }, [price]);
+  }, [bidVal, price]);
 
   const validatePotentialBid = (bid) => {
     if (maxBuyin === null) {
@@ -76,20 +98,55 @@ function BiddingWidget(props) {
   const bidChange = (value) => {
     const newVal = value == null ? null : Math.floor(value);
 
-    if (bidRules && bidRules.length > 0) {
-      const newMin = bidRules.find(br => br.MinThresholdExclusive < newVal && (br.MaxThresholdInclusive >= newVal || br.MaxThresholdInclusive == null))?.MinThresholdExclusive;
-      const newIncrement = bidRules.find(br => br.MinThresholdExclusive < newVal && (br.MaxThresholdInclusive >= newVal || br.MaxThresholdInclusive == null))?.MinIncrement || 1;
+    updateBidStep(newVal);
+    setBidVal(newVal);
+  }
 
-      const validationRemainder = (newVal - newMin) % newIncrement;
+  const onStep = (value, info) => {
+    let prevVal;
+    let newVal = value;
+    let step = 1;
 
-      if (validationRemainder > 0) {
-        setBidStatus('error');
+    if (info.type === 'up') prevVal = value - info.offset;
+    if (info.type === 'down') prevVal = value + info.offset;
+
+    if (bidRules && bidRules.length) {
+      const currentRule = bidRules.find(br => br.MinThresholdExclusive <= prevVal && (br.MaxThresholdInclusive > prevVal || br.MaxThresholdInclusive == null));
+      step = currentRule?.MinIncrement || step;
+
+      if (info.type === 'up') {
+        newVal = prevVal + step;
       } else {
-        setBidStatus(null);
+        newVal = prevVal - step;
+      }
+
+      const nextRule = bidRules.find(br => br.MinThresholdExclusive <= newVal && (br.MaxThresholdInclusive > newVal || br.MaxThresholdInclusive == null));
+
+      // next we need to validate that newVal is legal within nextRule and correct it if not
+      let remainder;
+      let ruleRemainder = nextRule?.MinThresholdExclusive % nextRule?.MinIncrement || 0;
+
+      if (info.type === 'up') {
+        if (currentRule && nextRule && currentRule.AuctionBidRuleId !== nextRule.AuctionBidRuleId) {
+          // we can set newVal to the nextRule's lower bound
+          newVal = nextRule.MinThresholdExclusive;
+        } else if (nextRule && nextRule.MinIncrement) {
+          remainder = newVal % nextRule.MinIncrement;
+          if (remainder !== ruleRemainder) newVal = newVal - remainder + ruleRemainder;
+        }
+      } else {
+        console.log(newVal);
+        if (currentRule && nextRule && currentRule.AuctionBidRuleId !== nextRule.AuctionBidRuleId) {
+          // set newVal to the highest legal bid within nextRule
+          newVal = nextRule.MaxThresholdInclusive - (nextRule.MaxThresholdInclusive % nextRule.MinIncrement);
+        } else if (nextRule && nextRule.MinIncrement) {
+          remainder = newVal % nextRule.MinIncrement;
+          console.log(remainder);
+          if (remainder !== ruleRemainder) newVal = newVal + nextRule.MinIncrement - ruleRemainder - remainder;
+        }
       }
     }
 
-    computeBidStep(newVal);
     setBidVal(newVal);
   }
 
@@ -103,6 +160,32 @@ function BiddingWidget(props) {
     }
   }
 
+  const computeMinBid = () => {
+    let potentialMinBid = price + 1;
+
+    if (bidRules && bidRules.length) {
+      const currentRule = bidRules.find(br => br.MinThresholdExclusive <= price && (br.MaxThresholdInclusive > price || br.MaxThresholdInclusive == null));
+
+      if (!currentRule) return potentialMinBid;
+      potentialMinBid = price + currentRule.MinIncrement;
+
+      // correction logic in case the current price does not conform to current rules
+      let remainder = (potentialMinBid - currentRule.MinThresholdExclusive) % currentRule.MinIncrement;
+      potentialMinBid -= remainder;
+      
+      // now check if potentialMinBid is governed by a different bid rule
+      const nextRule = bidRules.find(br => br.MinThresholdExclusive <= potentialMinBid && (br.MaxThresholdInclusive > potentialMinBid || br.MaxThresholdInclusive == null));
+      
+      // next rule is the same as the current rule
+      if (currentRule?.AuctionBidRuleId === nextRule?.AuctionBidRuleId) return potentialMinBid;
+
+      // at this point we know the potential bid is in a new rule's regime, so we can set the potential bid to the lower bound of the new rule
+      potentialMinBid = nextRule.MinThresholdExclusive;
+    }
+    
+    return potentialMinBid;
+  }
+
   const computeBidStep = (val) => {
     let step = 1;
 
@@ -110,7 +193,25 @@ function BiddingWidget(props) {
       step = bidRules.find(br => br.MinThresholdExclusive <= val && (br.MaxThresholdInclusive > val || br.MaxThresholdInclusive == null))?.MinIncrement || 1;
     }
 
+    return step;
+  }
+
+  const updateBidStep = (val) => {
+    const step = computeBidStep(val);
     setBidStep(step);
+    return step;
+  }
+
+  const updateStepAndMinBid = (val) => {
+    const step = updateBidStep(val);
+
+    
+
+    if (autoFillMinBid || val == 0) {
+      const minBid = computeMinBid(step);
+
+      setBidVal(minBid);
+    }
   }
 
   const showRulesModal = () => {
@@ -121,6 +222,11 @@ function BiddingWidget(props) {
     setRulesModalOpen(false);
   }
 
+  const autoFillMinBidChanged = (event) => {
+    setAutoFillMinBid(event.target.checked);
+    localStorage.setItem(AUTOFILL_MIN_BID_LOCALSTORAGE_KEY, JSON.stringify(event.target.checked));
+  }
+
   return (
     <Card size='small' className='flex-growVert-child'>
       <Row type='flex' justify='space-around' gutter={8}>
@@ -129,6 +235,7 @@ function BiddingWidget(props) {
           addonBefore='$'
           parser={value => value.replace(/\$\s?/g, '')}
           onChange={bidChange}
+          onStep={onStep}
           onPressEnter={placeCustomBid}
           precision={0}
           step={bidStep}
@@ -157,6 +264,14 @@ function BiddingWidget(props) {
         >
           Show Rules
         </Button>
+      </Row>
+      <Row type='flex' justify='center' style={{ textAlign: 'center', marginTop: '6px' }} gutter={8}>
+        <Checkbox
+          checked={autoFillMinBid}
+          onChange={autoFillMinBidChanged}
+        >
+          Auto-fill min bid
+        </Checkbox>
       </Row>
       {/* <Row type='flex' justify='center' style={{ textAlign: 'center', marginTop: '6px' }} gutter={8}>
         <Button type='primary' disabled={props.biddingDisabled} style={{ width: '90%' }} onClick={placeMinimumBid}>
