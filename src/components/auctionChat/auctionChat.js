@@ -3,7 +3,7 @@ import './auctionChat.css';
 
 import { formatTimestamp } from '../../utilities/helper';
 
-import { Row, List, Card, Input } from 'antd'
+import { Row, Col, List, Card, Input } from 'antd'
 import 'antd/dist/antd.css';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF, AUCTION_SERVICE_ENDPOINTS } from '../../utilities/constants';
@@ -11,6 +11,7 @@ import AuctionService from '../../services/autction/auction.service';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
 import { useAuctionState } from '../../context/auctionContext';
+import useDeepCompareEffect from 'use-deep-compare-effect';
 
 const urlRegex = /(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])/;
 
@@ -22,6 +23,7 @@ function AuctionChat(props) {
   const [messages, setMessages] = useState([]);
 
   const messagesRef = useRef(messages);
+  const dummyMessage = useRef(null);
 
   const { leagueId } = useLeagueState();
   const { authenticated } = useAuthState();
@@ -44,6 +46,10 @@ function AuctionChat(props) {
     });
   }, [leagueId, authenticated, connected]);
 
+  useDeepCompareEffect(() => {
+    dummyMessage.current.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'smooth' });
+  }, [messages]);
+
   const getAllMessages = () => {
     if (leagueId && authenticated && connected) {
       AuctionService.callApi(AUCTION_SERVICE_ENDPOINTS.FETCH_CHAT, { leagueId });
@@ -64,32 +70,37 @@ function AuctionChat(props) {
   }
 
   const sendMessage = (value) => {
-    let messageObj = {
-      leagueId: leagueId,
-      content: value
-    };
-
-    // sendSocketMessage(messageObj);
-    props.sendSocketMessage('MESSAGE', messageObj);
-
-    setChatMessage('');
+    if (value) {
+      const messageObj = {
+        leagueId: leagueId,
+        content: value
+      };
+  
+      // sendSocketMessage(messageObj);
+      props.sendSocketMessage('MESSAGE', messageObj);
+  
+      setChatMessage('');
+    }
   }
   
   return (
     <Row style={{ height: 'auto', maxHeight: 'calc(50vh - 70px)', marginTop: '12px' }} className='flex-growVert-child flex-growVert-parent'>
       <Card size='small' className='flex-growVert-child' bodyStyle={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
         <Row style={{ maxHeight: 'calc(50vh - 70px)', overflow: 'auto' }}>
-          <List
-            dataSource={messages}
-            style={{ overflow: 'auto', width: '100%' }}
-            renderItem={message => (
-              <div className='chat-message'>
-                <span className='author'>{message.alias}</span>
-                <span className='timestamp'>{formatTimestamp(message.timestamp)}</span>
-                <MessageContent>{message.content}</MessageContent>
-              </div>
-            )}
-          />
+          <Col span={24}>
+              <List
+                dataSource={messages}
+                style={{ overflow: 'auto', width: '100%' }}
+                renderItem={message => (
+                  <div className='chat-message'>
+                    <span className='author'>{message.alias}</span>
+                    <span className='timestamp'>{formatTimestamp(message.timestamp)}</span>
+                    <MessageContent>{message.content}</MessageContent>
+                  </div>
+                )}
+              />
+            <div id='dummy-for-scroll' ref={dummyMessage}></div>
+          </Col>
         </Row>
         <Row style={{ marginTop: '6px' }}>
           <Search
