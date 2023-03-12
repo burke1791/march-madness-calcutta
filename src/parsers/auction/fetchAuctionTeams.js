@@ -39,7 +39,7 @@ export function parseAuctionTeams(teams) {
       ownerAlias: teamObj.Alias,
       price: teamObj.Price,
       isComplete: teamObj.IsComplete,
-      ...getDisplayType(teamObj.IsComplete, teamObj.Price)
+      ...getDisplayType(teamObj.IsComplete, teamObj.Price, teamObj.Seed)
     };
   });
 
@@ -68,18 +68,21 @@ export function parseAuctionTeams(teams) {
  * @function
  * @param {Boolean} isComplete 
  * @param {Number} price
+ * @param {Number} [seed]
  * @returns {DisplayType} 
  */
-function getDisplayType(isComplete, price) {
+function getDisplayType(isComplete, price, seed) {
   let displayClass = 'active';
   let displayOrder = 1;
 
+  if (seed === null) displayOrder = 2;
+
   if (isComplete && price == 0) {
     displayClass = 'no-sell';
-    displayOrder = 3;
+    displayOrder = 4;
   } else if (isComplete && price > 0) {
     displayClass = 'purchased';
-    displayOrder = 2;
+    displayOrder = 3;
   }
 
   return {
