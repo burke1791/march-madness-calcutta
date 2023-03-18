@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { LEAGUE_FORM_TYPE, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { API_CONFIG, LEAGUE_FORM_TYPE, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 
 import { Form, Input, Button, Select } from 'antd';
 import 'antd/dist/antd.css';
 
 import LeagueService from '../../services/league/league.service';
 import { useTournamentState } from '../../context/tournamentContext';
+import useData from '../../hooks/useData';
+import { useAuthState } from '../../context/authContext';
 
 const { Option } = Select;
 
@@ -24,6 +26,20 @@ function NewLeagueForm(props) {
   const [tournamentScopeId, setTournamentScopeId] = useState('');
 
   const { tournaments, tournamentScopes } = useTournamentState();
+  const { authenticated } = useAuthState();
+
+  const [createLeagueResponse, createLeagueReturnDate, createLeague] = useData({
+    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
+    endpoint: LEAGUE_SERVICE_ENDPOINTS.NEW_LEAGUE,
+    method: 'POST',
+    conditions: [authenticated]
+  });
+
+  useEffect(() => {
+    if (createLeagueReturnDate) {
+      console.log(createLeagueResponse);
+    }
+  }, [createLeagueReturnDate, createLeagueResponse]);
 
   const tournamentSelected = (id) => {
     setTournamentId(Number(id));
@@ -36,17 +52,22 @@ function NewLeagueForm(props) {
   const handleSubmit = (values) => {
     props.toggleLoading();
 
-    let name = values.leagueName;
-    let password = values.leaguePassword;
-    let inviteCode = values.inviteCode;
+    const name = values.leagueName;
+    const inviteCode = values.inviteCode;
 
     if (props.leagueType === LEAGUE_FORM_TYPE.CREATE) {
-      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.NEW_LEAGUE, { 
+      const payload = {
         name: name,
-        password: password,
         tournamentId: tournamentId,
         tournamentScopeId: tournamentScopeId
-      });
+      };
+
+      createLeague(payload);
+      // LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.NEW_LEAGUE, { 
+      //   name: name,
+      //   tournamentId: tournamentId,
+      //   tournamentScopeId: tournamentScopeId
+      // });
     } else {
       LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.JOIN_LEAGUE, { inviteCode });
     }
@@ -67,11 +88,11 @@ function NewLeagueForm(props) {
       return (
         <React.Fragment>
           <Form.Item 
-            label='Sport' 
+            label='Event' 
             rules={[
               {
                 required: true,
-                message: 'Please select a sport'
+                message: 'Please select an Event'
               }
             ]}
           >
@@ -80,11 +101,11 @@ function NewLeagueForm(props) {
             </Select>
           </Form.Item>
           <Form.Item
-            label='Season Scope'
+            label='Event Scope'
             rules={[
               {
                 required: true,
-                message: 'Please select the season\'s scope'
+                message: 'Please select the event\'s scope'
               }
             ]}
           >
@@ -103,18 +124,6 @@ function NewLeagueForm(props) {
             ]}
           >
             <Input placeholder='league name' />
-          </Form.Item>
-          <Form.Item 
-            name='leaguePassword'
-            label='League Password'
-            rules={[
-              {
-                required: true,
-                message: 'Please input a league name!'
-              }
-            ]}  
-          >
-            <Input placeholder='league password' />
           </Form.Item>
         </React.Fragment>
       );

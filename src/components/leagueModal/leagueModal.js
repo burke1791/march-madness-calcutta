@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import WrappedNewLeagueForm from '../newLeagueForm/newLeagueForm';
 
-import { LEAGUE_FORM_TYPE, NOTIF, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { LEAGUE_FORM_TYPE, NOTIF, LEAGUE_SERVICE_ENDPOINTS, API_CONFIG } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';
 import LeagueService from '../../services/league/league.service'
 
@@ -11,6 +11,7 @@ import 'antd/dist/antd.css';
 import { useAuthState } from '../../context/authContext';
 import { useTournamentDispatch } from '../../context/tournamentContext';
 import { tournamentOptionsParser } from '../../services/league/parsers';
+import useData from '../../hooks/useData';
 
 // @TODO combine this entire component into AuthModal and rename it to CalcuttaModal
 function LeagueModal() {
@@ -21,6 +22,14 @@ function LeagueModal() {
 
   const { authenticated } = useAuthState();
   const tournamentDispatch = useTournamentDispatch();
+
+  const [tournamentOptions, tournamentOptionsReturnDate, fetchTournamentOptions] = useData({
+    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
+    endpoint: LEAGUE_SERVICE_ENDPOINTS.TOURNAMENT_OPTIONS,
+    method: 'GET',
+    processData: tournamentOptionsParser,
+    conditions: [authenticated]
+  });
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.LEAGUE_MODAL_SHOW, LeagueModal, showModal);
@@ -33,19 +42,21 @@ function LeagueModal() {
   }, []);
 
   useEffect(() => {
-    fetchTournamentOptions();
+    if (authenticated) {
+      fetchTournamentOptions();
+    }
   }, [authenticated]);
 
-  const fetchTournamentOptions = () => {
-    if (authenticated) {
-      LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.TOURNAMENT_OPTIONS).then(response => {
-        let [tournaments, tournamentScopes] = tournamentOptionsParser(response.data);
-        setTournamentOptionsInContext(tournaments, tournamentScopes);
-      }).catch(error => {
-        console.log(error);
-      });
+  useEffect(() => {
+    if (tournamentOptionsReturnDate) {
+      console.log(tournamentOptions);
+      if (tournamentOptions && tournamentOptions.length === 2) {
+        setTournamentOptionsInContext(tournamentOptions[0], tournamentOptions[1]);
+      } else {
+        console.log('Possibly an error in tournamentOptions endpoint');
+      }
     }
-  }
+  }, [tournamentOptionsReturnDate, tournamentOptions]);
 
   const setTournamentOptionsInContext = (tournaments, tournamentScopes) => {
     tournamentDispatch({ type: 'update', key: 'tournaments', value: tournaments });
