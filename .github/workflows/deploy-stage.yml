@@ -3,7 +3,7 @@ name: Stage
 
 on:
   push:
-    branches: develop
+    branches: stage
 
 jobs:
   build_and_deploy:
