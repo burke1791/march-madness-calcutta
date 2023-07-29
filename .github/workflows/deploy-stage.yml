@@ -28,5 +28,5 @@ jobs:
 
   
 env:
-  FIREBASE_PROJECT_ID: Calcutta-test
+  FIREBASE_PROJECT_ID: calcutta-test
   REACT_APP_BUILD_ENV: dev
