@@ -27,7 +27,7 @@ function LeagueDelete(props) {
     if (deleteLeagueReturnDate) {
       setLoading(false);
 
-      if (deleteLeagueResponse.length > 0 && deleteLeagueResponse[0]?.Error) {
+      if (deleteLeagueResponse?.length > 0 && deleteLeagueResponse[0]?.Error) {
         message.error(deleteLeagueResponse[0].Error);
       } else {
         navigate('/home');

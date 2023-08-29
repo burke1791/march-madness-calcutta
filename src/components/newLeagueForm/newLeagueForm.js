@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { API_CONFIG, LEAGUE_FORM_TYPE, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { API_CONFIG, LEAGUE_FORM_TYPE, LEAGUE_SERVICE_ENDPOINTS, NOTIF } from '../../utilities/constants';
 
 import { Form, Input, Button, Select } from 'antd';
 import 'antd/dist/antd.css';
@@ -8,6 +8,7 @@ import LeagueService from '../../services/league/league.service';
 import { useTournamentState } from '../../context/tournamentContext';
 import useData from '../../hooks/useData';
 import { useAuthState } from '../../context/authContext';
+import Pubsub from '../../utilities/pubsub';
 
 const { Option } = Select;
 
@@ -38,6 +39,11 @@ function NewLeagueForm(props) {
   useEffect(() => {
     if (createLeagueReturnDate) {
       console.log(createLeagueResponse);
+      // get rid of pubsub please
+      if (createLeagueResponse?.message == 'league created') {
+        console.log('pubsub');
+        Pubsub.publish(NOTIF.LEAGUE_JOINED);
+      }
     }
   }, [createLeagueReturnDate, createLeagueResponse]);
 
@@ -50,25 +56,31 @@ function NewLeagueForm(props) {
   }
 
   const handleSubmit = (values) => {
-    props.toggleLoading();
-
     const name = values.leagueName;
     const inviteCode = values.inviteCode;
 
     if (props.leagueType === LEAGUE_FORM_TYPE.CREATE) {
-      const payload = {
-        name: name,
-        tournamentId: tournamentId,
-        tournamentScopeId: tournamentScopeId
-      };
+      if (name == undefined || tournamentId == '' || tournamentScopeId == '') {
+        setErrorMessage('Please fill in all fields');
+      } else {
+        setErrorMessage('');
+        props.toggleLoading();
 
-      createLeague(payload);
-      // LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.NEW_LEAGUE, { 
-      //   name: name,
-      //   tournamentId: tournamentId,
-      //   tournamentScopeId: tournamentScopeId
-      // });
+        const payload = {
+          name: name,
+          tournamentId: tournamentId,
+          tournamentScopeId: tournamentScopeId
+        };
+  
+        createLeague(payload);
+        // LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.NEW_LEAGUE, { 
+        //   name: name,
+        //   tournamentId: tournamentId,
+        //   tournamentScopeId: tournamentScopeId
+        // });
+      }
     } else {
+      props.toggleLoading();
       LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.JOIN_LEAGUE, { inviteCode });
     }
   }
