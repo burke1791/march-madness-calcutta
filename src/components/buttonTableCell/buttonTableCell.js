@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from 'antd';
-import 'antd/dist/antd.css';
 
 
 /**

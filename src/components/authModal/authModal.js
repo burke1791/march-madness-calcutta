@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
 import { Modal, Button } from 'antd';
-import 'antd/dist/antd.css';
 
 import { AUTH_FORM_TYPE, NOTIF } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';

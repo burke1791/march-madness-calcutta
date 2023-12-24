@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
 import { Row, Col, Card, Table } from 'antd';
-import 'antd/dist/antd.css';
 
 import { formatMoney } from '../../utilities/helper';
 import { useAuthState } from '../../context/authContext';

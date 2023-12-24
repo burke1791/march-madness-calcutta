@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Form, Input, Button, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import 'antd/dist/antd.css';
 import withAuthForm from '../../HOC/withAuthForm';
 import { initiateForgotPassword } from '../../utilities/authService';
 

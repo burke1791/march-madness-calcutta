@@ -7,7 +7,6 @@ import Pubsub from '../../utilities/pubsub';
 import LeagueService from '../../services/league/league.service'
 
 import { Modal } from 'antd';
-import 'antd/dist/antd.css';
 import { useAuthState } from '../../context/authContext';
 import { useTournamentDispatch } from '../../context/tournamentContext';
 import { tournamentOptionsParser } from '../../services/league/parsers';

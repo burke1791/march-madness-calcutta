@@ -1,7 +1,6 @@
 import React from 'react';
 import { Card, Row, Col, Statistic } from 'antd';
 import { UserOutlined, ClockCircleOutlined, DollarTwoTone, FundTwoTone } from '@ant-design/icons';
-import 'antd/dist/antd.css';
 import { formatMoney } from '../../utilities/helper';
 
 const { Meta } = Card;

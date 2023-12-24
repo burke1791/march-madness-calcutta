@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Layout, Button, message, Popconfirm } from 'antd';
-import 'antd/dist/antd.css';
 import { useLeagueState } from '../../context/leagueContext';
 import { parseLeaguePathName } from '../../utilities/helper';
 import { useNavigate, useLocation } from 'react-router-dom';

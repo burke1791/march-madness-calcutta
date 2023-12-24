@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
 import { Modal } from 'antd';
-import 'antd/dist/antd.css';
 
 import Pubsub from '../../utilities/pubsub';
 import { MESSAGE_BOARD_FORM_TYPE, NOTIF } from '../../utilities/constants';

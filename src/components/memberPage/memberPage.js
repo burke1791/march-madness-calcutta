@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
 import { Layout, Table, Row, Typography, message } from 'antd';
-import 'antd/dist/antd.css';
 import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import LeagueService from '../../services/league/league.service';
 import { formatMoney, teamDisplayName } from '../../utilities/helper';

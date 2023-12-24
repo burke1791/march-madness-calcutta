@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 import { Form, Input, Button, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import 'antd/dist/antd.css';
 import { resetPassword } from '../../utilities/authService';
 
 const formItemStyle = {

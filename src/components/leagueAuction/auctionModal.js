@@ -3,7 +3,6 @@ import { NOTIF } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';
 
 import { Modal, Typography } from 'antd';
-import 'antd/dist/antd.css';
 import { useAuctionDispatch } from '../../context/auctionContext';
 
 const { Text } = Typography;

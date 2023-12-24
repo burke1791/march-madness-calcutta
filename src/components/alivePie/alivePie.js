@@ -2,7 +2,6 @@ import React from 'react';
 import './alivePie.css';
 import { THEME_COLORS } from '../../utilities/constants';
 import { Tooltip } from 'antd';
-import 'antd/dist/antd.css';
 
 function AlivePie(props) {
 

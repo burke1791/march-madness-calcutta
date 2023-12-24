@@ -4,7 +4,6 @@ import AuctionActions from '../auctionActions/auctionActions';
 import AuctionChat from '../auctionChat/auctionChat';
 
 import { Row, Col, message } from 'antd';
-import 'antd/dist/antd.css';
 import MyTeams from '../myTeams/myTeams';
 import MemberList from '../memberList/memberList';
 import { AUCTION_SERVICE_ENDPOINTS, SOCKETS, API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';

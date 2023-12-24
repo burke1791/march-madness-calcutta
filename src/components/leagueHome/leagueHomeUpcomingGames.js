@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
 import { message, Table, Typography } from 'antd';
-import 'antd/dist/antd.css';
 import { useAuthState } from '../../context/authContext';
 import { teamDisplayName } from '../../utilities/helper';
 import LeagueService from '../../services/league/league.service';

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import './messageBoard.css';
 
 import { Layout, Table, Button } from 'antd';
-import 'antd/dist/antd.css';
 import DataService, { Data } from '../../utilities/data';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';

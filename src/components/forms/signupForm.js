@@ -4,7 +4,6 @@ import { AUTH_FORM_TYPE, ERROR_MESSAGES, NOTIF } from '../../utilities/constants
 
 import { Form, Input, Button, Checkbox, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import 'antd/dist/antd.css';
 import { signUp } from '../../utilities/authService';
 import Pubsub from '../../utilities/pubsub';
 

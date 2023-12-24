@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, memo } from 'react';
 import { Divider, List, Modal, Progress, Typography } from 'antd';
-import 'antd/dist/antd.css';
 import { CheckCircleTwoTone, CloseCircleTwoTone, LoadingOutlined } from '@ant-design/icons/lib/icons';
 import { useAuctionState } from '../../context/auctionContext';
 

@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 
 import { Form } from 'antd';
-import 'antd/dist/antd.css';
 
 const layout = {
   labelCol: {

@@ -1,6 +1,5 @@
 import React, { Fragment, useState } from 'react';
 import { Button, Space } from 'antd';
-import 'antd/dist/antd.css';
 import ButtonTableCell from './buttonTableCell';
 
 /**

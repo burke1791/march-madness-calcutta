@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 import { Row, Col, Card, Table } from 'antd';
-import 'antd/dist/antd.css';
 import './memberList.css';
 
 import { formatMoney } from '../../utilities/helper';

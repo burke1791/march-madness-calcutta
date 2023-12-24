@@ -4,7 +4,6 @@ import './auctionActions.css';
 import AuctionAdmin from '../auctionAdmin/auctionAdmin';
 
 import { Button, Card, Statistic, Row, Col, message } from 'antd';
-import 'antd/dist/antd.css';
 
 import { formatMoney } from '../../utilities/helper';
 import AuctionService from '../../services/autction/auction.service';

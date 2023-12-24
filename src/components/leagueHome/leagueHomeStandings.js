@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
 import { message, Table, Typography } from 'antd';
-import 'antd/dist/antd.css';
 import './leagueHome.css';
 
 import AlivePie from '../alivePie/alivePie';

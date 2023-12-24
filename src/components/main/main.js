@@ -1,6 +1,5 @@
 import React, { Fragment, useEffect, useState, memo } from 'react';
 import { Row, Col, Button, Table, message, Typography, List, Card, Statistic, Divider, Layout, Popover } from 'antd';
-import 'antd/dist/antd.css';
 import './main.css';
 
 import LeagueModal from '../leagueModal/leagueModal';

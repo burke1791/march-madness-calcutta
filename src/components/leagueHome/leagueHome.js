@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 
 import { Layout, Row, Col } from 'antd';
 import LeagueHomeCards from './leagueHomeCards';
-import 'antd/dist/antd.css';
 import LeagueService from '../../services/league/league.service';
 import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';

@@ -1,6 +1,5 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { Button, message, Row, Table } from 'antd';
-import 'antd/dist/antd.css';
 import { useAuthState } from '../../context/authContext';
 import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
 import LeagueService from '../../services/league/league.service';

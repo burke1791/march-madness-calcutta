@@ -5,7 +5,6 @@ import AuthModal from '../authModal/authModal';
 
 import { Menu, Row, Col } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
-import 'antd/dist/antd.css';
 
 import { AUTH_FORM_TYPE, NOTIF, USER_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';

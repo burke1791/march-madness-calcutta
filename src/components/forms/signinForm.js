@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 
 import { Form, Input, Button, Checkbox } from 'antd';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
-import 'antd/dist/antd.css';
 import { AUTH_FORM_TYPE, ERROR_MESSAGES, NOTIF } from '../../utilities/constants';
 import { signIn } from '../../utilities/authService';
 import Pubsub from '../../utilities/pubsub';

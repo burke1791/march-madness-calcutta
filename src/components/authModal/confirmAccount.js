@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 import { Button } from 'antd';
-import 'antd/dist/antd.css';
 
 import { signIn, User } from '../../utilities/authService';
 import { AUTH_FORM_TYPE } from '../../utilities/constants';
