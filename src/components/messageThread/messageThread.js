@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import './messageThread.css';
 
-import { Layout, Row, Button, Comment, List, Form, Input, Avatar } from 'antd';
+import { Layout, Row, Button, List, Form, Input, Avatar } from 'antd';
 import { LeftOutlined, UserOutlined } from '@ant-design/icons';
-import 'antd/dist/antd.css';
+
 import DataService, { Data } from '../../utilities/data';
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF } from '../../utilities/constants';
@@ -87,7 +87,7 @@ function MessageThread(props) {
               style={{ width: '60%' }}
               renderItem={item => (
                 <li>
-                  <Comment
+                  {/* <Comment
                     //actions={item.actions}
                     author={<Button type='link' style={{ padding: '0' }} size='small' onClick={() => userClicked(item.authorId)}>{item.author}</Button>}
                     avatar={
@@ -101,7 +101,7 @@ function MessageThread(props) {
                     datetime={
                       <span>{item.created}</span>
                     }
-                  />
+                  /> */}
                 </li>
               )}
             />

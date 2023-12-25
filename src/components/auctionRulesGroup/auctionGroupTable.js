@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { List, Table } from 'antd';
-import 'antd/dist/antd.css';
+
 import { useLeagueState } from '../../context/leagueContext';
 import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { leagueServiceHelper } from '../../services/league/helper';

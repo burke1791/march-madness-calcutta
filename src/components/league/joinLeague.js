@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthState } from '../../context/authContext';
 import { Button, message, Result } from 'antd';
-import 'antd/dist/antd.css';
+
 import Pubsub from '../../utilities/pubsub';
 import { AUTH_FORM_TYPE, LEAGUE_SERVICE_ENDPOINTS, NOTIF } from '../../utilities/constants';
 import LeagueService from '../../services/league/league.service';

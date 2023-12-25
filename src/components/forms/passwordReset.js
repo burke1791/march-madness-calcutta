@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 
 import { Form, Input, Button, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import 'antd/dist/antd.css';
-import { resetPassword } from '../../utilities/authService';
+import withAuth from '../../HOC/withAuth';
 
 const formItemStyle = {
   marginBottom: '6px'
@@ -25,16 +24,16 @@ function PasswordReset(props) {
 
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values) => {
     props.toggleLoading();
 
     let oldPassword = values.oldPassword;
     let newPassword = values.newPassword;
 
-    resetPassword(oldPassword, newPassword).then(data => {
-      console.log(data);
+    try {
+      await props.resetPassword(oldPassword, newPassword);
       props.dismiss();
-    }).catch(error => {
+    } catch (error) {
       console.log(error);
 
       if (error.code === 'NotAuthorizedException') {
@@ -42,7 +41,7 @@ function PasswordReset(props) {
       }
 
       props.toggleLoading(false);
-    });
+    }
   }
 
   const generateErrorMessage = () => {
@@ -142,4 +141,4 @@ function PasswordReset(props) {
   );
 }
 
-export default PasswordReset;
+export default withAuth(PasswordReset);

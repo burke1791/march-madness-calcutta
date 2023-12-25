@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { Button } from 'antd';
-import 'antd/dist/antd.css';
-
-import { signIn, User } from '../../utilities/authService';
 import { AUTH_FORM_TYPE } from '../../utilities/constants';
+import withAuth from '../../HOC/withAuth';
+import { useAuthState } from '../../context/authContext';
 
 function ConfirmAccount(props) {
 
-  const attemptSignin = () => {
-    if (User.email == null || User.password == null) {
+  const { email, password } = useAuthState();
+
+  const attemptSignin = async () => {
+    if (!email || !password) {
       props.toggleAuthForm(AUTH_FORM_TYPE.SIGN_IN);
     } else {
       props.toggleLoading();
-      signIn(User.email, User.password);
+      await props.signIn(email, password);
     }
   }
 
@@ -25,4 +26,4 @@ function ConfirmAccount(props) {
   )
 }
 
-export default ConfirmAccount;
+export default withAuth(ConfirmAccount);

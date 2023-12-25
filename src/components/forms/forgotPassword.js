@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Form, Input, Button, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import 'antd/dist/antd.css';
+
 import withAuthForm from '../../HOC/withAuthForm';
-import { initiateForgotPassword } from '../../utilities/authService';
+import withAuth from '../../HOC/withAuth';
 
 const formItemStyle = {
   marginBottom: '6px'
@@ -155,4 +155,4 @@ function ForgotPassword(props) {
   );
 }
 
-export default withAuthForm(ForgotPassword, initiateForgotPassword);
+export default withAuth(withAuthForm(ForgotPassword, props.initiateForgotPassword));

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Layout } from 'antd';
-import 'antd/dist/antd.css';
+
 import LeagueHeader from '../../../components/league/leagueHeader';
 import { useLeagueState } from '../../../context/leagueContext';
 import HighlightDropdown from '../common/highlightDropdown';

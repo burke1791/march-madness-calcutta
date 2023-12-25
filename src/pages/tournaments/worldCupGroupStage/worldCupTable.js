@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { Col, Popover, Row, Table, Typography } from 'antd';
 import './worldCupGroup.css';
-import 'antd/dist/antd.css';
+
 import { useTournamentState } from '../../../context/tournamentContext';
 import Team from '../../../components/team/team';
 import { formatMoney } from '../../../utilities/helper';

@@ -4,7 +4,7 @@ import './auctionChat.css';
 import { formatTimestamp } from '../../utilities/helper';
 
 import { Row, Col, List, Card, Input } from 'antd'
-import 'antd/dist/antd.css';
+
 import Pubsub from '../../utilities/pubsub';
 import { NOTIF, AUCTION_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import AuctionService from '../../services/autction/auction.service';

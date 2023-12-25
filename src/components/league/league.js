@@ -10,8 +10,7 @@ import MemberPage from '../memberPage/memberPage';
 import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
 
 import { Layout } from 'antd';
-import 'antd/dist/antd.css';
-import { User } from '../../utilities/authService';
+
 import LeagueSettings from '../../pages/leagueSettings/leagueSettings';
 import { useSettingsDispatch } from '../../context/leagueSettingsContext';
 import LeagueService from '../../services/league/league.service';
@@ -137,7 +136,7 @@ function League(props) {
     }
   }
 
-  if (User.authenticated == undefined || User.authenticated) {
+  if (authenticated) {
     return (
       <Layout style={{ minHeight: 'calc(100vh - 64px)', height: '100%' }}>
         <LeagueNav />

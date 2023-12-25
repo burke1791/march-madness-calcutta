@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { API_CONFIG, LEAGUE_FORM_TYPE, LEAGUE_SERVICE_ENDPOINTS, NOTIF } from '../../utilities/constants';
 
 import { Form, Input, Button, Select } from 'antd';
-import 'antd/dist/antd.css';
+
 
 import LeagueService from '../../services/league/league.service';
 import { useTournamentState } from '../../context/tournamentContext';
