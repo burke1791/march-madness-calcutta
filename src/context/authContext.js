@@ -1,9 +1,35 @@
 import React, { createContext, useReducer, useContext } from 'react'
 import { calcuttaStore } from '../utilities/helper';
 
-const AuthStateContext = createContext()
-const AuthDispatchContext = createContext()
+const AuthStateContext = createContext();
+const AuthDispatchContext = createContext();
 
+/**
+ * @typedef ContextAction
+ * @property {('update'|'clear')} type
+ * @property {String} key
+ * @property {String} value
+ */
+
+/**
+ * @typedef AuthContextState
+ * @property {String} authStatus
+ * @property {Boolean} authenticated
+ * @property {String} token
+ * @property {String} email
+ * @property {String} password
+ * @property {Number} userId
+ * @property {String} alias
+ * @property {Number} userMetadataRefresh
+ * @property {String} errorMessage
+ */
+
+/**
+ * @function authReducer
+ * @param {AuthContextState} state 
+ * @param {ContextAction} action 
+ * @returns 
+ */
 function authReducer(state, action) {
   switch (action.type) {
     case 'update': {
@@ -68,17 +94,8 @@ function AuthProvider({children}) {
 }
 
 /**
- * @typedef AuthState
- * @property {String} authStatus
- * @property {Boolean} authenticated
- * @property {String} token
- * @property {Number} userId
- * @property {String} alias
- */
-
-/**
  * @function
- * @returns {AuthState}
+ * @returns {AuthContextState}
  */
 function useAuthState() {
   const context = useContext(AuthStateContext);

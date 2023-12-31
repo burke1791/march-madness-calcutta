@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 
 import { Form, Input, Button, Checkbox } from 'antd';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
-import 'antd/dist/antd.css';
-import { AUTH_FORM_TYPE, ERROR_MESSAGES, NOTIF } from '../../utilities/constants';
-import { signIn } from '../../utilities/authService';
+
+import { AUTH_FORM_TYPE, NOTIF } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';
+import withAuth from '../../HOC/withAuth';
 
 const lineHeightStyle = {
   lineHeight: '40px'
@@ -35,13 +35,18 @@ function SigninForm(props) {
     setErrorMessage(errorMsg);
   }
 
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values) => {
     props.toggleLoading();
     
-    let email = values.email;
-    let password = values.password;
-    
-    signIn(email, password);
+    try {
+      const email = values.email;
+      const password = values.password;
+
+      await props.signIn(email, password);
+    } catch (error) {
+      console.log(error);
+      props.toggleLoading();
+    }
   }
 
   const generateErrorMessage = () => {
@@ -120,4 +125,4 @@ function SigninForm(props) {
   );
 }
 
-export default SigninForm;
+export default withAuth(SigninForm);

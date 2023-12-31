@@ -24,10 +24,10 @@ function AuctionRulesModal(props) {
   return (
     <Modal
       title='Auction Rules'
-      bodyStyle={{ paddingTop: 0 }}
       open={props.open}
       onCancel={props.dismiss}
       footer={null}
+      styles={{ body: { paddingTop: 0 }}}
     >
       <Divider orientation='left'>General Rules</Divider>
       <Row>

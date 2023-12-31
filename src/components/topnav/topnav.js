@@ -5,15 +5,14 @@ import AuthModal from '../authModal/authModal';
 
 import { Menu, Row, Col } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
-import 'antd/dist/antd.css';
 
-import { AUTH_FORM_TYPE, NOTIF, USER_SERVICE_ENDPOINTS } from '../../utilities/constants';
+
+import { API_CONFIG, AUTH_FORM_TYPE, AUTH_STATUS, NOTIF, USER_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';
-import { signOut, getCurrentSession } from '../../utilities/authService';
-import { useAuthDispatch, useAuthState } from '../../context/authContext';
-import UserService from '../../services/user/user.service';
-import { genericContextUpdate } from '../../context/helper';
-import { userServiceHelper } from '../../services/user/helper';
+import { useAuthState } from '../../context/authContext';
+import withAuth from '../../HOC/withAuth';
+import useData from '../../hooks/useData';
+import { parseUserMetadata } from '../../parsers/user';
 
 const brandLink = (
   <Link to='/home'>
@@ -21,60 +20,53 @@ const brandLink = (
   </Link>
 );
 
-const { SubMenu } = Menu;
+function Topnav(props) {
 
-function Topnav() {
+  const { authStatus, authenticated, userMetadataRefresh } = useAuthState();
 
-  const authDispatch = useAuthDispatch();
-
-  const { authenticated, userMetadataRefresh } = useAuthState();
+  const [userMetadata, userMetadataReturnDate, fetchUserMetadata] = useData({
+    baseUrl: API_CONFIG.USER_SERVICE_BASE_URL,
+    endpoint: `${USER_SERVICE_ENDPOINTS.GET_USER_METADATA}`,
+    method: 'GET',
+    processData: parseUserMetadata,
+    conditions: [authenticated]
+  });
 
   useEffect(() => {
-    Pubsub.subscribe(NOTIF.SIGN_IN, Topnav, handleSignin);
-    Pubsub.subscribe(NOTIF.SIGN_OUT, Topnav, handleSignout);
-
     autoSignin();
-
-    return (() => {
-      Pubsub.unsubscribe(NOTIF.SIGN_IN, Topnav);
-      Pubsub.unsubscribe(NOTIF.SIGN_OUT, Topnav);
-    });
   }, []);
 
   useEffect(() => {
-    if (authenticated) {
+    if (authStatus === AUTH_STATUS.SIGNED_IN) {
       fetchUserMetadata();
     }
-  }, [authenticated, userMetadataRefresh]);
+  }, [authStatus, userMetadataRefresh]);
 
-  const autoSignin = () => {
-    authDispatch({ type: 'update', key: 'authStatus', value: 'in-flight' });
-
-    getCurrentSession();
-  }
-
-  const handleSignin = (session) => {
-    if (!!session) {
-      authDispatch({ type: 'update', key: 'authStatus', value: 'returned' });
-      authDispatch({ type: 'update', key: 'authenticated', value: true });
-      authDispatch({ type: 'update', key: 'token', value: session.idToken.jwtToken });
+  useEffect(() => {
+    if (userMetadataReturnDate) {
+      console.log(userMetadata);
+      props.setAuthContext({ userId: userMetadata.userId });
     }
-  }
+  }, [userMetadataReturnDate, userMetadata]);
 
-  const handleSignout = () => {
-    authDispatch({ type: 'clear' });
-  }
+  const autoSignin = async () => {
+    props.setAuthContext({ authStatus: AUTH_STATUS.IN_FLIGHT });
 
-  const fetchUserMetadata = () => {
-    UserService.callApiWithPromise(USER_SERVICE_ENDPOINTS.GET_USER_METADATA).then(response => {
-      console.log(response);
-      if (response.data && response.data.length) {
-        let userMetadata = userServiceHelper.packageUserMetadata(response.data[0]);
-        genericContextUpdate(userMetadata, authDispatch);
-      }
-    }).catch(error => {
-      console.log(error);
-    });
+    const token = await props.getCurrentSession();
+
+    if (token) {
+      props.setAuthContext({
+        token: token,
+        authStatus: AUTH_STATUS.SIGNED_IN,
+        authenticated: true
+      });
+    } else {
+      props.setAuthContext({
+        token: null,
+        authStatus: AUTH_STATUS.SIGNED_OUT,
+        authenticated: false
+      });
+    }
   }
 
   const generateAuthenticatedDropdown = () => {
@@ -86,7 +78,7 @@ function Topnav() {
   }
 
   const generateAuthMenu = () => {
-    if (authenticated) {
+    if (authStatus === AUTH_STATUS.SIGNED_IN) {
       const authSubmenu = (
         <span className="submenu-title-wrapper">
           <SettingOutlined />
@@ -103,12 +95,12 @@ function Topnav() {
     }
   }
 
-  const handleMenuItemClicked = (event) => {
+  const handleMenuItemClicked = async (event) => {
     console.log(event);
     if (event.key === 'signin') {
       Pubsub.publish(NOTIF.AUTH_MODAL_SHOW, AUTH_FORM_TYPE.SIGN_IN);
     } else if (event.key === 'signout') {
-      signOut();
+      await props.signOut();
     } else if (event.key === 'passwordReset') {
       Pubsub.publish(NOTIF.AUTH_MODAL_SHOW, AUTH_FORM_TYPE.PASSWORD_RESET);
     }
@@ -145,4 +137,4 @@ function Topnav() {
   );
 }
 
-export default Topnav;
+export default withAuth(Topnav);

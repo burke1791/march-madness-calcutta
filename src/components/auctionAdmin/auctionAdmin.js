@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { Button } from 'antd';
-import 'antd/dist/antd.css';
+
 import { AUCTION_STATUS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuctionState } from '../../context/auctionContext';

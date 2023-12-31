@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { SERVICES } from '../utilities/constants';
 import LeagueService from '../services/league/league.service';
-import { useAuthState, useAuthDispatch } from '../context/authContext';
+import { useAuthState } from '../context/authContext';
 import AuctionService from '../services/autction/auction.service';
-import { useLeagueState } from '../context/leagueContext';
 
 /**
  * HOC for calling an API endpoint

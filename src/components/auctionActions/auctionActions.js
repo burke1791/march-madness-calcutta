@@ -4,10 +4,9 @@ import './auctionActions.css';
 import AuctionAdmin from '../auctionAdmin/auctionAdmin';
 
 import { Button, Card, Statistic, Row, Col, message } from 'antd';
-import 'antd/dist/antd.css';
+
 
 import { formatMoney } from '../../utilities/helper';
-import AuctionService from '../../services/autction/auction.service';
 import { AUCTION_STATUS, AUCTION_SERVICE_ENDPOINTS, API_CONFIG } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
@@ -16,6 +15,7 @@ import { auctionServiceHelper } from '../../services/autction/helper';
 import Team from '../team/team';
 import BiddingWidget from './biddingWidget';
 import useData from '../../hooks/useData';
+import { parseServerOffset } from '../../parsers/auction';
 
 const { Countdown } = Statistic;
 
@@ -45,6 +45,14 @@ function AuctionActions(props) {
     conditions: [authenticated, leagueId, connected]
   });
 
+  const [serverOffset, offsetReturnDate, fetchServerOffset] = useData({
+    baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
+    endpoint: `${AUCTION_SERVICE_ENDPOINTS.SERVER_TIMESTAMP}`,
+    method: 'GET',
+    processData: parseServerOffset,
+    conditions: [authenticated]
+  });
+
   useEffect(() => {
     if (authenticated && leagueId && connected) {
       fetchAuctionStatus();
@@ -70,13 +78,17 @@ function AuctionActions(props) {
   }, [statusReturnDate]);
 
   useEffect(() => {
+    updateOffset(serverOffset);
+  }, [serverOffset, offsetReturnDate]);
+
+  useEffect(() => {
     updateBidButtonState();
     updateUndoButtonState();
   }, [prevUpdate, connected]);
 
   useEffect(() => {
     if (authenticated) {
-      getServerOffset();
+      fetchServerOffset();
     }
   }, [authenticated]);
 
@@ -109,13 +121,6 @@ function AuctionActions(props) {
   useEffect(() => {
     setTotalSpent((naturalBuyIn || 0) + (taxBuyIn || 0));
   }, [naturalBuyIn, taxBuyIn]);
-
-  const getServerOffset = () => {
-    AuctionService.callApiWithPromise(AUCTION_SERVICE_ENDPOINTS.SERVER_TIMESTAMP, {}).then(response => {
-      let clockOffset = auctionServiceHelper.updateServerPing(response.data[0].ServerTimestamp);
-      updateOffset(clockOffset);
-    });
-  }
 
   const updateOffset = (clockOffset) => {
     setOffset(clockOffset);

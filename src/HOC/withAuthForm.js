@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { Form } from 'antd';
-import 'antd/dist/antd.css';
+
 
 const layout = {
   labelCol: {
@@ -18,14 +18,13 @@ function withAuthForm(FormItems, submitFunction) {
     const [errorMessage, setErrorMessage] = useState('');
     const [formType, setFormType] = useState('');
 
-    const handleSubmit = (values) => {
+    const handleSubmit = async (values) => {
       console.log(values);
       setErrorMessage('');
       props.toggleLoading();
   
-      submitFunction(values).then(data => {
-        console.log(data);
-        props.toggleLoading(false);
+      try {
+        const data = await submitFunction(values);
 
         if (data.newFormType !== undefined) {
           setFormType(data.newFormType);
@@ -34,17 +33,17 @@ function withAuthForm(FormItems, submitFunction) {
         if (data.dismiss) {
           props.dismiss();
         }
-      }).catch(error => {
+      } catch (error) {
         console.log(error);
-  
+
         if (error.code === 'NotAuthorizedException') {
           setErrorMessage('Invalid credentials');
         } else {
           setErrorMessage(error.message);
         }
-  
+
         props.toggleLoading(false);
-      });
+      }
     }
 
     const generateErrorMessage = () => {

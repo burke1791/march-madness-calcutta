@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Form, Input, Button, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import 'antd/dist/antd.css';
-import withAuthForm from '../../HOC/withAuthForm';
-import { initiateForgotPassword } from '../../utilities/authService';
+
+import withAuth from '../../HOC/withAuth';
+import { useAuthState } from '../../context/authContext';
 
 const formItemStyle = {
   marginBottom: '6px'
@@ -21,8 +21,12 @@ const layout = {
 
 function ForgotPassword(props) {
 
+  const [form] = Form.useForm();
+
   const [instructionText, setInstructionText] = useState('');
   const [submitText, setSubmitText] = useState('Send Password Reset Code');
+
+  const { errorMessage } = useAuthState();
 
   useEffect(() => {
     console.log(props.formType);
@@ -35,6 +39,16 @@ function ForgotPassword(props) {
       setSubmitText('Send Password Reset Code');
     }
   }, [props.formType]);
+
+  const generateErrorMessage = () => {
+    if (errorMessage) {
+      return (
+        <span className='ant-form-text' style={{ color: '#cf1322' }}>{errorMessage}</span>
+      );
+    } else {
+      return null;
+    }
+  }
 
   const generateInstructionText = () => {
     if (props.formType === 'forgotPassword-code') {
@@ -119,9 +133,22 @@ function ForgotPassword(props) {
       ]);
     }
   }
+
+  const handleSubmit = async (values) => {
+    console.log(values);
+    props.toggleLoading();
+    const data = await props.initiateForgotPassword(values.email);
+    console.log(data);
+  }
   
   return (
-    <React.Fragment>
+    <Form
+      form={form}
+      onFinish={props.initiateForgotPassword}
+      className='forgot-password'
+      style={{ maxWidth: '300px' }}
+    >
+      {generateErrorMessage()}
       {generateInstructionText()}
       <Form.Item 
         name='email'
@@ -151,8 +178,8 @@ function ForgotPassword(props) {
           {submitText}
         </Button>
       </Form.Item>
-    </React.Fragment>
+    </Form>
   );
 }
 
-export default withAuthForm(ForgotPassword, initiateForgotPassword);
+export default withAuth(ForgotPassword);

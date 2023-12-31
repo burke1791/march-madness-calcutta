@@ -1,16 +1,14 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { Button, message, Row, Table } from 'antd';
-import 'antd/dist/antd.css';
+
 import { useAuthState } from '../../context/authContext';
-import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
-import LeagueService from '../../services/league/league.service';
+import { useLeagueState } from '../../context/leagueContext';
 import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
-import { leagueServiceHelper } from '../../services/league/helper';
 import useData from '../../hooks/useData';
 import { API_CONFIG } from '../../utilities/constants';
-import { sortRoster } from '../../services/league/parsers/leagueRoster';
 import RoleSelection from './roleSelection';
 import { ButtonCell } from '../tableCells';
+import { sortLeagueRoster } from '../../parsers/league';
 
 const { Column } = Table;
 
@@ -28,7 +26,7 @@ function LeagueRoster() {
     baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
     endpoint: `${LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_ROSTER}/${leagueId}`,
     method: 'GET',
-    processData: sortRoster,
+    processData: sortLeagueRoster,
     conditions: [authenticated, leagueId]
   });
 

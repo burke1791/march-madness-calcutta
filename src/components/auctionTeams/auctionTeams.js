@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './auctionTeams.css';
 
 import { Row, List } from 'antd';
-import 'antd/dist/antd.css';
+
 import { formatMoney } from '../../utilities/helper';
 import Team from '../team/team';
 import { useAuctionState } from '../../context/auctionContext';

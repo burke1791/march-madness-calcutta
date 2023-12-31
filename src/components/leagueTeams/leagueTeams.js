@@ -6,7 +6,7 @@ import PrizepoolCards from './prizepoolCards';
 import { useAuthState } from '../../context/authContext';
 import useData from '../../hooks/useData';
 import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
-import { parseLeagueTeamPayouts } from '../../services/league/parsers/leagueTeamPayouts';
+import { parseLeagueTeamPayouts } from '../../parsers/league';
 import { ButtonTableCell } from '../buttonTableCell';
 import { formatMoney } from '../../utilities/helper';
 import TeamPayoutModal from './payoutModal';

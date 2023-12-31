@@ -9,11 +9,11 @@ import amplifyConfig from './utilities/amplifyConfig';
 
 Amplify.configure({
   Auth: {
-    mandatorySignIn: true,
-    region: amplifyConfig.cognito.REGION,
-    userPoolId: amplifyConfig.cognito.USER_POOL_ID,
-    userPoolWebClientId: amplifyConfig.cognito.APP_CLIENT_ID,
-    authenticationFlowType: amplifyConfig.cognito.AUTH_FLOW
+    Cognito: {
+      userPoolId: amplifyConfig.cognito.USER_POOL_ID,
+      userPoolClientId: amplifyConfig.cognito.APP_CLIENT_ID,
+      signUpVerificationMethod: 'link'
+    }
   }
 });
 

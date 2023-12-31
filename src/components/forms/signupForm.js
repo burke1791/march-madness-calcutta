@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
-import { AUTH_FORM_TYPE, ERROR_MESSAGES, NOTIF } from '../../utilities/constants';
+import { AUTH_FORM_TYPE, NOTIF } from '../../utilities/constants';
 
 import { Form, Input, Button, Checkbox, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import 'antd/dist/antd.css';
-import { signUp } from '../../utilities/authService';
+
 import Pubsub from '../../utilities/pubsub';
+import withAuth from '../../HOC/withAuth';
 
 const formItemStyle = {
   marginBottom: '6px'
@@ -46,14 +46,19 @@ function SignupForm(props) {
     setErrorMessage(errorMsg);
   }
 
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values) => {
     props.toggleLoading();
     
-    let email = values.email;
-    let username = values.username;
-    let password = values.password;
+    try {
+      const email = values.email;
+      const username = values.username;
+      const password = values.password;
 
-    signUp(username, email, password);
+      await props.signUp(username, email, password);
+    } catch (error) {
+      console.log(error);
+      props.toggleLoading();
+    }
   }
 
   const generateErrorMessage = () => {
@@ -183,5 +188,5 @@ function SignupForm(props) {
   );
 }
 
-export default SignupForm;
+export default withAuth(SignupForm);
 

@@ -5,6 +5,19 @@ export const API_CONFIG = {
   TOURNAMENT_SERVICE_BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_TOURNAMENT_SERVICE_API_URL : process.env.REACT_APP_TOURNAMENT_SERVICE_API_URL
 }
 
+export const AUTH_STATUS = {
+  AWAITING_CONFIRMATION: 'awaiting_confirmation',
+  IN_FLIGHT: 'in_flight',
+  SIGNED_IN: 'signed_in',
+  SIGNED_OUT: 'signed_out',
+  ERROR: 'error'
+}
+
+export const AUTH_ERROR_MESSAGES = {
+  EMAIL_EXISTS: 'Email address already in user',
+  INVALID_CREDENTIALS: 'Invalid Credentials'
+}
+
 export const SERVICES = {
   LEAGUE_SERVICE: 'league_service',
   AUCTION_SERVICE: 'auction_service',
@@ -150,6 +163,7 @@ export const NOTIF = {
   AUCTION_TEAMS_DOWNLOADED: 'auction_teams_downloaded',
   AUCTION_BUYINS_DOWNLOADED: 'auction_buyins_downloaded',
   AUCTION_ERROR: 'auction_error',
+  SIGN_UP_PLEASE_CONFIRM: 'sign_up_please_confirm',
   SIGN_IN: 'sign_in',
   SIGN_OUT: 'sign_out',
   NEW_CHAT_MESSAGE: 'new_chat_message',
