@@ -3,8 +3,6 @@ import React, { Fragment, useEffect } from 'react';
 import LeagueNav from '../leagueNav/leagueNav';
 import LeagueHome from '../leagueHome/leagueHome';
 import LeagueAuction from '../leagueAuction/leagueAuction';
-import MessageBoard from '../messageBoard/messageBoard';
-import MessageThread from '../messageThread/messageThread';
 import MemberPage from '../memberPage/memberPage';
 
 import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
@@ -13,11 +11,9 @@ import { Layout } from 'antd';
 
 import LeagueSettings from '../../pages/leagueSettings/leagueSettings';
 import { useSettingsDispatch } from '../../context/leagueSettingsContext';
-import LeagueService from '../../services/league/league.service';
 import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS, SUPPLEMENTAL_PAGES } from '../../utilities/constants';
 import { useAuthState } from '../../context/authContext';
 import { AuctionProvider } from '../../context/auctionContext';
-import { leagueServiceHelper } from '../../services/league/helper';
 import { genericContextUpdate } from '../../context/helper';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import useData from '../../hooks/useData';
@@ -45,6 +41,13 @@ function League(props) {
     conditions: [authenticated, leagueId]
   });
 
+  const [leagueMetadata, leagueMetadataReturnDate, fetchLeagueMetadata] = useData({
+    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
+    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.LEAGUE_METADATA}/${leagueId}`,
+    method: 'GET',
+    conditions: [authenticated, !!leagueId]
+  });
+
   useEffect(() => {
     // cannot use lookbehind because it causes issues on mobile (ugh)
     const parsedLeagueId = +location.pathname.match(/\d{1,}($|(?=\/))/ig)[0];
@@ -57,9 +60,17 @@ function League(props) {
 
   useEffect(() => {
     if (!!leagueId && authenticated) {
-      fetchMetadata(leagueId);
+      // fetchMetadata(leagueId);
+      fetchLeagueMetadata();
     }
   }, [leagueId, authenticated, leagueMetadataRefresh]);
+
+  useEffect(() => {
+    if (leagueMetadataReturnDate) {
+      console.log(leagueMetadata);
+      updateMetadataInContext(leagueMetadata);
+    }
+  }, [leagueMetadata, leagueMetadataReturnDate]);
 
   useEffect(() => {
     if (!!leagueId && authenticated) {
@@ -119,15 +130,6 @@ function League(props) {
     return null;
   }
 
-  const fetchMetadata = (leagueId) => {
-    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_METADATA, { leagueId }).then(response => {
-      let leagueMetadata = leagueServiceHelper.packageLeagueMetadata(response.data[0]);
-      updateMetadataInContext(leagueMetadata);
-    }).catch(error => {
-      console.log(error);
-    });
-  }
-
   const updateMetadataInContext = (metadata) => {
     let status = genericContextUpdate(metadata, dispatch);
 
@@ -154,8 +156,6 @@ function League(props) {
 
               {constructRoutes()}
 
-              {/* <Route path='message_board' element={<MessageBoard leagueId={leagueId} role={role} />} /> */}
-              {/* <Route path='message_board/:topicId' element={<MessageThread leagueId={leagueId} role={role} />} /> */}
               <Route path='member/:userId' element={<MemberPage />} />
               <Route path='settings/*' element={<LeagueSettings />} />
             </Routes>

@@ -1,45 +1,40 @@
 import React, { useState, useEffect } from 'react';
 
-import { message, Table, Typography } from 'antd';
+import { Table, Typography } from 'antd';
 
 import { useAuthState } from '../../context/authContext';
 import { teamDisplayName } from '../../utilities/helper';
-import LeagueService from '../../services/league/league.service';
-import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
-import { leagueServiceHelper } from '../../services/league/helper';
+import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
+import useData from '../../hooks/useData';
 
 const { Text } = Typography;
 
 function LeagueHomeUpcomingGames(props) {
 
-  const [upcomingGames, setUpcomingGames] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const { userId, authenticated } = useAuthState();
   const { leagueId } = useLeagueState();
 
+  const [upcomingGames, upcomingGamesReturnDate, fetchUpcomingGames] = useData({
+    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
+    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.UPCOMING_GAMES}/${leagueId}`,
+    method: 'GET',
+    conditions: [authenticated, leagueId]
+  });
+
   useEffect(() => {
-    if (leagueId !== undefined && authenticated) {
+    if (leagueId && authenticated) {
       fetchUpcomingGames();
     }
   }, [leagueId, authenticated]);
 
-  const fetchUpcomingGames = () => {
-    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.UPCOMING_GAMES, { leagueId }).then(response => {
-      let games = leagueServiceHelper.packageUpcomingGames(response.data);
-      populateUpcomingGames(games);
-    }).catch(error => {
-      message.error('Unable to get upcoming games, please try again later.');
+  useEffect(() => {
+    if (upcomingGames && upcomingGamesReturnDate) {
       setLoading(false);
-      console.log(error);
-    });
-  }
-
-  const populateUpcomingGames = (games) => {
-    setUpcomingGames(games);
-    setLoading(false);
-  }
+    }
+  }, [upcomingGames, upcomingGamesReturnDate]);
 
   const upcomingColumns = [
     {

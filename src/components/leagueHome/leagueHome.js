@@ -3,13 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { Layout, Row, Col } from 'antd';
 import LeagueHomeCards from './leagueHomeCards';
 
-import LeagueService from '../../services/league/league.service';
-import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
 import LeagueHeader from '../league/leagueHeader';
 import LeagueHomeStandings from './leagueHomeStandings';
 import LeagueHomeUpcomingGames from './leagueHomeUpcomingGames';
+import useData from '../../hooks/useData';
 
 const { Content } = Layout;
 
@@ -20,36 +20,28 @@ function LeagueHome() {
   const { leagueId, leagueName, tournamentName, tournamentRegimeName, numUsers, prizepool, myBuyIn, myPayout } = useLeagueState();
   const { authenticated } = useAuthState();
 
+  const [remainingTeams, remainingTeamsReturnDate, fetchRemainingTeamCount] = useData({
+    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
+    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.REMAINING_TEAMS_COUNT}/${leagueId}`,
+    method: 'GET',
+    conditions: [authenticated, leagueId]
+  });
+
   useEffect(() => {
-    if (authenticated) {
+    if (leagueId && authenticated) {
       fetchDataOnSignIn();
     }
-  }, [authenticated]);
+  }, [leagueId, authenticated]);
 
   useEffect(() => {
-    if (leagueId) {
-      fetchRemainingTeamCount();
+    if (remainingTeams && remainingTeamsReturnDate) {
+      console.log(remainingTeams);
+      setRemainingTeamsCount(remainingTeams.numTeamsRemaining);
     }
-  }, [leagueId]);
+  }, [remainingTeams, remainingTeamsReturnDate])
 
   const fetchDataOnSignIn = () => {
-    if (leagueId) {
-      fetchRemainingTeamCount();
-    }
-  }
-
-  const fetchRemainingTeamCount = () => {
-    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.REMAINING_TEAMS_COUNT, { leagueId }).then(response => {
-      if (response.data.length > 0) {
-        if (Object.keys(response.data[0])[0] === 'Error') {
-          throw new Error(response.data[0].Error);
-        }
-
-        setRemainingTeamsCount(response.data[0].NumTeamsRemaining);
-      }
-    }).catch(error => {
-      console.log(error);
-    });
+    fetchRemainingTeamCount();
   }
 
   const secondaryHeaderText = () => {

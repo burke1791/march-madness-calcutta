@@ -6,12 +6,13 @@ import { formatTimestamp } from '../../utilities/helper';
 import { Row, Col, List, Card, Input } from 'antd'
 
 import Pubsub from '../../utilities/pubsub';
-import { NOTIF, AUCTION_SERVICE_ENDPOINTS } from '../../utilities/constants';
-import AuctionService from '../../services/autction/auction.service';
+import { NOTIF, AUCTION_SERVICE_ENDPOINTS, API_CONFIG } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
 import { useAuctionState } from '../../context/auctionContext';
 import useDeepCompareEffect from 'use-deep-compare-effect';
+import useData from '../../hooks/useData';
+import { parseAuctionChatMessages } from '../../parsers/auction';
 
 const urlRegex = /(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])/;
 
@@ -29,6 +30,14 @@ function AuctionChat(props) {
   const { authenticated } = useAuthState();
   const { connected } = useAuctionState();
 
+  const [chatMessages, messagesReturnDate, fetchChatMessages] = useData({
+    baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
+    endpoint: `${AUCTION_SERVICE_ENDPOINTS.FETCH_CHAT}/${leagueId}`,
+    method: 'GET',
+    processData: parseAuctionChatMessages,
+    conditions: [authenticated, connected, leagueId]
+  });
+
   useEffect(() => {
     Pubsub.subscribe(NOTIF.NEW_CHAT_MESSAGE, AuctionChat, handleNewMessage);
 
@@ -38,27 +47,28 @@ function AuctionChat(props) {
   }, []);
 
   useEffect(() => {
-    clearMessages();
-    getAllMessages();
+    if (leagueId && authenticated && connected) {
+      clearMessages();
+      fetchChatMessages();
+    }
 
     return (() => {
       clearMessages();
     });
   }, [leagueId, authenticated, connected]);
 
+  useEffect(() => {
+    if (chatMessages && chatMessages.length && messagesReturnDate) {
+      handleNewMessage(chatMessages);
+    }
+  }, [chatMessages, messagesReturnDate]);
+
   useDeepCompareEffect(() => {
     dummyMessage.current.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'smooth' });
   }, [messages]);
 
-  const getAllMessages = () => {
-    if (leagueId && authenticated && connected) {
-      AuctionService.callApi(AUCTION_SERVICE_ENDPOINTS.FETCH_CHAT, { leagueId });
-    }
-  }
-
-  const handleNewMessage = (newMessage) => {
-    const newList = [...messagesRef.current, ...newMessage];
-    // const newList = [...messages, ...newMessage];
+  const handleNewMessage = (newMessages) => {
+    const newList = [...messagesRef.current, ...newMessages];
 
     messagesRef.current = newList;
     setMessages(newList);
@@ -76,7 +86,6 @@ function AuctionChat(props) {
         content: value
       };
   
-      // sendSocketMessage(messageObj);
       props.sendSocketMessage('MESSAGE', messageObj);
   
       setChatMessage('');
@@ -88,17 +97,17 @@ function AuctionChat(props) {
       <Card size='small' className='flex-growVert-child' bodyStyle={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
         <Row style={{ maxHeight: 'calc(50vh - 70px)', overflow: 'auto' }}>
           <Col span={24}>
-              <List
-                dataSource={messages}
-                style={{ overflow: 'auto', width: '100%' }}
-                renderItem={message => (
-                  <div className='chat-message'>
-                    <span className='author'>{message.alias}</span>
-                    <span className='timestamp'>{formatTimestamp(message.timestamp)}</span>
-                    <MessageContent>{message.content}</MessageContent>
-                  </div>
-                )}
-              />
+            <List
+              dataSource={messages}
+              style={{ overflow: 'auto', width: '100%' }}
+              renderItem={message => (
+                <div className='chat-message'>
+                  <span className='author'>{message.alias}</span>
+                  <span className='timestamp'>{formatTimestamp(message.timestamp)}</span>
+                  <MessageContent>{message.content}</MessageContent>
+                </div>
+              )}
+            />
             <div id='dummy-for-scroll' ref={dummyMessage}></div>
           </Col>
         </Row>

@@ -3,6 +3,7 @@ import { useAuthDispatch } from '../context/authContext';
 import { fetchAuthSession, signIn, signOut, signUp, updatePassword, resetPassword, confirmResetPassword } from 'aws-amplify/auth';
 import { AUTH_ERROR_MESSAGES, AUTH_STATUS } from '../utilities/constants';
 import { clearDataOnSignout } from '../services/league/endpoints';
+import amplifyConfig from '../utilities/amplifyConfig';
 
 function withAuth(WrappedComponent) {
   
@@ -46,7 +47,13 @@ function withAuth(WrappedComponent) {
 
     const authSignIn = async (username, password) => {
       try {
-        const data = await signIn({ username: username, password: password });
+        const data = await signIn({
+          username: username,
+          password: password,
+          options: {
+            authFlowType: amplifyConfig.cognito.AUTH_FLOW
+          }
+        });
         console.log(data);
         const token = await getSession();
         setAuthContext({
@@ -92,7 +99,7 @@ function withAuth(WrappedComponent) {
         const { idToken } = (await fetchAuthSession()).tokens ?? {};
         
         if (idToken) {
-          return idToken;
+          return idToken.toString();
         } else {
           return null;
         }

@@ -2,16 +2,18 @@ import React, { useState, useEffect } from 'react';
 
 import { Layout, Table, Row, Typography, message } from 'antd';
 
-import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import LeagueService from '../../services/league/league.service';
 import { formatMoney, teamDisplayName } from '../../utilities/helper';
 import { useLeagueState } from '../../context/leagueContext';
 import { leagueServiceHelper } from '../../services/league/helper';
 import { useAuthState } from '../../context/authContext';
 import { useLocation } from 'react-router-dom';
+import useData from '../../hooks/useData';
+import { parseLeagueUserTeams } from '../../parsers/league';
 
 const { Header, Content } = Layout;
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 const columns = [
   {
@@ -71,6 +73,22 @@ function MemberPage(props) {
   const { authenticated } = useAuthState();
   const location = useLocation();
 
+  const [userMetadata, userMetadataReturnDate, fetchUserMetadata] = useData({
+    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
+    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_USER_METADATA}/${leagueId}/${userId}`,
+    method: 'GET',
+    processData: null,
+    conditions: [authenticated, userId, leagueId]
+  });
+
+  const [userTeams, userTeamsReturnDate, fetchUserTeams] = useData({
+    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
+    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS}/${leagueId}/${userId}`,
+    method: 'GET',
+    processData: parseLeagueUserTeams,
+    conditions: [authenticated, userId, leagueId]
+  });
+
   useEffect(() => {
     // cannot use lookbehind on mobile because reasons (ugh)
     const userIdPath = location.pathname.match(/\/member\/\d{1,}($|(?=\/))/ig)[0];
@@ -81,46 +99,32 @@ function MemberPage(props) {
   }, [JSON.stringify(location)]);
 
   useEffect(() => {
-    if (authenticated && userId != null) {
-      fetchUserMetadata();
-      fetchTeams();
+    if (userMetadata && userMetadataReturnDate) {
+      setAlias(userMetadata.alias);
+      setNumTeams(userMetadata.numTeams);
+      setTotalBuyIn(userMetadata.totalBuyIn);
+      setTaxBuyIn(userMetadata.taxBuyIn);
+      setPayout(userMetadata.totalReturn);
     }
-  }, [authenticated, userId]);
+  }, [userMetadata, userMetadataReturnDate]);
 
-  const fetchUserMetadata = () => {
-    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_USER_METADATA, {
-      leagueId: leagueId,
-      userId: userId
-    }).then(response => {
-      if (response.data.length > 0) {
-        let data = response.data[0];
-
-        setAlias(data.Alias);
-        setNumTeams(data.NumTeams);
-        setTotalBuyIn(Number(data.NaturalBuyIn + data.TaxBuyIn));
-        setTaxBuyIn(Number(data.TaxBuyIn));
-        setPayout(Number(data.TotalReturn));
-      }
-    })
-  }
-
-  const fetchTeams = () => {
-    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_TEAMS, {
-      leagueId: leagueId,
-      userId: userId
-    }).then(response => {
-      if (response.data.length > 0) {
-        let userTeams =  leagueServiceHelper.packageUserTeams(response.data);
-
-        setTeams(userTeams);
-      }
-      
+  useEffect(() => {
+    console.log(userTeams);
+    if (userTeams?.length && userTeamsReturnDate) {
+      setTeams(userTeams);
       setLoading(false);
-    }).catch(error => {
+    } else if (userTeams?.length == 0) {
+      setTeams([]);
       setLoading(false);
-      console.log(error);
-    })
-  }
+    }
+  }, [userTeams, userTeamsReturnDate]);
+
+  useEffect(() => {
+    if (authenticated && userId && leagueId) {
+      fetchUserMetadata();
+      fetchUserTeams();
+    }
+  }, [authenticated, userId, leagueId]);
 
   const groupTeamsTable = (groupTeams) => {
     const columns = [
@@ -165,7 +169,7 @@ function MemberPage(props) {
   return (
     <Layout>
       <Header style={{ background: 'none', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '32px' }}>{alias}</h1>
+        <Title level={1} style={{ margin: 0 }}>{alias}</Title>
       </Header>
       <Content>
         <Row type='flex' justify='center'>

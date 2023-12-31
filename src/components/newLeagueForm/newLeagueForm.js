@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { API_CONFIG, LEAGUE_FORM_TYPE, LEAGUE_SERVICE_ENDPOINTS, NOTIF } from '../../utilities/constants';
 
 import { Form, Input, Button, Select } from 'antd';
-
-
-import LeagueService from '../../services/league/league.service';
 import { useTournamentState } from '../../context/tournamentContext';
 import useData from '../../hooks/useData';
 import { useAuthState } from '../../context/authContext';
@@ -36,6 +33,13 @@ function NewLeagueForm(props) {
     conditions: [authenticated]
   });
 
+  const [joinLeagueResponse, joinLeagueReturnDate, joinLeague] = useData({
+    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
+    endpoint: LEAGUE_SERVICE_ENDPOINTS.JOIN_LEAGUE,
+    method: 'POST',
+    conditions: [authenticated]
+  });
+
   useEffect(() => {
     if (createLeagueReturnDate) {
       console.log(createLeagueResponse);
@@ -46,6 +50,13 @@ function NewLeagueForm(props) {
       }
     }
   }, [createLeagueReturnDate, createLeagueResponse]);
+
+  useEffect(() => {
+    if (joinLeagueResponse && joinLeagueReturnDate) {
+      console.log(joinLeagueResponse);
+      Pubsub.publish(NOTIF.LEAGUE_JOINED);
+    }
+  }, [joinLeagueResponse, joinLeagueReturnDate]);
 
   const tournamentSelected = (id) => {
     setTournamentId(Number(id));
@@ -73,15 +84,10 @@ function NewLeagueForm(props) {
         };
   
         createLeague(payload);
-        // LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.NEW_LEAGUE, { 
-        //   name: name,
-        //   tournamentId: tournamentId,
-        //   tournamentScopeId: tournamentScopeId
-        // });
       }
     } else {
       props.toggleLoading();
-      LeagueService.callApi(LEAGUE_SERVICE_ENDPOINTS.JOIN_LEAGUE, { inviteCode });
+      joinLeague({ inviteCode });
     }
   }
 

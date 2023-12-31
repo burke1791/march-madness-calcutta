@@ -57,12 +57,14 @@ function Topnav(props) {
     if (token) {
       props.setAuthContext({
         token: token,
-        authStatus: AUTH_STATUS.SIGNED_IN
+        authStatus: AUTH_STATUS.SIGNED_IN,
+        authenticated: true
       });
     } else {
       props.setAuthContext({
         token: null,
-        authStatus: AUTH_STATUS.SIGNED_OUT
+        authStatus: AUTH_STATUS.SIGNED_OUT,
+        authenticated: false
       });
     }
   }

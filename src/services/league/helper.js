@@ -165,7 +165,7 @@ export const leagueServiceHelper = {
   
     // sorting the teams in descending order by their net return
     userTeams.sort(function(a, b) { return b.netReturn - a.netReturn });
-    groups.sort(function(a, b) { return b.netReturn - a.netRedurt });
+    groups.sort(function(a, b) { return b.netReturn - a.netReturn });
   
     // merge the userTeams and groups arrays
     return [...userTeams, ...groups];
