@@ -1,268 +1,268 @@
 
-export const leagueServiceHelper = {
-  packageLeagueSummaries: function(data) {
-    if (data != null && data.length) {
-      let leagues = data.map(league => {
-        let buyIn = (league.NaturalBuyIn + league.TaxBuyIn).toFixed(2);
-        let netReturn = (league.TotalReturn - buyIn).toFixed(2);
+// export const leagueServiceHelper = {
+//   packageLeagueSummaries: function(data) {
+//     if (data != null && data.length) {
+//       let leagues = data.map(league => {
+//         let buyIn = (league.NaturalBuyIn + league.TaxBuyIn).toFixed(2);
+//         let netReturn = (league.TotalReturn - buyIn).toFixed(2);
 
-        let leagueObj = {
-          id: league.LeagueId,
-          name: league.LeagueName,
-          tournamentId: league.TournamentId,
-          tournamentName: league.TournamentName,
-          buyIn: Number(buyIn),
-          payout: +league.TotalReturn,
-          netReturn: Number(netReturn),
-          role: league.Role,
-          roleId: league.RoleId
-        };
+//         let leagueObj = {
+//           id: league.LeagueId,
+//           name: league.LeagueName,
+//           tournamentId: league.TournamentId,
+//           tournamentName: league.TournamentName,
+//           buyIn: Number(buyIn),
+//           payout: +league.TotalReturn,
+//           netReturn: Number(netReturn),
+//           role: league.Role,
+//           roleId: league.RoleId
+//         };
     
-        return leagueObj;
-      });
+//         return leagueObj;
+//       });
     
-      return leagues;
-    }
-    return null;
-  },
+//       return leagues;
+//     }
+//     return null;
+//   },
 
-  extractUserId: function(leagueSummaryData) {
-    if (leagueSummaryData != null && leagueSummaryData.length) {
-      return +leagueSummaryData[0].UserId;
-    }
-    return null;
-  },
+//   extractUserId: function(leagueSummaryData) {
+//     if (leagueSummaryData != null && leagueSummaryData.length) {
+//       return +leagueSummaryData[0].UserId;
+//     }
+//     return null;
+//   },
 
-  packageLeagueMetadata: function(metadata) {
-    let data = {
-      leagueName: metadata.LeagueName,
-      numUsers: +metadata.NumUsers,
-      prizepool: +metadata.Prizepool,
-      myBuyIn: +metadata.MyBuyIn,
-      myPayout: +metadata.MyPayout,
-      leagueStatusId: metadata.StatusId,
-      tournamentId: metadata.TournamentId,
-      tournamentName: metadata.TournamentName,
-      tournamentRegimeId: metadata.TournamentRegimeId,
-      tournamentRegimeName: metadata.TournamentRegimeName,
-      roleId: metadata.RoleId,
-      roleName: metadata.RoleName,
-      inviteCode: metadata.InviteCode,
-      inviteUrl: metadata.InviteUrl,
-      hasBracketPage: !!metadata.HasBracketPage
-    };
+//   packageLeagueMetadata: function(metadata) {
+//     let data = {
+//       leagueName: metadata.LeagueName,
+//       numUsers: +metadata.NumUsers,
+//       prizepool: +metadata.Prizepool,
+//       myBuyIn: +metadata.MyBuyIn,
+//       myPayout: +metadata.MyPayout,
+//       leagueStatusId: metadata.StatusId,
+//       tournamentId: metadata.TournamentId,
+//       tournamentName: metadata.TournamentName,
+//       tournamentRegimeId: metadata.TournamentRegimeId,
+//       tournamentRegimeName: metadata.TournamentRegimeName,
+//       roleId: metadata.RoleId,
+//       roleName: metadata.RoleName,
+//       inviteCode: metadata.InviteCode,
+//       inviteUrl: metadata.InviteUrl,
+//       hasBracketPage: !!metadata.HasBracketPage
+//     };
 
-    return data;
-  },
+//     return data;
+//   },
 
-  /**
-   * Packages league user summary data returned from the API into an array with relevant information. It is sorted in descending order based on the value in the "return" property
-   * @function packageLeagueUserInfo
-   * @param {Array.<Object>} userSummaries
-   * @returns {Array.<{id: Number, name: String, buyIn: Number, payout: Number, return: Number, numTeams: Number, numTeamsAlive: Number, rank: Number}>}
-   */
-  packageLeagueUserInfo: function(userSummaries, removeUsersWithoutTeams) {
-    if (userSummaries.length > 0) {
-      let users = userSummaries.map(user => {
-        return {
-          id: user.UserId,
-          name: user.Alias,
-          roleId: user.RoleId,
-          role: user.Role,
-          buyIn: Number((+user.NaturalBuyIn + +user.TaxBuyIn).toFixed(2)),
-          payout: Number((+user.TotalReturn).toFixed(2)),
-          return: Number((+user.TotalReturn - +user.NaturalBuyIn - +user.TaxBuyIn).toFixed(2)),
-          numTeams: +user.NumTeams,
-          numTeamsAlive: +user.NumTeamsAlive
-        }
-      });
+//   /**
+//    * Packages league user summary data returned from the API into an array with relevant information. It is sorted in descending order based on the value in the "return" property
+//    * @function packageLeagueUserInfo
+//    * @param {Array.<Object>} userSummaries
+//    * @returns {Array.<{id: Number, name: String, buyIn: Number, payout: Number, return: Number, numTeams: Number, numTeamsAlive: Number, rank: Number}>}
+//    */
+//   packageLeagueUserInfo: function(userSummaries, removeUsersWithoutTeams) {
+//     if (userSummaries.length > 0) {
+//       let users = userSummaries.map(user => {
+//         return {
+//           id: user.UserId,
+//           name: user.Alias,
+//           roleId: user.RoleId,
+//           role: user.Role,
+//           buyIn: Number((+user.NaturalBuyIn + +user.TaxBuyIn).toFixed(2)),
+//           payout: Number((+user.TotalReturn).toFixed(2)),
+//           return: Number((+user.TotalReturn - +user.NaturalBuyIn - +user.TaxBuyIn).toFixed(2)),
+//           numTeams: +user.NumTeams,
+//           numTeamsAlive: +user.NumTeamsAlive
+//         }
+//       });
 
-      // sorts the users in descending order based on their net return
-      users.sort(function(a, b) { return b.return - a.return });
+//       // sorts the users in descending order based on their net return
+//       users.sort(function(a, b) { return b.return - a.return });
 
-      // adds a rank property to each user after being sorted
-      users.forEach((user, index) => {
-        user.rank = index + 1;
-      });
+//       // adds a rank property to each user after being sorted
+//       users.forEach((user, index) => {
+//         user.rank = index + 1;
+//       });
 
-      return users;
-    }
+//       return users;
+//     }
 
-    return null;
-  },
+//     return null;
+//   },
 
-  packageUpcomingGames: function(games) {
-    if (games.length) {
-      let upcomingGames = games.map(game => {
-        return game;
-      });
+//   packageUpcomingGames: function(games) {
+//     if (games.length) {
+//       let upcomingGames = games.map(game => {
+//         return game;
+//       });
   
-      return upcomingGames;
-    }
+//       return upcomingGames;
+//     }
   
-    return null;
-  },
+//     return null;
+//   },
 
-  packageBracketGames: function(games) {
-    return games.map(game => {
-      // refactor to account for no seeds, etc.
-      return {
-        gameId: game.gameId,
-        nextGameId: game.nextGameId,
-        team1Id: game.team1Id,
-        team1Name: game.team1Id == null ? null : `(${game.team1Seed}) ${game.team1Name}`,
-        team1Score: game.team1Score,
-        team2Id: game.team2Id,
-        team2Name: game.team2Id == null ? null : `(${game.team2Seed}) ${game.team2Name}`,
-        team2Score: game.team2Score
-      };
-    });
-  },
+//   packageBracketGames: function(games) {
+//     return games.map(game => {
+//       // refactor to account for no seeds, etc.
+//       return {
+//         gameId: game.gameId,
+//         nextGameId: game.nextGameId,
+//         team1Id: game.team1Id,
+//         team1Name: game.team1Id == null ? null : `(${game.team1Seed}) ${game.team1Name}`,
+//         team1Score: game.team1Score,
+//         team2Id: game.team2Id,
+//         team2Name: game.team2Id == null ? null : `(${game.team2Seed}) ${game.team2Name}`,
+//         team2Score: game.team2Score
+//       };
+//     });
+//   },
 
-  packageUserTeams: function(teams) {
-    let userTeams = [];
-    let groups = [];
-    let groupsProcessed = [];
+//   packageUserTeams: function(teams) {
+//     let userTeams = [];
+//     let groups = [];
+//     let groupsProcessed = [];
 
-    // fill in group records
-    teams.forEach(teamObj => {
-      let groupName = teamObj.GroupName;
+//     // fill in group records
+//     teams.forEach(teamObj => {
+//       let groupName = teamObj.GroupName;
 
-      // if the team is part of a group AND that group hasn't already been handled
-      if (groupName != null && !groupsProcessed.includes(groupName)) {
-        let groupPayout = getGroupPayout(teams, teamObj.GroupId);
-        let groupNetReturn = groupPayout - teamObj.Price;
+//       // if the team is part of a group AND that group hasn't already been handled
+//       if (groupName != null && !groupsProcessed.includes(groupName)) {
+//         let groupPayout = getGroupPayout(teams, teamObj.GroupId);
+//         let groupNetReturn = groupPayout - teamObj.Price;
         
-        let groupObj = {
-          id: teamObj.GroupId,
-          name: groupName,
-          groupFlag: true,
-          price: teamObj.Price,
-          payout: groupPayout,
-          netReturn: groupNetReturn,
-          eliminated: teamGroupEliminated(teams, teamObj.GroupId),
-          groupTeams: getGroupTeams(teams, teamObj.GroupId)
-        };
+//         let groupObj = {
+//           id: teamObj.GroupId,
+//           name: groupName,
+//           groupFlag: true,
+//           price: teamObj.Price,
+//           payout: groupPayout,
+//           netReturn: groupNetReturn,
+//           eliminated: teamGroupEliminated(teams, teamObj.GroupId),
+//           groupTeams: getGroupTeams(teams, teamObj.GroupId)
+//         };
 
-        groupsProcessed.push(groupName)
+//         groupsProcessed.push(groupName)
 
-        groups.push(groupObj);
-      } else if (groupName == null) {
-        let team = {
-          id: teamObj.TeamId,
-          name: teamObj.Name,
-          groupFlag: false,
-          seed: teamObj.Seed,
-          price: teamObj.Price,
-          payout: teamObj.Payout,
-          netReturn: teamObj.Payout - teamObj.Price,
-          eliminated: !teamObj.IsAlive
-        };
+//         groups.push(groupObj);
+//       } else if (groupName == null) {
+//         let team = {
+//           id: teamObj.TeamId,
+//           name: teamObj.Name,
+//           groupFlag: false,
+//           seed: teamObj.Seed,
+//           price: teamObj.Price,
+//           payout: teamObj.Payout,
+//           netReturn: teamObj.Payout - teamObj.Price,
+//           eliminated: !teamObj.IsAlive
+//         };
 
-        userTeams.push(team);
-      }
-    });
+//         userTeams.push(team);
+//       }
+//     });
   
-    // sorting the teams in descending order by their net return
-    userTeams.sort(function(a, b) { return b.netReturn - a.netReturn });
-    groups.sort(function(a, b) { return b.netReturn - a.netReturn });
+//     // sorting the teams in descending order by their net return
+//     userTeams.sort(function(a, b) { return b.netReturn - a.netReturn });
+//     groups.sort(function(a, b) { return b.netReturn - a.netReturn });
   
-    // merge the userTeams and groups arrays
-    return [...userTeams, ...groups];
-  },
+//     // merge the userTeams and groups arrays
+//     return [...userTeams, ...groups];
+//   },
 
-  packageLeagueSeedGroups: function(groups) {
-    let seedGroups = [];
-    let groupsProcessed = [];
+//   packageLeagueSeedGroups: function(groups) {
+//     let seedGroups = [];
+//     let groupsProcessed = [];
 
-    groups.forEach(groupTeam => {
-      let groupName = groupTeam.GroupName;
+//     groups.forEach(groupTeam => {
+//       let groupName = groupTeam.GroupName;
 
-      if (!groupsProcessed.includes(groupName)) {
-        let group = {
-          groupId: groupTeam.TournamentSeedGroupId,
-          groupName: groupName,
-          teams: getSeedGroupTeams(groupTeam.TournamentSeedGroupId, groups)
-        };
+//       if (!groupsProcessed.includes(groupName)) {
+//         let group = {
+//           groupId: groupTeam.TournamentSeedGroupId,
+//           groupName: groupName,
+//           teams: getSeedGroupTeams(groupTeam.TournamentSeedGroupId, groups)
+//         };
 
-        seedGroups.push(group);
-        groupsProcessed.push(groupName);
-      }
-    });
+//         seedGroups.push(group);
+//         groupsProcessed.push(groupName);
+//       }
+//     });
 
-    return seedGroups;
-  }
-}
+//     return seedGroups;
+//   }
+// }
 
-function getGroupPayout(teams, groupId) {
-  return teams.reduce((payout, teamObj) => {
-    if (teamObj.GroupId === groupId) {
-      return payout + teamObj.Payout;
-    }
-    return payout;
-  }, 0);
-}
+// function getGroupPayout(teams, groupId) {
+//   return teams.reduce((payout, teamObj) => {
+//     if (teamObj.GroupId === groupId) {
+//       return payout + teamObj.Payout;
+//     }
+//     return payout;
+//   }, 0);
+// }
 
-function teamGroupEliminated(teams, groupId) {
-  let eliminated = true;
+// function teamGroupEliminated(teams, groupId) {
+//   let eliminated = true;
 
-  teams.forEach(teamObj => {
-    if (teamObj.GroupId === groupId) {
-      if (!!teamObj.IsAlive) {
-        eliminated = false;
-      }
-    }
-  });
+//   teams.forEach(teamObj => {
+//     if (teamObj.GroupId === groupId) {
+//       if (!!teamObj.IsAlive) {
+//         eliminated = false;
+//       }
+//     }
+//   });
 
-  return eliminated;
-}
+//   return eliminated;
+// }
 
-function getGroupTeams(teams, groupId) {
-  let groupTeams = [];
+// function getGroupTeams(teams, groupId) {
+//   let groupTeams = [];
 
-  teams.forEach(teamObj => {
-    if (teamObj.GroupId === groupId) {
-      let groupTeam = {
-        id: teamObj.TeamId,
-        name: teamObj.Name,
-        seed: teamObj.Seed,
-        price: null,
-        payout: teamObj.Payout,
-        netReturn: null,
-        eliminated: !teamObj.IsAlive
-      };
+//   teams.forEach(teamObj => {
+//     if (teamObj.GroupId === groupId) {
+//       let groupTeam = {
+//         id: teamObj.TeamId,
+//         name: teamObj.Name,
+//         seed: teamObj.Seed,
+//         price: null,
+//         payout: teamObj.Payout,
+//         netReturn: null,
+//         eliminated: !teamObj.IsAlive
+//       };
 
-      groupTeams.push(groupTeam);
-    }
-  });
+//       groupTeams.push(groupTeam);
+//     }
+//   });
 
-  // sort in descending order by payout
-  groupTeams.sort((a, b) => { return b.payout - a.payout });
+//   // sort in descending order by payout
+//   groupTeams.sort((a, b) => { return b.payout - a.payout });
 
-  return groupTeams;
-}
+//   return groupTeams;
+// }
 
-function getSeedGroupTeams(groupId, teams) {
-  let groupTeams = [];
+// function getSeedGroupTeams(groupId, teams) {
+//   let groupTeams = [];
 
-  teams.forEach(team => {
-    if (team.TournamentSeedGroupId == groupId) {
-      let groupTeam = {
-        slotId: team.TournamentSlotId,
-        teamId: team.TeamId,
-        seed: team.Seed,
-        teamName: team.TeamDisplayName
-      };
+//   teams.forEach(team => {
+//     if (team.TournamentSeedGroupId == groupId) {
+//       let groupTeam = {
+//         slotId: team.TournamentSlotId,
+//         teamId: team.TeamId,
+//         seed: team.Seed,
+//         teamName: team.TeamDisplayName
+//       };
 
-      groupTeams.push(groupTeam);
-    }
-  });
+//       groupTeams.push(groupTeam);
+//     }
+//   });
 
-  return groupTeams;
-}
+//   return groupTeams;
+// }
 
-export {
-  getGroupPayout,
-  teamGroupEliminated,
-  getGroupTeams
-}
+// export {
+//   getGroupPayout,
+//   teamGroupEliminated,
+//   getGroupTeams
+// }

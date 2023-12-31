@@ -2,7 +2,6 @@ import React from 'react';
 import { useAuthDispatch } from '../context/authContext';
 import { fetchAuthSession, signIn, signOut, signUp, updatePassword, resetPassword, confirmResetPassword } from 'aws-amplify/auth';
 import { AUTH_ERROR_MESSAGES, AUTH_STATUS } from '../utilities/constants';
-import { clearDataOnSignout } from '../services/league/endpoints';
 import amplifyConfig from '../utilities/amplifyConfig';
 
 function withAuth(WrappedComponent) {
@@ -32,7 +31,6 @@ function withAuth(WrappedComponent) {
       } catch (error) {
         console.log(error);
 
-        clearDataOnSignout();
         if (error.code === 'UsernameExistsException') {
           setAuthContext({
             authStatus: AUTH_STATUS.ERROR,
@@ -63,7 +61,6 @@ function withAuth(WrappedComponent) {
         });
       } catch (error) {
         console.log(error);
-        clearDataOnSignout();
 
         if (error.code == 'NotAuthorizedException') {
           setAuthContext({
@@ -85,7 +82,6 @@ function withAuth(WrappedComponent) {
     const authSignOut = async () => {
       try {
         await signOut();
-        clearDataOnSignout();
         setAuthContext({ clear: true });
         return true;
       } catch (error) {
