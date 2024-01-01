@@ -16,7 +16,7 @@ jobs:
       - name: use nodejs
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
       - run: npm install
       - run: CI=false npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
