@@ -97,7 +97,7 @@ export const SOCKETS = {
 export const AUTH_FORM_TYPE = {
   SIGN_IN: 'Sign In',
   SIGN_UP: 'Create an Account',
-  CONFIRM: 'confirm',
+  CONFIRM: 'Confirm Your Account',
   PASSWORD_RESET: 'Password Reset',
   FORGOT_PASSWORD: 'Forgot Password'
 };

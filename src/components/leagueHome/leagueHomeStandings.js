@@ -54,7 +54,7 @@ function LeagueHomeStandings(props) {
   }
 
   const getRowClassName = (record) => {
-    if (record.id == userId) return 'pointer current-user-row';
+    if (+record.userId === +userId) return 'pointer current-user-row';
     return 'pointer';
   }
 

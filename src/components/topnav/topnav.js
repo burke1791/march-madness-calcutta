@@ -43,7 +43,7 @@ function Topnav(props) {
   }, [authStatus, userMetadataRefresh]);
 
   useEffect(() => {
-    if (userMetadataReturnDate) {
+    if (userMetadata && userMetadataReturnDate) {
       console.log(userMetadata);
       props.setAuthContext({ userId: userMetadata.userId });
     }

@@ -59,6 +59,12 @@ function League(props) {
   }, []);
 
   useEffect(() => {
+    if (authenticated === false) {
+      navigate('/');
+    }
+  }, [authenticated]);
+
+  useEffect(() => {
     if (!!leagueId && authenticated) {
       // fetchMetadata(leagueId);
       fetchLeagueMetadata();
@@ -138,35 +144,30 @@ function League(props) {
     }
   }
 
-  if (authenticated) {
-    return (
-      <Layout style={{ minHeight: 'calc(100vh - 64px)', height: '100%' }}>
-        <LeagueNav />
-        <Layout>
-          <Content style={{ minHeight: 'calc(100vh - 64px)', height: '100%', overflow: 'auto' }}>
-            <Routes>
-              <Route path='/' element={<LeagueHome />} />
-              <Route path='auction' element={
-                  <AuctionProvider>
-                    <LeagueAuction path='/' />
-                  </AuctionProvider>
-                } 
-              />
-              <Route path='teams' element={<LeagueTeams />} />
+  return (
+    <Layout style={{ minHeight: 'calc(100vh - 64px)', height: '100%' }}>
+      <LeagueNav />
+      <Layout>
+        <Content style={{ minHeight: 'calc(100vh - 64px)', height: '100%', overflow: 'auto' }}>
+          <Routes>
+            <Route path='/' element={<LeagueHome />} />
+            <Route path='auction' element={
+                <AuctionProvider>
+                  <LeagueAuction path='/' />
+                </AuctionProvider>
+              } 
+            />
+            <Route path='teams' element={<LeagueTeams />} />
 
-              {constructRoutes()}
+            {constructRoutes()}
 
-              <Route path='member/:userId' element={<MemberPage />} />
-              <Route path='settings/*' element={<LeagueSettings />} />
-            </Routes>
-          </Content>
-        </Layout>
+            <Route path='member/:userId' element={<MemberPage />} />
+            <Route path='settings/*' element={<LeagueSettings />} />
+          </Routes>
+        </Content>
       </Layout>
-    );
-  } else {
-    return navigate('/');
-  }
-  
+    </Layout>
+  );
 }
 
 export default League;

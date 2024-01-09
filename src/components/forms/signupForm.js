@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { AUTH_FORM_TYPE, NOTIF } from '../../utilities/constants';
+import { AUTH_FORM_TYPE, AUTH_STATUS, NOTIF } from '../../utilities/constants';
 
 import { Form, Input, Button, Checkbox, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -22,6 +22,19 @@ const layout = {
   }
 };
 
+/**
+ * @typedef SignupFormProps
+ * @property {Boolean} loading
+ * @property {Function} toggleLoading
+ * @property {Function} toggleAuthForm
+ * @property {Function} signUp
+ * @property {Function} setAuthContext
+ */
+
+/**
+ * @component
+ * @param {SignupFormProps} props 
+ */
 function SignupForm(props) {
 
   const [form] = Form.useForm();
@@ -47,14 +60,20 @@ function SignupForm(props) {
   }
 
   const handleSubmit = async (values) => {
-    props.toggleLoading();
+    props.toggleLoading(true);
     
     try {
       const email = values.email;
       const username = values.username;
       const password = values.password;
 
-      await props.signUp(username, email, password);
+      const { isSignUpComplete, nextStep } = await props.signUp(username, email, password);
+
+      props.toggleLoading(false);
+
+      if (nextStep === 'CONFIRM_SIGN_UP') {
+        props.toggleAuthForm(AUTH_FORM_TYPE.CONFIRM)
+      }
     } catch (error) {
       console.log(error);
       props.toggleLoading();
