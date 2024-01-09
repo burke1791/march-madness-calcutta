@@ -13,8 +13,9 @@ function ConfirmAccount(props) {
     if (!email || !password) {
       props.toggleAuthForm(AUTH_FORM_TYPE.SIGN_IN);
     } else {
-      props.toggleLoading();
+      props.toggleLoading(true);
       await props.signIn(email, password);
+      props.dismiss();
     }
   }
 

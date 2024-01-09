@@ -28,6 +28,11 @@ function withAuth(WrappedComponent) {
           email: email,
           password: password
         });
+
+        return {
+          isSignUpComplete: response.isSignUpComplete,
+          nextStep: response.nextStep.signUpStep
+        };
       } catch (error) {
         console.log(error);
 
@@ -53,16 +58,23 @@ function withAuth(WrappedComponent) {
           }
         });
         console.log(data);
+
+        if (!data.isSignedIn) {
+          throw new Error('Unable to log in');
+        }
+
         const token = await getSession();
         setAuthContext({
           token: token,
           authStatus: AUTH_STATUS.SIGNED_IN,
-          authenticated: true
+          authenticated: true,
+          userMetadataRefresh: new Date().valueOf()
         });
       } catch (error) {
         console.log(error);
+        console.log(error.message);
 
-        if (error.code == 'NotAuthorizedException') {
+        if (error?.code == 'NotAuthorizedException') {
           setAuthContext({
             token: null,
             authStatus: AUTH_STATUS.SIGNED_OUT,
@@ -73,7 +85,8 @@ function withAuth(WrappedComponent) {
           setAuthContext({
             token: null,
             authStatus: AUTH_STATUS.SIGNED_OUT,
-            authenticated: false
+            authenticated: false,
+            errorMessage: error?.message ? error.message : null
           });
         }
       }
@@ -82,7 +95,7 @@ function withAuth(WrappedComponent) {
     const authSignOut = async () => {
       try {
         await signOut();
-        setAuthContext({ clear: true });
+        authContextSignedOut();
         return true;
       } catch (error) {
         console.log(error);
@@ -121,6 +134,19 @@ function withAuth(WrappedComponent) {
         username: email,
         confirmationCode: code,
         newPassword: newPassword
+      });
+    }
+
+    const authContextSignedOut = () => {
+      setAuthContext({
+        token: null,
+        authStatus: AUTH_STATUS.SIGNED_OUT,
+        authenticated: false,
+        userId: null,
+        email: null,
+        password: null,
+        alias: null,
+        errorMessage: null
       });
     }
 

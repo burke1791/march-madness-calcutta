@@ -8,7 +8,6 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import useData from '../../hooks/useData';
 
 function JoinLeague(props) {
-  console.log(props);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -62,6 +61,10 @@ function JoinLeague(props) {
       setFeedback('Please try again later');
       setTitle('Error Joining League');
       setStatus('error');
+    } else if (authStatus === AUTH_STATUS.AWAITING_CONFIRMATION) {
+      setFeedback('Please check your email and confirm your account');
+      setTitle('Awaiting Account Confirmation');
+      setStatus('info');
     } else if (authenticated !== undefined && !authenticated && authStatus !== AUTH_STATUS.SIGNED_IN) {
       setFeedback('Please Sign In');
       setStatus('warning');

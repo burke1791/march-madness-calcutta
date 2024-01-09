@@ -42,20 +42,9 @@
  */
 
 /**
- * @typedef RankedLeagueUserSummaries
- * @property {Number} leagueId
- * @property {String} leagueName
- * @property {Number} tournamentId
- * @property {String} tournamentName
- * @property {Number} leagueStatusId
- * @property {String} leagueStatus
- * @property {Array<RankedLeagueUser>} leagueUsers
- */
-
-/**
  * @function
  * @param {LeagueUserSummaries} data 
- * @returns {Array<RankedLeagueUserSummaries>}
+ * @returns {Array<RankedLeagueUser>}
  */
 export function parseLeagueUserSummaries(data) {
   if (data?.leagueUsers.length > 0) {

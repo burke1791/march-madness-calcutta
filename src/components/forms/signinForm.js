@@ -36,16 +36,18 @@ function SigninForm(props) {
   }
 
   const handleSubmit = async (values) => {
-    props.toggleLoading();
+    props.toggleLoading(true);
     
     try {
       const email = values.email;
       const password = values.password;
 
       await props.signIn(email, password);
+      form.resetFields();
+      props.dismiss();
     } catch (error) {
       console.log(error);
-      props.toggleLoading();
+      props.toggleLoading(false);
     }
   }
 

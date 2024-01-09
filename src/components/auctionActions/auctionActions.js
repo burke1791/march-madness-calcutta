@@ -11,11 +11,10 @@ import { AUCTION_STATUS, AUCTION_SERVICE_ENDPOINTS, API_CONFIG } from '../../uti
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
 import { useAuctionDispatch, useAuctionState } from '../../context/auctionContext';
-import { auctionServiceHelper } from '../../services/autction/helper';
 import Team from '../team/team';
 import BiddingWidget from './biddingWidget';
 import useData from '../../hooks/useData';
-import { parseServerOffset } from '../../parsers/auction';
+import { parseAuctionStatus, parseServerOffset } from '../../parsers/auction';
 
 const { Countdown } = Statistic;
 
@@ -41,7 +40,7 @@ function AuctionActions(props) {
     baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
     endpoint: `${AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_STATUS}/${leagueId}`,
     method: 'GET',
-    processData: auctionServiceHelper.parseAuctionStatus,
+    processData: parseAuctionStatus,
     conditions: [authenticated, leagueId, connected]
   });
 
