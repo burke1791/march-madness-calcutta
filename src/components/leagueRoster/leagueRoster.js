@@ -3,7 +3,7 @@ import { Button, message, Row, Table } from 'antd';
 
 import { useAuthState } from '../../context/authContext';
 import { useLeagueState } from '../../context/leagueContext';
-import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { DATA_SYNC_SERVICE_ENDPOINTS, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import useData from '../../hooks/useData';
 import { API_CONFIG } from '../../utilities/constants';
 import RoleSelection from './roleSelection';
@@ -31,15 +31,15 @@ function LeagueRoster() {
   });
 
   const [rolesUpdate, rolesUpdateReturnDate, updateRoles] = useData({
-    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
-    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.SET_LEAGUE_MEMBER_ROLES}/${leagueId}`,
+    baseUrl: API_CONFIG.DATA_SYNC_SERVICE_BASE_URL,
+    endpoint: `${DATA_SYNC_SERVICE_ENDPOINTS.SET_LEAGUE_MEMBER_ROLES}/${leagueId}`,
     method: 'POST',
     conditions: [authenticated, leagueId]
   });
 
   const [kickMemberResponse, kickMemberReturnDate, kickMember] = useData({
-    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
-    endpoint: LEAGUE_SERVICE_ENDPOINTS.KICK_LEAGUE_MEMBER,
+    baseUrl: API_CONFIG.DATA_SYNC_SERVICE_BASE_URL,
+    endpoint: DATA_SYNC_SERVICE_ENDPOINTS.KICK_LEAGUE_MEMBER,
     method: 'POST',
     conditions: [authenticated, leagueId]
   });

@@ -56,6 +56,7 @@ function AuctionRules(props) {
 
   useEffect(() => {
     if (rulesFetchDate != undefined) {
+      console.log(rules);
       setDataLoading(false);
       props.clearRulesRef();
     }

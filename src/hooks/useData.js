@@ -15,11 +15,14 @@ import { useAuthState } from '../context/authContext';
  */
 function useData({ baseUrl, endpoint, method, headers = {}, processData, conditions = [] }) {
 
+  const isValid = useRef(false);
+  const apiToken = useRef('');
+
   const [data, setData] = useState();
   const [fetchDate, setFetchDate] = useState();
   const [err, setErr] = useState();
   const [errDate, setErrDate] = useState();
-  const [isValid, setIsValid] = useState(false);
+  // const [isValid, setIsValid] = useState(false);
   const requestQueue = useRef([]);
 
   const { token } = useAuthState();
@@ -29,14 +32,19 @@ function useData({ baseUrl, endpoint, method, headers = {}, processData, conditi
   const processJson = useCallback(processData || ((jsonBody) => jsonBody), []);
 
   useEffect(() => {
-    setIsValid(evaluateConditions());
+    // setIsValid(evaluateConditions());
+    isValid.current = evaluateConditions();
   }, [...conditions]);
 
   useEffect(() => {
-    if (isValid && requestQueue.current.length > 0) {
+    apiToken.current = token;
+  }, [token]);
+
+  useEffect(() => {
+    if (isValid.current && requestQueue.current.length > 0) {
       sendQueuedRequests();
     }
-  }, [isValid]);
+  }, [isValid.current]);
 
   const sendQueuedRequests = () => {
     while (requestQueue.current.length > 0) {
@@ -62,8 +70,8 @@ function useData({ baseUrl, endpoint, method, headers = {}, processData, conditi
       method: method
     };
 
-    if (token) {
-      options.headers['x-cognito-token'] = token;
+    if (apiToken.current) {
+      options.headers['x-cognito-token'] = apiToken.current;
     }
 
     if (method == 'POST' || method == 'PUT') {
@@ -88,7 +96,7 @@ function useData({ baseUrl, endpoint, method, headers = {}, processData, conditi
   };
 
   const callApi = (payload) => {
-    if (isValid) {
+    if (isValid.current) {
       setData(null);
       setErr(null);
       fetchApi(payload).then(data => {

@@ -6,7 +6,7 @@ import { parseLeaguePathName } from '../../utilities/helper';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthState } from '../../context/authContext';
 import useData from '../../hooks/useData';
-import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { API_CONFIG, DATA_SYNC_SERVICE_ENDPOINTS } from '../../utilities/constants';
 
 const menuItems = {
   start: [
@@ -121,8 +121,8 @@ function LeaveButton (props) {
   const navigate = useNavigate();
 
   const [leaveLeagueResponse, leaveLeagueReturnDate, leaveLeague] = useData({
-    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
-    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.LEAVE_LEAGUE}/${leagueId}`,
+    baseUrl: API_CONFIG.DATA_SYNC_SERVICE_BASE_URL,
+    endpoint: `${DATA_SYNC_SERVICE_ENDPOINTS.LEAVE_LEAGUE}/${leagueId}`,
     method: 'POST',
     conditions: [authenticated, leagueId]
   });

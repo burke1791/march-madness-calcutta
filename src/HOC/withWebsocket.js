@@ -155,6 +155,7 @@ function withAuctionWebsocket(WrappedComponent, config) {
         default:
           console.log('unknown auction websocket message');
           console.log(msgType);
+          console.log(msgObj);
       }
     }
 

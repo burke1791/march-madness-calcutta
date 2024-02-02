@@ -3,7 +3,7 @@ import { useAuthState } from '../../context/authContext';
 import { Button, message, Result } from 'antd';
 
 import Pubsub from '../../utilities/pubsub';
-import { API_CONFIG, AUTH_FORM_TYPE, AUTH_STATUS, LEAGUE_SERVICE_ENDPOINTS, NOTIF } from '../../utilities/constants';
+import { API_CONFIG, AUTH_FORM_TYPE, AUTH_STATUS, DATA_SYNC_SERVICE_ENDPOINTS, LEAGUE_SERVICE_ENDPOINTS, NOTIF } from '../../utilities/constants';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import useData from '../../hooks/useData';
 
@@ -23,8 +23,8 @@ function JoinLeague(props) {
   const { authenticated, authStatus } = useAuthState();
 
   const [joinLeagueResponse, joinLeagueReturnDate, joinLeague] = useData({
-    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
-    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.JOIN_LEAGUE}`,
+    baseUrl: API_CONFIG.DATA_SYNC_SERVICE_BASE_URL,
+    endpoint: `${DATA_SYNC_SERVICE_ENDPOINTS.JOIN_LEAGUE}`,
     method: 'POST',
     conditions: [authenticated]
   });

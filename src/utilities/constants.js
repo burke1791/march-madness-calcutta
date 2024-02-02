@@ -2,7 +2,8 @@ export const API_CONFIG = {
   AUCTION_SERVICE_BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_AUCTION_SERVICE_API_URL : process.env.REACT_APP_AUCTION_SERVICE_API_URL,
   LEAGUE_SERVICE_BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_LEAGUE_SERVICE_API_URL : process.env.REACT_APP_LEAGUE_SERVICE_API_URL,
   USER_SERVICE_BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_USER_SERVICE_API_URL : process.env.REACT_APP_USER_SERVICE_API_URL,
-  TOURNAMENT_SERVICE_BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_TOURNAMENT_SERVICE_API_URL : process.env.REACT_APP_TOURNAMENT_SERVICE_API_URL
+  TOURNAMENT_SERVICE_BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_TOURNAMENT_SERVICE_API_URL : process.env.REACT_APP_TOURNAMENT_SERVICE_API_URL,
+  DATA_SYNC_SERVICE_BASE_URL: process.env.REACT_APP_BUILD_ENV == 'dev' ? process.env.REACT_APP_DEV_DATA_SYNC_SERVICE_API_URL : process.env.REACT_APP_DATA_SYNC_SERVICE_API_URL
 }
 
 export const AUTH_STATUS = {
@@ -28,8 +29,6 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   TOURNAMENT_OPTIONS: '/getTournamentOptions',
   LEAGUE_SUMMARIES: '/getLeagueSummaries',
   LEAGUE_METADATA: '/getLeagueMetadata',
-  NEW_LEAGUE: '/createLeague',
-  JOIN_LEAGUE: '/joinLeague',
   LEAGUE_USER_SUMMARIES: '/getLeagueUserSummaries',
   UPCOMING_GAMES: '/getUpcomingGames',
   REMAINING_TEAMS_COUNT: '/getRemainingTeamsCount',
@@ -43,7 +42,6 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   GET_LEAGUE_SEED_GROUPS: '/getLeagueSeedGroups',
   NEW_LEAGUE_SEED_GROUP: '/newLeagueSeedGroup',
   DELETE_LEAGUE_SEED_GROUP: '/deleteLeagueSeedGroup',
-  KICK_LEAGUE_MEMBER: '/kickLeagueMember',
   UPDATE_LEAGUE_NAME: '/updateLeagueName',
   GET_AUCTION_BID_RULES: '/getAuctionBidRules',
   SET_AUCTION_BID_RULES: '/setAuctionBidRules',
@@ -54,9 +52,7 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   GET_LEAGUE_TEAM_PAYOUTS: '/getLeagueTeamPayouts',
   SET_LEAGUE_TEAM_PAYOUTS: '/setLeagueTeamPayouts',
   GET_LEAGUE_ROSTER: '/getLeagueRoster',
-  SET_LEAGUE_MEMBER_ROLES: '/setLeagueMemberRoles',
   DELETE_LEAGUE: '/deleteLeague',
-  LEAVE_LEAGUE: '/leaveLeague',
   UPDATE_SEED_GROUP: '/updateLeagueSeedGroup',
   GET_LEAGUE_TEAMS: '/getLeagueTeams'
 }
@@ -82,6 +78,14 @@ export const TOURNAMENT_SERVICE_ENDPOINTS = {
   GET_WORLD_CUP_TABLES: '/getWorldCupTables',
   GET_WORLD_CUP_BRACKET: '/getWorldCupBracket',
   GET_MARCH_MADNESS_BRACKET: '/getMarchMadnessBracket'
+}
+
+export const DATA_SYNC_SERVICE_ENDPOINTS = {
+  JOIN_LEAGUE: '/joinLeague',
+  CREATE_LEAGUE: '/createLeague',
+  KICK_LEAGUE_MEMBER: '/kickLeagueMember',
+  LEAVE_LEAGUE: '/leaveLeague',
+  SET_LEAGUE_MEMBER_ROLES: '/setLeagueMemberRoles'
 }
 
 export const THEME_COLORS = {

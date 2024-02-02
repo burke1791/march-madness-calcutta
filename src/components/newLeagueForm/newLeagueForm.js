@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { API_CONFIG, LEAGUE_FORM_TYPE, LEAGUE_SERVICE_ENDPOINTS, NOTIF } from '../../utilities/constants';
+import { API_CONFIG, DATA_SYNC_SERVICE_ENDPOINTS, LEAGUE_FORM_TYPE, NOTIF } from '../../utilities/constants';
 
 import { Form, Input, Button, Select } from 'antd';
 import { useTournamentState } from '../../context/tournamentContext';
@@ -21,21 +21,21 @@ function NewLeagueForm(props) {
 
   const [errorMessage, setErrorMessage] = useState('');
   const [tournamentId, setTournamentId] = useState('');
-  const [tournamentScopeId, setTournamentScopeId] = useState('');
+  const [tournamentRegimeId, setTournamentRegimeId] = useState('');
 
   const { tournaments, tournamentScopes } = useTournamentState();
   const { authenticated } = useAuthState();
 
   const [createLeagueResponse, createLeagueReturnDate, createLeague] = useData({
-    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
-    endpoint: LEAGUE_SERVICE_ENDPOINTS.NEW_LEAGUE,
+    baseUrl: API_CONFIG.DATA_SYNC_SERVICE_BASE_URL,
+    endpoint: DATA_SYNC_SERVICE_ENDPOINTS.CREATE_LEAGUE,
     method: 'POST',
     conditions: [authenticated]
   });
 
   const [joinLeagueResponse, joinLeagueReturnDate, joinLeague] = useData({
-    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
-    endpoint: LEAGUE_SERVICE_ENDPOINTS.JOIN_LEAGUE,
+    baseUrl: API_CONFIG.DATA_SYNC_SERVICE_BASE_URL,
+    endpoint: DATA_SYNC_SERVICE_ENDPOINTS.JOIN_LEAGUE,
     method: 'POST',
     conditions: [authenticated]
   });
@@ -63,7 +63,7 @@ function NewLeagueForm(props) {
   }
 
   const tournamentScopeSelected = (id) => {
-    setTournamentScopeId(Number(id));
+    setTournamentRegimeId(Number(id));
   }
 
   const handleSubmit = (values) => {
@@ -71,7 +71,7 @@ function NewLeagueForm(props) {
     const inviteCode = values.inviteCode;
 
     if (props.leagueType === LEAGUE_FORM_TYPE.CREATE) {
-      if (name == undefined || tournamentId == '' || tournamentScopeId == '') {
+      if (name == undefined || tournamentId == '' || tournamentRegimeId == '') {
         setErrorMessage('Please fill in all fields');
       } else {
         setErrorMessage('');
@@ -80,7 +80,7 @@ function NewLeagueForm(props) {
         const payload = {
           name: name,
           tournamentId: tournamentId,
-          tournamentScopeId: tournamentScopeId
+          tournamentRegimeId: tournamentRegimeId
         };
   
         createLeague(payload);
