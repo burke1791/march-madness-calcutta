@@ -8,8 +8,10 @@ import AuctionRulesDisplay from './auctionRulesDisplay';
 
 /**
  * @typedef AuctionRulesProps
+ * @property {String} getBaseUrl
  * @property {String} getEndpoint
  * @property {Function} [getPostProcess]
+ * @property {String} postBaseUrl
  * @property {String} postEndpoint
  * @property {String} ruleKey
  * @property {Boolean} isRuleChanged
@@ -34,7 +36,7 @@ function AuctionRules(props) {
   const { leagueId } = useLeagueState();
 
   const [rules, rulesFetchDate, getRules] = useData({
-    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
+    baseUrl: props.getBaseUrl,
     endpoint: props.getEndpoint,
     method: 'GET',
     processData: props.getPostProcess || null,
@@ -42,7 +44,7 @@ function AuctionRules(props) {
   });
 
   const [rulesUpdate, rulesUpdateReturnDate, updateRules] = useData({
-    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
+    baseUrl: props.postBaseUrl,
     endpoint: props.postEndpoint,
     method: 'POST',
     conditions: [authenticated]

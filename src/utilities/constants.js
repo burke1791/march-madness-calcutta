@@ -36,7 +36,6 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   LEAGUE_USER_TEAMS: '/getLeagueUserTeams',
   GET_LEAGUE_USER_METADATA: '/getLeagueUserMetadata',
   GET_LEAGUE_SETTINGS: '/getLeagueSettings',
-  UPDATE_LEAGUE_SETTINGS: '/updateLeagueSettings',
   GET_LEAGUE_PAYOUT_SETTINGS: '/getLeaguePayoutSettings',
   UPDATE_LEAGUE_PAYOUT_SETTINGS: '/updateLeaguePayoutSettings',
   GET_LEAGUE_SEED_GROUPS: '/getLeagueSeedGroups',
@@ -44,7 +43,6 @@ export const LEAGUE_SERVICE_ENDPOINTS = {
   DELETE_LEAGUE_SEED_GROUP: '/deleteLeagueSeedGroup',
   UPDATE_LEAGUE_NAME: '/updateLeagueName',
   GET_AUCTION_BID_RULES: '/getAuctionBidRules',
-  SET_AUCTION_BID_RULES: '/setAuctionBidRules',
   AUCTION_TAX_RULE: '/auctionTaxRule',
   GET_SUPPLEMENTAL_PAGES: '/getLeagueSupplementalPages',
   GET_MANUAL_PAYOUT_INFO: '/getManualPayoutInfo',
@@ -85,7 +83,10 @@ export const DATA_SYNC_SERVICE_ENDPOINTS = {
   CREATE_LEAGUE: '/createLeague',
   KICK_LEAGUE_MEMBER: '/kickLeagueMember',
   LEAVE_LEAGUE: '/leaveLeague',
-  SET_LEAGUE_MEMBER_ROLES: '/setLeagueMemberRoles'
+  SET_LEAGUE_MEMBER_ROLES: '/setLeagueMemberRoles',
+  UPDATE_LEAGUE_SETTINGS: '/updateLeagueSettings',
+  SET_AUCTION_BID_RULES: '/setAuctionBidRules',
+  AUCTION_TAX_RULE: '/auctionTaxRule'
 }
 
 export const THEME_COLORS = {
