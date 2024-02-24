@@ -64,17 +64,17 @@ function AuctionActions(props) {
     }
   }, [auctionClosed]);
 
-  useEffect(() => {
-    if (statusReturnDate) {
-      const keys = Object.keys(auctionStatus);
+  // useEffect(() => {
+  //   if (statusReturnDate) {
+  //     const keys = Object.keys(auctionStatus);
 
-      for (let key of keys) {
-        auctionDispatch({ type: 'update', key: key, value: auctionStatus[key] });
-      }
+  //     for (let key of keys) {
+  //       auctionDispatch({ type: 'update', key: key, value: auctionStatus[key] });
+  //     }
 
-      auctionDispatch({ type: 'update', key: 'auctionStatusDownloadedDate', value: new Date().valueOf() });
-    }
-  }, [statusReturnDate]);
+  //     auctionDispatch({ type: 'update', key: 'auctionStatusDownloadedDate', value: new Date().valueOf() });
+  //   }
+  // }, [statusReturnDate]);
 
   useEffect(() => {
     updateOffset(serverOffset);

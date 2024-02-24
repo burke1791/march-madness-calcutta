@@ -115,19 +115,19 @@ function withAuctionWebsocket(WrappedComponent, config) {
 
     const emit = (msgType, msgObj, messageText) => {
       switch (msgType) {
-        case 'auction_open':
+        case AUCTION_WEBSOCKET_MSG_TYPE.OPEN:
           // open auction
           processAuctionStatus(msgObj);
           break;
-        case 'auction_close':
+        case AUCTION_WEBSOCKET_MSG_TYPE.CLOSE:
           message.info(messageText);
           auctionDispatch({ type: 'update', key: 'auctionClosed', value: true });
           break;
-        case 'auction_bid':
+        case AUCTION_WEBSOCKET_MSG_TYPE.BID:
           // handle bid
           processAuctionStatus(msgObj);
           break;
-        case 'auction_sale':
+        case AUCTION_WEBSOCKET_MSG_TYPE.SALE:
           // handles all sale types: sold, not purchased, unsold (?)
           processAuctionStatus(msgObj);
           break;
@@ -135,21 +135,21 @@ function withAuctionWebsocket(WrappedComponent, config) {
           // this msgType indicates a full data update was sent with the websocket payload
           fullAuctionDataSync(msgObj);
           break;
-        case 'auction_info':
+        case AUCTION_WEBSOCKET_MSG_TYPE.INFO:
           // misc info that doesn't affect core auction functionality
           showNotifMessage(msgObj.notifLevel, msgObj.notifMessage);
           console.log(msgObj);
 
           auctionInfoUpdateContext(msgObj.action);
           break;
-        case 'connection':
+        case AUCTION_WEBSOCKET_MSG_TYPE.CONNECTION:
           Pubsub.publish(AUCTION_NOTIF.CONNECTION, msgObj);
           break;
-        case 'auction_error':
+        case AUCTION_WEBSOCKET_MSG_TYPE.ERROR:
           // error catchall
           processAuctionError(messageText);
           break;
-        case 'chat':
+        case AUCTION_WEBSOCKET_MSG_TYPE.CHAT:
           Pubsub.publish(NOTIF.NEW_CHAT_MESSAGE, parseChatMessage(msgObj));
           break;
         default:

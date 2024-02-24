@@ -16,7 +16,7 @@ import AuctionModal from './auctionModal';
 import AuctionLoadingModal from './auctionLoadingModal';
 import useData from '../../hooks/useData';
 import { parseAuctionSettings } from './helper';
-import { parseAuctionSummary, parseAuctionTeams } from '../../parsers/auction';
+import { parseAuctionStatus, parseAuctionSummary, parseAuctionTeams } from '../../parsers/auction';
 
 function LeagueAuction(props) {
 
@@ -27,6 +27,13 @@ function LeagueAuction(props) {
   const { errorMessage, connected } = useAuctionState();
 
   const auctionDispatch = useAuctionDispatch();
+
+  const [auctionData, auctionDataReturnDate, fetchAuctionData] = useData({
+    baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
+    endpoint: `${AUCTION_SERVICE_ENDPOINTS.FULL_PAYLOAD}/${leagueId}`,
+    method: 'GET',
+    conditions: [authenticated, leagueId]
+  });
 
   const [auctionSettings, auctionSettingsReturnDate, fetchAuctionSettings] = useData({
     baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
@@ -61,8 +68,19 @@ function LeagueAuction(props) {
   useEffect(() => {
     if (leagueId && authenticated && connected) {
       fetchAllAuctionData();
+      fetchAuctionData();
     }
   }, [leagueId, authenticated, connected]);
+
+  useEffect(() => {
+    if (auctionDataReturnDate && auctionData?.message == 'ERROR!') {
+      console.log(auctionData);
+      message.error('Unable to get auction data');
+    } else if (auctionDataReturnDate) {
+      console.log(auctionData);
+      syncAuctionStatus(auctionData.status);
+    }
+  }, [auctionData, auctionDataReturnDate]);
 
   useEffect(() => {
     if (auctionSettingsReturnDate && auctionSettings) {
@@ -94,6 +112,17 @@ function LeagueAuction(props) {
     fetchAuctionSettings();
     fetchAuctionSummary();
     fetchTeams();
+  }
+
+  const syncAuctionStatus = (status) => {
+    const parsedStatus = parseAuctionStatus([status]);
+    const keys = Object.keys(parsedStatus);
+
+    for (let key of keys) {
+      auctionDispatch({ type: 'update', key: key, value: parsedStatus[key] });
+    }
+
+    auctionDispatch({ type: 'update', key: 'auctionStatusDownloadedDate', value: new Date().valueOf() });
   }
 
   const handleAuctionError = (errorMessage) => {
