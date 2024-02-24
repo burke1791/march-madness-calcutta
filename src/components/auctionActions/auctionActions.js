@@ -10,11 +10,11 @@ import { formatMoney } from '../../utilities/helper';
 import { AUCTION_STATUS, AUCTION_SERVICE_ENDPOINTS, API_CONFIG } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
-import { useAuctionDispatch, useAuctionState } from '../../context/auctionContext';
+import { useAuctionState } from '../../context/auctionContext';
 import Team from '../team/team';
 import BiddingWidget from './biddingWidget';
 import useData from '../../hooks/useData';
-import { parseAuctionStatus, parseServerOffset } from '../../parsers/auction';
+import { parseServerOffset } from '../../parsers/auction';
 
 const { Countdown } = Statistic;
 
@@ -34,16 +34,6 @@ function AuctionActions(props) {
   const { userId, authenticated } = useAuthState();
   const { auctionInterval, status, displayName, currentItemId, itemTypeId, price, winnerId, winnerAlias, lastBid, prevUpdate, teamLogoUrl, connected, auctionClosed, naturalBuyIn, taxBuyIn } = useAuctionState();
 
-  const auctionDispatch = useAuctionDispatch();
-
-  const [auctionStatus, statusReturnDate, fetchAuctionStatus] = useData({
-    baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
-    endpoint: `${AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_STATUS}/${leagueId}`,
-    method: 'GET',
-    processData: parseAuctionStatus,
-    conditions: [authenticated, leagueId, connected]
-  });
-
   const [serverOffset, offsetReturnDate, fetchServerOffset] = useData({
     baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
     endpoint: `${AUCTION_SERVICE_ENDPOINTS.SERVER_TIMESTAMP}`,
@@ -51,30 +41,6 @@ function AuctionActions(props) {
     processData: parseServerOffset,
     conditions: [authenticated]
   });
-
-  useEffect(() => {
-    if (authenticated && leagueId && connected) {
-      fetchAuctionStatus();
-    }
-  }, [authenticated, leagueId, connected]);
-
-  useEffect(() => {
-    if (!!auctionClosed) {
-      fetchAuctionStatus();
-    }
-  }, [auctionClosed]);
-
-  // useEffect(() => {
-  //   if (statusReturnDate) {
-  //     const keys = Object.keys(auctionStatus);
-
-  //     for (let key of keys) {
-  //       auctionDispatch({ type: 'update', key: key, value: auctionStatus[key] });
-  //     }
-
-  //     auctionDispatch({ type: 'update', key: 'auctionStatusDownloadedDate', value: new Date().valueOf() });
-  //   }
-  // }, [statusReturnDate]);
 
   useEffect(() => {
     updateOffset(serverOffset);

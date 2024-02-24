@@ -16,7 +16,8 @@ import AuctionModal from './auctionModal';
 import AuctionLoadingModal from './auctionLoadingModal';
 import useData from '../../hooks/useData';
 import { parseAuctionSettings } from './helper';
-import { parseAuctionStatus, parseAuctionSummary, parseAuctionTeams } from '../../parsers/auction';
+import { parseAuctionStatus, parseAuctionSummary } from '../../parsers/auction';
+import { parseAuctionTeamsNew } from '../../parsers/auction/fetchAuctionTeams';
 
 function LeagueAuction(props) {
 
@@ -35,13 +36,13 @@ function LeagueAuction(props) {
     conditions: [authenticated, leagueId]
   });
 
-  const [auctionSettings, auctionSettingsReturnDate, fetchAuctionSettings] = useData({
-    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
-    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SETTINGS}/${leagueId}?settingClass=Auction`,
-    method: 'GET',
-    processData: parseAuctionSettings,
-    conditions: [authenticated, leagueId]
-  });
+  // const [auctionSettings, auctionSettingsReturnDate, fetchAuctionSettings] = useData({
+  //   baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
+  //   endpoint: `${LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SETTINGS}/${leagueId}?settingClass=Auction`,
+  //   method: 'GET',
+  //   processData: parseAuctionSettings,
+  //   conditions: [authenticated, leagueId]
+  // });
 
   const [auctionSummary, auctionSummaryReturnDate, fetchAuctionSummary] = useData({
     baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
@@ -49,14 +50,6 @@ function LeagueAuction(props) {
     method: 'GET',
     processData: parseAuctionSummary,
     conditions: [authenticated, leagueId]
-  });
-
-  const [teams, teamsReturnDate, fetchTeams] = useData({
-    baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
-    endpoint: `${AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_TEAMS}/${leagueId}`,
-    method: 'GET',
-    processData: parseAuctionTeams,
-    conditions: [authenticated, leagueId, connected]
   });
 
   useEffect(() => {
@@ -79,18 +72,20 @@ function LeagueAuction(props) {
     } else if (auctionDataReturnDate) {
       console.log(auctionData);
       syncAuctionStatus(auctionData.status);
+      syncAuctionTeams(auctionData.slots);
+      syncAuctionSettings(auctionData.settings);
     }
   }, [auctionData, auctionDataReturnDate]);
 
-  useEffect(() => {
-    if (auctionSettingsReturnDate && auctionSettings) {
-      const keys = Object.keys(auctionSettings);
+  // useEffect(() => {
+  //   if (auctionSettingsReturnDate && auctionSettings) {
+  //     const keys = Object.keys(auctionSettings);
       
-      for (let key of keys) {
-        auctionDispatch({ type: 'update', key: key, value: auctionSettings[key] });
-      }
-    }
-  }, [auctionSettingsReturnDate]);
+  //     for (let key of keys) {
+  //       auctionDispatch({ type: 'update', key: key, value: auctionSettings[key] });
+  //     }
+  //   }
+  // }, [auctionSettingsReturnDate]);
 
   useEffect(() => {
     if (auctionSummaryReturnDate && auctionSummary) {
@@ -100,18 +95,9 @@ function LeagueAuction(props) {
     }
   }, [auctionSummaryReturnDate]);
 
-  useEffect(() => {
-    if (teamsReturnDate) {
-      console.log(teams);
-      auctionDispatch({ type: 'update', key: 'teams', value: teams });
-      auctionDispatch({ type: 'update', key: 'teamsDownloadedDate', value: new Date().valueOf() });
-    }
-  }, [teamsReturnDate]);
-
   const fetchAllAuctionData = () => {
-    fetchAuctionSettings();
+    // fetchAuctionSettings();
     fetchAuctionSummary();
-    fetchTeams();
   }
 
   const syncAuctionStatus = (status) => {
@@ -123,6 +109,20 @@ function LeagueAuction(props) {
     }
 
     auctionDispatch({ type: 'update', key: 'auctionStatusDownloadedDate', value: new Date().valueOf() });
+  }
+
+  const syncAuctionTeams = (teams) => {
+    const parsedTeams = parseAuctionTeamsNew(teams);
+
+    auctionDispatch({ type: 'update', key: 'teams', value: parsedTeams });
+    auctionDispatch({ type: 'update', key: 'teamsDownloadedDate', value: new Date().valueOf() });
+  }
+
+  const syncAuctionSettings = (settings) => {
+    if (!Array.isArray(settings) || settings.length == 0) return;
+
+    auctionDispatch({ type: 'update', key: 'auctionSettings', value: settings });
+    auctionDispatch({ type: 'update', key: 'auctionSettingsDownloadedDate', value: new Date().valueOf() });
   }
 
   const handleAuctionError = (errorMessage) => {
