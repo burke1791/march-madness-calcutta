@@ -38,11 +38,11 @@ function MyTeams() {
     }
   }, [teamsDownloadedDate, taxBuyIn]);
 
-  useEffect(() => {
-    if (confirmedSoldTimestamp && confirmedSoldTimestamp > teamsDownloadedDate) {
-      setLoading(true);
-    }
-  }, [confirmedSoldTimestamp, teamsDownloadedDate]);
+  // useEffect(() => {
+  //   if (confirmedSoldTimestamp && confirmedSoldTimestamp > teamsDownloadedDate) {
+  //     setLoading(true);
+  //   }
+  // }, [confirmedSoldTimestamp, teamsDownloadedDate]);
 
   return (
     <Row style={{ height: 'calc(50vh - 70px)' }}>

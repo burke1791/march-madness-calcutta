@@ -7,6 +7,7 @@ import { parseAuctionSummary, parseAuctionTeams } from '../parsers/auction';
 import { AUCTION_NOTIF, AUCTION_STATUS, AUCTION_WEBSOCKET_MSG_TYPE, NOTIF } from '../utilities/constants';
 import Pubsub from '../utilities/pubsub';
 import { parseChatMessage, parseAuctionMessage } from './websocketHelper';
+import { parseAuctionTeamsNew } from '../parsers/auction/fetchAuctionTeams';
 
 
 function withAuctionWebsocket(WrappedComponent, config) {
@@ -113,11 +114,14 @@ function withAuctionWebsocket(WrappedComponent, config) {
       }
     }
 
+    /**
+     * 
+     */
     const emit = (msgType, msgObj, messageText) => {
       switch (msgType) {
         case AUCTION_WEBSOCKET_MSG_TYPE.OPEN:
-          // open auction
-          processAuctionStatus(msgObj);
+          console.log(msgObj);
+          processAuctionStatus(msgObj.status);
           break;
         case AUCTION_WEBSOCKET_MSG_TYPE.CLOSE:
           message.info(messageText);
@@ -125,15 +129,17 @@ function withAuctionWebsocket(WrappedComponent, config) {
           break;
         case AUCTION_WEBSOCKET_MSG_TYPE.BID:
           // handle bid
-          processAuctionStatus(msgObj);
+          console.log(msgObj);
+          processAuctionStatus(msgObj.status);
           break;
         case AUCTION_WEBSOCKET_MSG_TYPE.SALE:
-          // handles all sale types: sold, not purchased, unsold (?)
-          processAuctionStatus(msgObj);
+        case AUCTION_WEBSOCKET_MSG_TYPE.RESET:
+          console.log(msgObj);
+          auctionDataSync(msgObj);
           break;
         case AUCTION_WEBSOCKET_MSG_TYPE.SYNC:
           // this msgType indicates a full data update was sent with the websocket payload
-          fullAuctionDataSync(msgObj);
+          auctionDataSync(msgObj);
           break;
         case AUCTION_WEBSOCKET_MSG_TYPE.INFO:
           // misc info that doesn't affect core auction functionality
@@ -171,33 +177,64 @@ function withAuctionWebsocket(WrappedComponent, config) {
       updateAuctionStatusInContext(statusObj);
     }
 
+    const syncAuctionTeams = (teams) => {
+      const parsedTeams = parseAuctionTeamsNew(teams);
+
+      auctionDispatch({ type: 'update', key: 'teams', value: parsedTeams });
+      auctionDispatch({ type: 'update', key: 'teamsDownloadedDate', value: new Date().valueOf() });
+    }
+
+    const syncAuctionSettings = (settings) => {
+      if (!Array.isArray(settings) || settings.length == 0) return;
+
+      auctionDispatch({ type: 'update', key: 'auctionSettings', value: settings });
+      auctionDispatch({ type: 'update', key: 'auctionSettingsDownloadedDate', value: new Date().valueOf() });
+    }
+
+    const syncAuctionSummary = (users, userId) => {
+      if (!Array.isArray(users) || users.length == 0) return;
+
+      const thisUser = users.find(u => u.userId == userId);
+      if (thisUser != undefined) {
+        auctionDispatch({ type: 'update', key: 'naturalBuyIn', value: thisUser.naturalBuyIn });
+        auctionDispatch({ type: 'update', key: 'taxBuyIn', value: thisUser.taxBuyIn });
+      }
+
+      let prizepool = 0;
+
+      users.forEach(u => {
+        prizepool += u.naturalBuyIn;
+        prizepool += u.taxBuyIn;
+      });
+
+      auctionDispatch({ type: 'update', key: 'prizepool', value: prizepool });
+    }
+
+    const syncAuctionUsers = (users) => {
+      if (!Array.isArray(users) || users.length == 0) return;
+
+      auctionDispatch({ type: 'update', key: 'memberBuyIns', value: users });
+      auctionDispatch({ type: 'update', key: 'auctionBuyInsDownloadedDate', value: new Date().valueOf() });
+    }
+
+    const auctionDataSync = (payload) => {
+      syncAuctionSummary(payload.users, userId);
+      processAuctionStatus(payload.status);
+      syncAuctionTeams(payload.slots);
+      syncAuctionSettings(payload.settings);
+      syncAuctionUsers(payload.users);
+
+      if (payload.message) {
+        message.info(payload.message);
+      }
+    }
+
     const processAuctionError = (error) => {
       const obj = {
         errorMessage: error
       };
 
       updateAuctionStatusInContext(obj);
-    }
-
-    const fullAuctionDataSync = (data) => {
-      const parsedSummary = parseAuctionSummary(data?.summary);
-      console.log(parsedSummary);
-
-      if (parsedSummary.prizepool !== undefined) {
-        auctionDispatch({ type: 'update', key: 'prizepool', value: parsedSummary.prizepool });
-      }
-
-      const parsedTeams = parseAuctionTeams(data?.teams);
-      console.log(parsedTeams);
-
-      auctionDispatch({ type: 'update', key: 'teams', value: parsedTeams });
-      auctionDispatch({ type: 'update', key: 'teamsDownloadedDate', value: new Date().valueOf() });
-
-      const parsedMemberBuyIns = data?.memberBuyIns // no parser at the moment
-      console.log(parsedMemberBuyIns);
-
-      auctionDispatch({ type: 'update', key: 'memberBuyIns', value: parsedMemberBuyIns });
-      auctionDispatch({ type: 'update', key: 'auctionBuyInsDownloadedDate', value: new Date().valueOf() });
     }
 
     const updateAuctionStatusInContext = (statusObj) => {

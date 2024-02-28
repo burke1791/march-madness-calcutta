@@ -133,6 +133,7 @@ export const AUCTION_WEBSOCKET_MSG_TYPE = {
   BID: 'auction_bid',
   SALE: 'auction_sale',
   SYNC: 'auction_sync',
+  RESET: 'auction_reset',
   INFO: 'auction_info',
   CONNECTION: 'connection',
   ERROR: 'auction_error',

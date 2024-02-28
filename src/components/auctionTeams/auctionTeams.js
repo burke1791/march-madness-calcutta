@@ -45,11 +45,11 @@ function AuctionTeamsList() {
     if (teamsDownloadedDate) setLoading(false);
   }, [teamsDownloadedDate]);
 
-  useEffect(() => {
-    if (confirmedSoldTimestamp && confirmedSoldTimestamp > teamsDownloadedDate) {
-      setLoading(true);
-    }
-  }, [confirmedSoldTimestamp, teamsDownloadedDate]);
+  // useEffect(() => {
+  //   if (confirmedSoldTimestamp && confirmedSoldTimestamp > teamsDownloadedDate) {
+  //     setLoading(true);
+  //   }
+  // }, [confirmedSoldTimestamp, teamsDownloadedDate]);
 
   const getStatusText = (displayClass, price) => {
     if (displayClass === 'no-sell') {

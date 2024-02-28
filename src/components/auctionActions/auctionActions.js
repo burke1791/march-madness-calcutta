@@ -32,7 +32,7 @@ function AuctionActions(props) {
   
   const { roleId, leagueId } = useLeagueState();
   const { userId, authenticated } = useAuthState();
-  const { auctionInterval, status, displayName, currentItemId, itemTypeId, price, winnerId, winnerAlias, lastBid, prevUpdate, teamLogoUrl, connected, auctionClosed, naturalBuyIn, taxBuyIn } = useAuctionState();
+  const { auctionSettings, status, displayName, currentItemId, itemTypeId, price, winnerId, winnerAlias, lastBid, prevUpdate, teamLogoUrl, connected, auctionClosed, naturalBuyIn, taxBuyIn } = useAuctionState();
 
   const [serverOffset, offsetReturnDate, fetchServerOffset] = useData({
     baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
@@ -132,7 +132,8 @@ function AuctionActions(props) {
   }
 
   const getInterval = () => {
-    const interval = auctionInterval || 15;
+    const interval = Number(auctionSettings.find(s => s.code == 'AUCTION_INTERVAL')?.settingValue);
+    // const interval = auctionInterval || 15;
 
     return interval * 1000;
   }

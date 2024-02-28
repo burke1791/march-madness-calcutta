@@ -7,7 +7,7 @@ import { Row, Col, message } from 'antd';
 
 import MyTeams from '../myTeams/myTeams';
 import MemberList from '../memberList/memberList';
-import { AUCTION_SERVICE_ENDPOINTS, SOCKETS, API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { AUCTION_SERVICE_ENDPOINTS, SOCKETS, API_CONFIG } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
 import withAuctionWebsocket from '../../HOC/withWebsocket';
@@ -15,8 +15,7 @@ import { useAuctionDispatch, useAuctionState } from '../../context/auctionContex
 import AuctionModal from './auctionModal';
 import AuctionLoadingModal from './auctionLoadingModal';
 import useData from '../../hooks/useData';
-import { parseAuctionSettings } from './helper';
-import { parseAuctionStatus, parseAuctionSummary } from '../../parsers/auction';
+import { parseAuctionStatus } from '../../parsers/auction';
 import { parseAuctionTeamsNew } from '../../parsers/auction/fetchAuctionTeams';
 
 function LeagueAuction(props) {
@@ -24,7 +23,7 @@ function LeagueAuction(props) {
   const [sidebarInUse, setSidebarInUse] = useState(true);
 
   const { leagueId } = useLeagueState();
-  const { authenticated } = useAuthState();
+  const { authenticated, userId } = useAuthState();
   const { errorMessage, connected } = useAuctionState();
 
   const auctionDispatch = useAuctionDispatch();
@@ -36,22 +35,6 @@ function LeagueAuction(props) {
     conditions: [authenticated, leagueId]
   });
 
-  // const [auctionSettings, auctionSettingsReturnDate, fetchAuctionSettings] = useData({
-  //   baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
-  //   endpoint: `${LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SETTINGS}/${leagueId}?settingClass=Auction`,
-  //   method: 'GET',
-  //   processData: parseAuctionSettings,
-  //   conditions: [authenticated, leagueId]
-  // });
-
-  const [auctionSummary, auctionSummaryReturnDate, fetchAuctionSummary] = useData({
-    baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
-    endpoint: `${AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_SUMMARY}/${leagueId}`,
-    method: 'GET',
-    processData: parseAuctionSummary,
-    conditions: [authenticated, leagueId]
-  });
-
   useEffect(() => {
     if (errorMessage !== null && errorMessage !== undefined) {
       handleAuctionError(errorMessage);
@@ -60,7 +43,7 @@ function LeagueAuction(props) {
 
   useEffect(() => {
     if (leagueId && authenticated && connected) {
-      fetchAllAuctionData();
+      // fetchAllAuctionData();
       fetchAuctionData();
     }
   }, [leagueId, authenticated, connected]);
@@ -74,31 +57,15 @@ function LeagueAuction(props) {
       syncAuctionStatus(auctionData.status);
       syncAuctionTeams(auctionData.slots);
       syncAuctionSettings(auctionData.settings);
+      syncAuctionUsers(auctionData.users);
     }
   }, [auctionData, auctionDataReturnDate]);
 
-  // useEffect(() => {
-  //   if (auctionSettingsReturnDate && auctionSettings) {
-  //     const keys = Object.keys(auctionSettings);
-      
-  //     for (let key of keys) {
-  //       auctionDispatch({ type: 'update', key: key, value: auctionSettings[key] });
-  //     }
-  //   }
-  // }, [auctionSettingsReturnDate]);
-
   useEffect(() => {
-    if (auctionSummaryReturnDate && auctionSummary) {
-      if (auctionSummary.prizepool !== undefined) {
-        auctionDispatch({ type: 'update', key: 'prizepool', value: auctionSummary.prizepool });
-      }
+    if (auctionDataReturnDate && !!userId) {
+      syncAuctionSummary(auctionData.users, userId);
     }
-  }, [auctionSummaryReturnDate]);
-
-  const fetchAllAuctionData = () => {
-    // fetchAuctionSettings();
-    fetchAuctionSummary();
-  }
+  }, [auctionData, auctionDataReturnDate, userId]);
 
   const syncAuctionStatus = (status) => {
     const parsedStatus = parseAuctionStatus([status]);
@@ -123,6 +90,32 @@ function LeagueAuction(props) {
 
     auctionDispatch({ type: 'update', key: 'auctionSettings', value: settings });
     auctionDispatch({ type: 'update', key: 'auctionSettingsDownloadedDate', value: new Date().valueOf() });
+  }
+
+  const syncAuctionSummary = (users, userId) => {
+    if (!Array.isArray(users) || users.length == 0) return;
+
+    const thisUser = users.find(u => u.userId == userId);
+    if (thisUser != undefined) {
+      auctionDispatch({ type: 'update', key: 'naturalBuyIn', value: thisUser.naturalBuyIn });
+      auctionDispatch({ type: 'update', key: 'taxBuyIn', value: thisUser.taxBuyIn });
+    }
+
+    let prizepool = 0;
+
+    users.forEach(u => {
+      prizepool += u.naturalBuyIn;
+      prizepool += u.taxBuyIn;
+    });
+
+    auctionDispatch({ type: 'update', key: 'prizepool', value: prizepool });
+  }
+
+  const syncAuctionUsers = (users) => {
+    if (!Array.isArray(users) || users.length == 0) return;
+
+    auctionDispatch({ type: 'update', key: 'memberBuyIns', value: users });
+    auctionDispatch({ type: 'update', key: 'auctionBuyInsDownloadedDate', value: new Date().valueOf() });
   }
 
   const handleAuctionError = (errorMessage) => {
