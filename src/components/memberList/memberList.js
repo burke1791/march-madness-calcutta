@@ -33,14 +33,6 @@ function MemberList(props) {
     }
   }, [authenticated, leagueId]);
 
-  // useEffect(() => {
-  //   if (confirmedSoldTimestamp && confirmedSoldTimestamp > auctionBuyInsDownloadedDate) {
-  //     setLoading(true);
-  //   } else if (auctionBuyInsDownloadedDate && auctionBuyInsDownloadedDate > confirmedSoldTimestamp) {
-  //     setLoading(false);
-  //   }
-  // }, [confirmedSoldTimestamp, auctionBuyInsDownloadedDate]);
-
   useEffect(() => {
     if (connectedUsersUpdated || auctionBuyInsDownloadedDate) {
       updateUsersList();
