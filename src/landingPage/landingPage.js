@@ -14,13 +14,13 @@ function LandingPage() {
 
   const navigate = useNavigate();
 
-  const { userId } = useAuthState();
+  const { authenticated } = useAuthState();
 
   useEffect(() => {
-    if (userId) {
+    if (authenticated) {
       navigate('/home');
     }
-  }, [userId]);
+  }, [authenticated]);
 
   const signup = () => {
     Pubsub.publish(NOTIF.AUTH_MODAL_SHOW, AUTH_FORM_TYPE.SIGN_UP);

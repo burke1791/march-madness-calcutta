@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Table, Typography } from 'antd';
 import { useLeagueState } from '../../context/leagueContext';
-import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { API_CONFIG, DATA_SYNC_SERVICE_ENDPOINTS, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import AuctionRules from '../auctionRules/auctionRules';
 import AuctionBidRuleInputNumberCell from './auctionBidRuleInputNumberCell';
 import AuctionBidRuleDeleteCell from './auctionBidRuleDeleteCell';
@@ -119,8 +119,10 @@ function BiddingRules() {
 
   return (
     <AuctionRules
+      getBaseUrl={API_CONFIG.LEAGUE_SERVICE_BASE_URL}
       getEndpoint={`${LEAGUE_SERVICE_ENDPOINTS.GET_AUCTION_BID_RULES}/${leagueId}`}
-      postEndpoint={`${LEAGUE_SERVICE_ENDPOINTS.SET_AUCTION_BID_RULES}/${leagueId}`}
+      postBaseUrl={API_CONFIG.DATA_SYNC_SERVICE_BASE_URL}
+      postEndpoint={`${DATA_SYNC_SERVICE_ENDPOINTS.SET_AUCTION_BID_RULES}/${leagueId}`}
       ruleKey='AuctionBidRuleId'
       isRuleChanged={!!ruleChangedEvent}
       getNewRules={packageChangedRules}

@@ -3,7 +3,7 @@ import { Button, Form, Select, Input } from 'antd';
 import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
 import useData from '../../hooks/useData';
-import { API_CONFIG, AUCTION_SERVICE_ENDPOINTS, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { API_CONFIG, AUCTION_SERVICE_ENDPOINTS, DATA_SYNC_SERVICE_ENDPOINTS, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { auctionServiceHelper } from '../../services/autction/helper';
 
 const layout = {
@@ -63,15 +63,15 @@ function SeedGroupForm(props) {
   // });
 
   const [updateGroupResponse, updateGroupReturnDate, updateSeedGroup] = useData({
-    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
-    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.UPDATE_SEED_GROUP}/${leagueId}`,
+    baseUrl: API_CONFIG.DATA_SYNC_SERVICE_BASE_URL,
+    endpoint: `${DATA_SYNC_SERVICE_ENDPOINTS.UPDATE_SEED_GROUP}/${leagueId}`,
     method: 'POST',
     conditions: [authenticated, leagueId]
   });
 
   const [createGroupResponse, createGroupReturnDate, createSeedGroup] = useData({
-    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
-    endpoint: LEAGUE_SERVICE_ENDPOINTS.NEW_LEAGUE_SEED_GROUP,
+    baseUrl: API_CONFIG.DATA_SYNC_SERVICE_BASE_URL,
+    endpoint: DATA_SYNC_SERVICE_ENDPOINTS.NEW_LEAGUE_SEED_GROUP,
     method: 'POST',
     conditions: [authenticated, leagueId]
   });
@@ -118,6 +118,8 @@ function SeedGroupForm(props) {
   }, [createGroupReturnDate]);
 
   const packageTeamsForApiCall = (teams) => {
+    console.log(teams);
+    console.log(props.tournamentTeams);
     const groupTeams = teams.map(team => {
       const teamObj = props.tournamentTeams.find(t => t.DisplayName == team);
 
@@ -165,7 +167,7 @@ function SeedGroupForm(props) {
 
   const initialValues = {
     groupName: props.groupName,
-    groupTeams: props.groupTeams.map(t => t.teamName)
+    groupTeams: props.groupTeams.map(t => t.displayName)
   };
 
   return (
@@ -232,7 +234,7 @@ function SeedGroupTeams(props) {
     return false;
   });
   
-  const options = filteredTeams?.length && filteredTeams.map(team => { 
+  const options = filteredTeams?.length && filteredTeams.map(team => {
     return { value: team.DisplayName }
   });
 

@@ -1,0 +1,41 @@
+
+.green {
+  background: #409b12;
+}
+
+.center {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 100vh;
+}
+
+.pulse-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pulse-inline {
+  margin: 0px 12px;
+}
+
+.circle-menu {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow: 0px 0px 1px 1px #0000001a;
+}
+
+.pulse-menu {
+  animation: pulse-animation-menu 2s infinite;
+}
+
+@keyframes pulse-animation-menu {
+  0% {
+    box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 15px rgba(0, 0, 0, 0);
+  }
+}

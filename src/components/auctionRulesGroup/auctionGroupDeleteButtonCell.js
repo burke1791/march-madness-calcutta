@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'antd';
 import useData from '../../hooks/useData';
-import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { API_CONFIG, DATA_SYNC_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useAuthState } from '../../context/authContext';
 import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
 
@@ -25,8 +25,8 @@ function AuctionGroupDeleteButtonCell(props) {
   const leagueDispatch = useLeagueDispatch();
 
   const [deleteGroupResponse, deleteGroupReturnDate, deleteGroup] = useData({
-    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
-    endpoint: LEAGUE_SERVICE_ENDPOINTS.DELETE_LEAGUE_SEED_GROUP,
+    baseUrl: API_CONFIG.DATA_SYNC_SERVICE_BASE_URL,
+    endpoint: DATA_SYNC_SERVICE_ENDPOINTS.DELETE_LEAGUE_SEED_GROUP,
     method: 'POST',
     conditions: [authenticated]
   });

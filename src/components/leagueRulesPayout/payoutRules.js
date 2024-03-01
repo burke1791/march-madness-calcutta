@@ -2,7 +2,7 @@ import React, { Fragment, useRef, useState } from 'react';
 import { Table, Tooltip } from 'antd';
 import { QuestionCircleTwoTone } from '@ant-design/icons';
 import { useLeagueState } from '../../context/leagueContext';
-import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import AuctionRules from '../auctionRules/auctionRules';
 import { LeaguePayoutRuleInputNumberCell } from './leaguePayoutRuleInputNumberCell';
 
@@ -51,7 +51,9 @@ function PayoutRules() {
 
   return (
     <AuctionRules
+      getBaseUrl={API_CONFIG.LEAGUE_SERVICE_BASE_URL}
       getEndpoint={`${LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_PAYOUT_SETTINGS}/${leagueId}`}
+      postBaseUrl={API_CONFIG.LEAGUE_SERVICE_BASE_URL}
       postEndpoint={`${LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_PAYOUT_SETTINGS}`}
       ruleKey='TournamentPayoutId'
       isRuleChanged={!!ruleChangedEvent}

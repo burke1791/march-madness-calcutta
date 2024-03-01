@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo } from 'react';
+import React, { useEffect, useState, memo, useRef } from 'react';
 import { Row, Col, Button, Table, Typography, Divider, Layout } from 'antd';
 
 import './main.css';
@@ -16,6 +16,8 @@ import { parseLeagueSummaries } from '../../parsers/league';
 const { Title } = Typography;
 
 function Main() {
+
+  const isAuthenticated = useRef(false);
 
   const [loading, setLoading] = useState(true);
   const [activeLeagueSummaries, setActiveLeagueSummaries] = useState([
@@ -36,8 +38,7 @@ function Main() {
     baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
     endpoint: LEAGUE_SERVICE_ENDPOINTS.LEAGUE_SUMMARIES,
     method: 'GET',
-    processData: parseLeagueSummaries,
-    conditions: [authenticated]
+    processData: parseLeagueSummaries
   });
 
   useEffect(() => {
@@ -64,7 +65,10 @@ function Main() {
   }, []);
 
   useEffect(() => {
+    console.log(authenticated);
+    isAuthenticated.current = authenticated;
     if (authenticated) {
+      console.log('fetch summaries auth:', authenticated);
       fetchLeagueSummaries();
     } else if (authenticated === false) {
       handleSignout();
@@ -73,6 +77,8 @@ function Main() {
   }, [authenticated]);
 
   const handleLeagueJoin = () => {
+    console.log('handle league join - fetchSummaries');
+    console.log(isAuthenticated.current);
     fetchLeagueSummaries();
   }
 
@@ -87,7 +93,7 @@ function Main() {
 
   const newLeague = () => {
     console.log('new league clicked');
-    if (authenticated) {
+    if (isAuthenticated.current) {
       Pubsub.publish(NOTIF.LEAGUE_MODAL_SHOW, LEAGUE_FORM_TYPE.CREATE);
     } else {
       alert('Please sign in to create a league');
@@ -96,7 +102,7 @@ function Main() {
 
   const joinLeague = () => {
     console.log('join league clicked');
-    if (authenticated) {
+    if (isAuthenticated.current) {
       Pubsub.publish(NOTIF.LEAGUE_MODAL_SHOW, LEAGUE_FORM_TYPE.JOIN);
     } else {
       alert('Please sign in to join a league');

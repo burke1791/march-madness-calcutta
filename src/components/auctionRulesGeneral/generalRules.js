@@ -1,6 +1,6 @@
 import React, { Fragment, useRef, useState } from 'react';
 import { Table, Tooltip, Typography } from 'antd';
-import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { API_CONFIG, DATA_SYNC_SERVICE_ENDPOINTS, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useLeagueState } from '../../context/leagueContext';
 import { QuestionCircleTwoTone } from '@ant-design/icons';
 import AuctionRuleInputNumberCell from './auctionRuleInputNumberCell';
@@ -94,8 +94,10 @@ function GeneralRules() {
 
   return (
     <AuctionRules
+      getBaseUrl={API_CONFIG.LEAGUE_SERVICE_BASE_URL}
       getEndpoint={`${LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SETTINGS}/${leagueId}?settingClass=Auction`}
-      postEndpoint={LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_SETTINGS}
+      postBaseUrl={API_CONFIG.DATA_SYNC_SERVICE_BASE_URL}
+      postEndpoint={DATA_SYNC_SERVICE_ENDPOINTS.UPDATE_LEAGUE_SETTINGS}
       getPostProcess={rulesParser}
       ruleKey='SettingParameterId'
       isRuleChanged={!!ruleChangedEvent}
