@@ -124,7 +124,10 @@ function withAuctionWebsocket(WrappedComponent, config) {
           processAuctionStatus(msgObj.status);
           break;
         case AUCTION_WEBSOCKET_MSG_TYPE.CLOSE:
-          message.info(messageText);
+          if (msgObj.message) {
+            message.info(msgObj.message);
+          }
+          processAuctionStatus(msgObj.status);
           auctionDispatch({ type: 'update', key: 'auctionClosed', value: true });
           break;
         case AUCTION_WEBSOCKET_MSG_TYPE.BID:
