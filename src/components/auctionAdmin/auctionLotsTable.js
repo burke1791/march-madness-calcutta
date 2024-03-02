@@ -53,6 +53,7 @@ function AuctionLotsTable(props) {
     };
 
     props.sendSocketMessage('NEXT_ITEM', payload);
+    props.dismissableClick('NEXT_ITEM');
   }
 
   const resetItem = (itemId, itemTypeId) => {

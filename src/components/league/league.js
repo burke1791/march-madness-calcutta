@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import LeagueNav from '../leagueNav/leagueNav';
 import LeagueHome from '../leagueHome/leagueHome';
@@ -7,7 +7,7 @@ import MemberPage from '../memberPage/memberPage';
 
 import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
 
-import { Layout } from 'antd';
+import { Button, Checkbox, Layout, Modal } from 'antd';
 
 import LeagueSettings from '../../pages/leagueSettings/leagueSettings';
 import { useSettingsDispatch } from '../../context/leagueSettingsContext';
@@ -21,17 +21,24 @@ import { WorldCupGroupStage } from '../../pages/tournaments';
 import WorldCupKnockout from '../../pages/tournaments/worldCupKnockout/worldCupKnockout';
 import MarchMadnessBracket from '../../pages/tournaments/marchMadnessBracket/marchMadnessBracket';
 import LeagueTeams from '../leagueTeams/leagueTeams';
+import { parseLeaguePathName } from '../../utilities/helper';
 
 const { Content } = Layout;
 
+const FEEDBACK_ACKNOWLEDGED_LOCALSTORAGE_KEY = 'feedback_acknowledged';
+
 function League(props) {
+
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [feedbackAcknowledged, setFeedbackAcknowledged] = useState(null);
+  const [isAuctionPage, setIsAuctionPage] = useState(true); // defaulting to true so that a race condition doesn't flash the modal for a split second
 
   const dispatch = useLeagueDispatch();
   const settingsDispatch = useSettingsDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { leagueId, leagueMetadataRefresh } = useLeagueState();
+  const { leagueId, leagueMetadataRefresh, leagueStatusId } = useLeagueState();
   const { authenticated } = useAuthState();
 
   const [supplementalPages, supplementalPagesReturnDate, fetchSupplementalPages] = useData({
@@ -59,6 +66,32 @@ function League(props) {
   }, []);
 
   useEffect(() => {
+    const { menuItem } = parseLeaguePathName(location.pathname);
+
+    if (menuItem == 'auction') {
+      // we don't want to show the feedback modal if the user is on the auction page
+      setIsAuctionPage(true);
+    } else {
+      setIsAuctionPage(false);
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (leagueId) {
+      const isAcknowledged = JSON.parse(localStorage.getItem(`${FEEDBACK_ACKNOWLEDGED_LOCALSTORAGE_KEY}_${leagueId}`));
+      console.log(isAcknowledged);
+
+      setFeedbackAcknowledged(!!isAcknowledged);
+    }
+  }, [leagueId]);
+
+  useEffect(() => {
+    if (leagueId && feedbackAcknowledged !== null) {
+      localStorage.setItem(`${FEEDBACK_ACKNOWLEDGED_LOCALSTORAGE_KEY}_${leagueId}`, JSON.stringify(!!feedbackAcknowledged));
+    }
+  }, [leagueId, feedbackAcknowledged]);
+
+  useEffect(() => {
     if (authenticated === false) {
       navigate('/');
     }
@@ -72,7 +105,7 @@ function League(props) {
   }, [leagueId, authenticated, leagueMetadataRefresh]);
 
   useEffect(() => {
-    if (leagueMetadataReturnDate) {
+    if (leagueMetadataReturnDate && leagueMetadata) {
       console.log(leagueMetadata);
       updateMetadataInContext(leagueMetadata);
     }
@@ -89,6 +122,12 @@ function League(props) {
       syncSupplementalPagesInContext();
     }
   }, [supplementalPagesReturnDate]);
+
+  useEffect(() => {
+    if (leagueStatusId == 2 && feedbackAcknowledged === false && !isAuctionPage) {
+      setFeedbackModalOpen(true);
+    }
+  }, [leagueStatusId, feedbackAcknowledged, isAuctionPage])
 
   const syncSupplementalPagesInContext = () => {
     if (supplementalPages && supplementalPages.length > 0) {
@@ -144,6 +183,14 @@ function League(props) {
     }
   }
 
+  const dismissModal = () => {
+    setFeedbackModalOpen(false);
+  }
+
+  const onFeedbackAcknowledgedChange = (event) => {
+    setFeedbackAcknowledged(event.target.checked);
+  }
+
   return (
     <Layout style={{ minHeight: 'calc(100vh - 64px)', height: '100%' }}>
       <LeagueNav />
@@ -166,6 +213,19 @@ function League(props) {
           </Routes>
         </Content>
       </Layout>
+      <Modal
+        okText='Dismiss'
+        title='Auction in progress'
+        open={feedbackModalOpen}
+        onCancel={dismissModal}
+        onOk={dismissModal}
+        footer={[
+          <Checkbox key='acknowledge_checkbox' onChange={onFeedbackAcknowledgedChange}>Don't show again</Checkbox>,
+          <Button key='dismiss_button' type='primary' onClick={dismissModal}>Dismiss</Button>
+        ]}
+      >
+        This league currently has an auction in progress. Auction results will not appear here until a league admin closes the auction.
+      </Modal>
     </Layout>
   );
 }

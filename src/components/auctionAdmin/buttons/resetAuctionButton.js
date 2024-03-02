@@ -15,13 +15,17 @@ function ResetAuctionButton(props) {
 
   const [loading, setLoading] = useState(false);
 
-  const { resetAuctionTriggered } = useAuctionState();
+  const { resetAuctionTriggered, status } = useAuctionState();
 
   useEffect(() => {
     if (resetAuctionTriggered) {
       setLoading(false);
     }
   }, [resetAuctionTriggered]);
+
+  useEffect(() => {
+    if (status) setLoading(false);
+  }, [status]);
 
   const onClick = () => {
     setLoading(true);

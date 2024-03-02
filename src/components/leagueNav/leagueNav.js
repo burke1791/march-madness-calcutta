@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Layout, Button, message, Popconfirm } from 'antd';
+import { Menu, Layout, Button, message, Popconfirm, Tooltip } from 'antd';
 
 import './leagueNav.css';
 
@@ -165,10 +165,12 @@ function LeaveButton (props) {
 function AuctionRoomMenuItem(props) {
   if (props.isActive) {
     return (
-      <div className='pulse-container'>
-        <span>Auction Room</span>
-        <PulseCircle />
-      </div>
+      <Tooltip placement='right' title='Auction results will not appear on league pages until the auction is closed'>
+        <div className='pulse-container'>
+          <span>Auction Room</span>
+          <PulseCircle />
+        </div>
+      </Tooltip>
     );
   }
 
