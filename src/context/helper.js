@@ -6,9 +6,16 @@
  * @returns {{ success: Boolean, error: Error }}
  */
 const genericContextUpdate = (data, dispatch) => {
-  let keys = Object.keys(data);
+  if (data === undefined || data === null) {
+    return {
+      success: false,
+      error: 'data param is empty'
+    };
+  }
 
-  for (var key of keys) {
+  const keys = Object.keys(data);
+
+  for (let key of keys) {
     dispatch({ type: 'update', key: key, value: data[key] });
   }
 

@@ -7,8 +7,8 @@ import { Row, Col, message } from 'antd';
 
 import MyTeams from '../myTeams/myTeams';
 import MemberList from '../memberList/memberList';
-import { AUCTION_SERVICE_ENDPOINTS, SOCKETS, API_CONFIG } from '../../utilities/constants';
-import { useLeagueState } from '../../context/leagueContext';
+import { AUCTION_SERVICE_ENDPOINTS, SOCKETS, API_CONFIG, AUCTION_STATUS } from '../../utilities/constants';
+import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
 import withAuctionWebsocket from '../../HOC/withWebsocket';
 import { useAuctionDispatch, useAuctionState } from '../../context/auctionContext';
@@ -22,11 +22,12 @@ function LeagueAuction(props) {
 
   const [sidebarInUse, setSidebarInUse] = useState(true);
 
-  const { leagueId } = useLeagueState();
+  const { leagueId, leagueStatusId } = useLeagueState();
   const { authenticated, userId } = useAuthState();
-  const { errorMessage, connected } = useAuctionState();
+  const { errorMessage, connected, status } = useAuctionState();
 
   const auctionDispatch = useAuctionDispatch();
+  const leagueDispatch = useLeagueDispatch();
 
   const [auctionData, auctionDataReturnDate, fetchAuctionData] = useData({
     baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
@@ -49,10 +50,23 @@ function LeagueAuction(props) {
   }, [leagueId, authenticated, connected]);
 
   useEffect(() => {
+    if (leagueStatusId != undefined && status != undefined) {
+      console.log(leagueStatusId, status);
+      if (
+        ((status == AUCTION_STATUS.END || status == AUCTION_STATUS.INITIAL) && leagueStatusId == 2) ||
+        ((status == AUCTION_STATUS.BIDDING || status == AUCTION_STATUS.SOLD || status == AUCTION_STATUS.CONFIRMED_SOLD) && leagueStatusId != 2)
+      ) {
+        console.log('should be refreshing league metadata');
+        leagueDispatch({ type: 'update', key: 'leagueMetadataRefresh', value: new Date().valueOf() });
+      }
+    }
+  }, [leagueStatusId, status]);
+
+  useEffect(() => {
     if (auctionDataReturnDate && auctionData?.message == 'ERROR!') {
       console.log(auctionData);
       message.error('Unable to get auction data');
-    } else if (auctionDataReturnDate) {
+    } else if (auctionDataReturnDate && auctionData) {
       console.log(auctionData);
       syncAuctionStatus(auctionData.status);
       syncAuctionTeams(auctionData.slots);
@@ -62,7 +76,7 @@ function LeagueAuction(props) {
   }, [auctionData, auctionDataReturnDate]);
 
   useEffect(() => {
-    if (auctionDataReturnDate && !!userId) {
+    if (auctionDataReturnDate && !!userId && auctionData?.users) {
       syncAuctionSummary(auctionData.users, userId);
     }
   }, [auctionData, auctionDataReturnDate, userId]);
