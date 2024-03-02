@@ -2,10 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Popconfirm, Table, Button } from 'antd';
 import { useAuctionState } from '../../context/auctionContext';
 import { useLeagueState } from '../../context/leagueContext';
-import { API_CONFIG, AUCTION_SERVICE_ENDPOINTS, AUCTION_STATUS } from '../../utilities/constants';
+import { AUCTION_STATUS } from '../../utilities/constants';
 import { formatMoney } from '../../utilities/helper';
-import useData from '../../hooks/useData';
-import { useAuthState } from '../../context/authContext';
 
 const { Column } = Table;
 
@@ -139,7 +137,7 @@ function SetNextItemButton(props) {
   useEffect(() => {
     setLoading(false);
 
-    if (status === AUCTION_STATUS.BIDDING || status === AUCTION_STATUS.END) {
+    if (status === AUCTION_STATUS.BIDDING) {
       setDisabled(true);
     } else {
       setDisabled(false);
@@ -151,17 +149,38 @@ function SetNextItemButton(props) {
     props.onClick(props.itemId, props.itemTypeId);
   }
 
-  return (
-    <Button
-      type='primary'
-      size='small'
-      onClick={onClick}
-      loading={loading}
-      disabled={disabled}
-    >
-      Set Next Item
-    </Button>
-  );
+  if (status == AUCTION_STATUS.END) {
+    return (
+      <Popconfirm
+        title='Auction is closed'
+        description='This will action will reopen the auction'
+        cancelText='Cancel'
+        okText='OK'
+        onConfirm={onClick}
+      >
+        <Button
+          type='primary'
+          size='small'
+          loading={loading}
+          disabled={disabled}
+        >
+          Set Next Item
+        </Button>
+      </Popconfirm>
+    );
+  } else {
+    return (
+      <Button
+        type='primary'
+        size='small'
+        onClick={onClick}
+        loading={loading}
+        disabled={disabled}
+      >
+        Set Next Item
+      </Button>
+    );
+  }
 }
 
 /**
