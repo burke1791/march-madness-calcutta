@@ -91,7 +91,7 @@ function AuctionLotsTable(props) {
       <Column
         align='right'
         render={(text, record) => {
-          if (record.displayClass == 'purchased' || record.displayClass == 'unsold') {
+          if (record.displayClass == 'purchased' || record.displayClass == 'no-sell') {
             return (
               <ResetItemButton
                 itemId={record.itemId}
@@ -153,7 +153,7 @@ function SetNextItemButton(props) {
     return (
       <Popconfirm
         title='Auction is closed'
-        description='This will action will reopen the auction'
+        description='This will reopen the auction'
         cancelText='Cancel'
         okText='OK'
         onConfirm={onClick}
@@ -198,7 +198,7 @@ function ResetItemButton(props) {
 
   const [loading, setLoading] = useState(false);
 
-  const { resetItemTriggered } = useAuctionState();
+  const { resetItemTriggered, status } = useAuctionState();
 
   useEffect(() => {
     if (resetItemTriggered) {
@@ -214,9 +214,9 @@ function ResetItemButton(props) {
   
   return (
     <Popconfirm
-      okText='Yes'
+      okText={status == AUCTION_STATUS.END ? 'Ok' : 'Yes'}
       cancelText='Cancel'
-      title='Are you sure? This cannot be undone!'
+      title={status == AUCTION_STATUS.END ? 'This will reopen the auction' : 'Are you sure? This cannot be undone!'}
       onConfirm={onClick}
     >
       <Button

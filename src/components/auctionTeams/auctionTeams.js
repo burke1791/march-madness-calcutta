@@ -18,12 +18,12 @@ import { useAuctionState } from '../../context/auctionContext';
  */
 function AuctionTeams() {
 
-  const { prizepool } = useAuctionState();
+  const { prizepool, numLotsRemaining } = useAuctionState();
 
   return (
     <div style={{ padding: '0 6px' }}>
       <Row type='flex' justify='space-between' style={{ padding: '6px 10px' }}>
-        <h3>Auction Items</h3>
+        <h3>Auction Items{numLotsRemaining != undefined ? ` (${numLotsRemaining} remaining)` : null}</h3>
         <h3>
           Prizepool: {formatMoney(prizepool || 0)}
         </h3>
@@ -44,12 +44,6 @@ function AuctionTeamsList() {
   useEffect(() => {
     if (teamsDownloadedDate) setLoading(false);
   }, [teamsDownloadedDate]);
-
-  // useEffect(() => {
-  //   if (confirmedSoldTimestamp && confirmedSoldTimestamp > teamsDownloadedDate) {
-  //     setLoading(true);
-  //   }
-  // }, [confirmedSoldTimestamp, teamsDownloadedDate]);
 
   const getStatusText = (displayClass, price) => {
     if (displayClass === 'no-sell') {
