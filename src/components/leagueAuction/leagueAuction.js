@@ -17,6 +17,7 @@ import AuctionLoadingModal from './auctionLoadingModal';
 import useData from '../../hooks/useData';
 import { parseAuctionStatus } from '../../parsers/auction';
 import { parseAuctionTeamsNew } from '../../parsers/auction/fetchAuctionTeams';
+import AuctionCloseModal from './auctionCloseModal';
 
 function LeagueAuction(props) {
 
@@ -97,6 +98,14 @@ function LeagueAuction(props) {
 
     auctionDispatch({ type: 'update', key: 'teams', value: parsedTeams });
     auctionDispatch({ type: 'update', key: 'teamsDownloadedDate', value: new Date().valueOf() });
+
+    let available = 0;
+
+    teams.forEach(t => {
+      if (t.price == null) available++;
+    });
+
+    auctionDispatch({ type: 'update', key: 'numLotsRemaining', value: available });
   }
 
   const syncAuctionSettings = (settings) => {
@@ -152,6 +161,7 @@ function LeagueAuction(props) {
       </Col>
       <AuctionModal title='Connection to Auction Service Closed' />
       <AuctionLoadingModal errorTimer={15} />
+      <AuctionCloseModal sendSocketMessage={props.sendSocketMessage} />
     </Row>
   );
 }

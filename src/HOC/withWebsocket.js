@@ -227,9 +227,22 @@ function withAuctionWebsocket(WrappedComponent, config) {
       syncAuctionSettings(payload.settings);
       syncAuctionUsers(payload.users);
 
+      // if all teams have been sold (or unclaimed) then show a modal prompting the auctioneer to close the auction
+      auctionDispatch({ type: 'update', key: 'numLotsRemaining', value: countAvailableLots(payload.slots) });
+
       if (payload.message) {
         message.info(payload.message);
       }
+    }
+
+    const countAvailableLots = (slots) => {
+      let available = 0;
+
+      slots.forEach(s => {
+        if (s.price == null) available++;
+      });
+
+      return available;
     }
 
     const processAuctionError = (error) => {

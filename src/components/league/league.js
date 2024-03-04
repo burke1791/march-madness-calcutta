@@ -11,7 +11,7 @@ import { Button, Checkbox, Layout, Modal } from 'antd';
 
 import LeagueSettings from '../../pages/leagueSettings/leagueSettings';
 import { useSettingsDispatch } from '../../context/leagueSettingsContext';
-import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS, SUPPLEMENTAL_PAGES } from '../../utilities/constants';
+import { API_CONFIG, AUCTION_SERVICE_ENDPOINTS, LEAGUE_SERVICE_ENDPOINTS, SUPPLEMENTAL_PAGES } from '../../utilities/constants';
 import { useAuthState } from '../../context/authContext';
 import { AuctionProvider } from '../../context/auctionContext';
 import { genericContextUpdate } from '../../context/helper';
@@ -31,6 +31,7 @@ function League(props) {
 
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [feedbackAcknowledged, setFeedbackAcknowledged] = useState(null);
+  const [feedbackModalAllowAuctionClose, setFeedbackModalAllowAuctionClose] = useState(false);
   const [isAuctionPage, setIsAuctionPage] = useState(true); // defaulting to true so that a race condition doesn't flash the modal for a split second
 
   const dispatch = useLeagueDispatch();
@@ -38,7 +39,7 @@ function League(props) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { leagueId, leagueMetadataRefresh, leagueStatusId } = useLeagueState();
+  const { leagueId, leagueMetadataRefresh, leagueStatusId, roleId } = useLeagueState();
   const { authenticated } = useAuthState();
 
   const [supplementalPages, supplementalPagesReturnDate, fetchSupplementalPages] = useData({
@@ -53,6 +54,13 @@ function League(props) {
     endpoint: `${LEAGUE_SERVICE_ENDPOINTS.LEAGUE_METADATA}/${leagueId}`,
     method: 'GET',
     conditions: [authenticated, !!leagueId]
+  });
+
+  const [auctionData, auctionDataReturnDate, fetchAuctionData] = useData({
+    baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
+    endpoint: `${AUCTION_SERVICE_ENDPOINTS.FULL_PAYLOAD}/${leagueId}`,
+    method: 'GET',
+    conditions: [authenticated, leagueId]
   });
 
   useEffect(() => {
@@ -127,7 +135,29 @@ function League(props) {
     if (leagueStatusId == 2 && feedbackAcknowledged === false && !isAuctionPage) {
       setFeedbackModalOpen(true);
     }
-  }, [leagueStatusId, feedbackAcknowledged, isAuctionPage])
+  }, [leagueStatusId, feedbackAcknowledged, isAuctionPage]);
+
+  useEffect(() => {
+    if (leagueStatusId == 2 && roleId <= 2) {
+      fetchAuctionData();
+    }
+  }, [leagueStatusId, roleId]);
+
+  useEffect(() => {
+    if (auctionData && auctionDataReturnDate) {
+      let available = 0;
+
+      auctionData.slots.forEach(t => {
+        if (t.price == null) available++;
+      });
+
+      console.log('available:', available);
+
+      if (available == 0 && leagueStatusId == 2) {
+        setFeedbackAcknowledged(false);
+      }
+    }
+  }, [auctionDataReturnDate, auctionData, leagueStatusId, roleId]);
 
   const syncSupplementalPagesInContext = () => {
     if (supplementalPages && supplementalPages.length > 0) {
@@ -202,7 +232,7 @@ function League(props) {
                 <AuctionProvider>
                   <LeagueAuction path='/' />
                 </AuctionProvider>
-              } 
+              }
             />
             <Route path='teams' element={<LeagueTeams />} />
 

@@ -2,10 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Popconfirm, Table, Button } from 'antd';
 import { useAuctionState } from '../../context/auctionContext';
 import { useLeagueState } from '../../context/leagueContext';
-import { API_CONFIG, AUCTION_SERVICE_ENDPOINTS, AUCTION_STATUS } from '../../utilities/constants';
+import { AUCTION_STATUS } from '../../utilities/constants';
 import { formatMoney } from '../../utilities/helper';
-import useData from '../../hooks/useData';
-import { useAuthState } from '../../context/authContext';
 
 const { Column } = Table;
 
@@ -93,7 +91,7 @@ function AuctionLotsTable(props) {
       <Column
         align='right'
         render={(text, record) => {
-          if (record.displayClass == 'purchased' || record.displayClass == 'unsold') {
+          if (record.displayClass == 'purchased' || record.displayClass == 'no-sell') {
             return (
               <ResetItemButton
                 itemId={record.itemId}
@@ -139,7 +137,7 @@ function SetNextItemButton(props) {
   useEffect(() => {
     setLoading(false);
 
-    if (status === AUCTION_STATUS.BIDDING || status === AUCTION_STATUS.END) {
+    if (status === AUCTION_STATUS.BIDDING) {
       setDisabled(true);
     } else {
       setDisabled(false);
@@ -151,17 +149,38 @@ function SetNextItemButton(props) {
     props.onClick(props.itemId, props.itemTypeId);
   }
 
-  return (
-    <Button
-      type='primary'
-      size='small'
-      onClick={onClick}
-      loading={loading}
-      disabled={disabled}
-    >
-      Set Next Item
-    </Button>
-  );
+  if (status == AUCTION_STATUS.END) {
+    return (
+      <Popconfirm
+        title='Auction is closed'
+        description='This will reopen the auction'
+        cancelText='Cancel'
+        okText='OK'
+        onConfirm={onClick}
+      >
+        <Button
+          type='primary'
+          size='small'
+          loading={loading}
+          disabled={disabled}
+        >
+          Set Next Item
+        </Button>
+      </Popconfirm>
+    );
+  } else {
+    return (
+      <Button
+        type='primary'
+        size='small'
+        onClick={onClick}
+        loading={loading}
+        disabled={disabled}
+      >
+        Set Next Item
+      </Button>
+    );
+  }
 }
 
 /**
@@ -179,7 +198,7 @@ function ResetItemButton(props) {
 
   const [loading, setLoading] = useState(false);
 
-  const { resetItemTriggered } = useAuctionState();
+  const { resetItemTriggered, status } = useAuctionState();
 
   useEffect(() => {
     if (resetItemTriggered) {
@@ -195,9 +214,9 @@ function ResetItemButton(props) {
   
   return (
     <Popconfirm
-      okText='Yes'
+      okText={status == AUCTION_STATUS.END ? 'Ok' : 'Yes'}
       cancelText='Cancel'
-      title='Are you sure? This cannot be undone!'
+      title={status == AUCTION_STATUS.END ? 'This will reopen the auction' : 'Are you sure? This cannot be undone!'}
       onConfirm={onClick}
     >
       <Button
