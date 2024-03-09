@@ -5,7 +5,7 @@ import { useAuthState } from '../../../context/authContext';
 import useData from '../../../hooks/useData';
 import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../../utilities/constants';
 import { useTournamentDispatch } from '../../../context/tournamentContext';
-import { leagueServiceHelper } from '../../../services/league/helper';
+import { parseLeagueUserSummaries } from '../../../parsers/league';
 
 const { Option } = Select;
 
@@ -32,7 +32,7 @@ function HighlightDropdown(props) {
     baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
     endpoint: `${LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES}/${leagueId}`,
     method: 'GET',
-    processData: leagueServiceHelper.packageLeagueUserInfo,
+    processData: parseLeagueUserSummaries,
     conditions: [authenticated, leagueId]
   });
 
@@ -46,7 +46,7 @@ function HighlightDropdown(props) {
 
       return users.map(user => {
         return (
-          <Option key={user.id} value={user.id}>{user.name}</Option>
+          <Option key={user.userId} value={user.userId}>{user.name}</Option>
         );
       });
     }
