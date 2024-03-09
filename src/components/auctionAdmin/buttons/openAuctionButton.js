@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import { useAuctionState } from '../../../context/auctionContext';
 import { AUCTION_STATUS } from '../../../utilities/constants';
 
 /**
  * @typedef OpenAuctionButtonProps
  * @property {Function} onClick
+ * @property {Boolean} isReopen
  */
 
 /**
@@ -15,35 +16,35 @@ import { AUCTION_STATUS } from '../../../utilities/constants';
 function OpenAuctionButton(props) {
 
   const [loading, setLoading] = useState(false);
-  const [disabled, setDisabled] = useState(true);
-
-  const { status } = useAuctionState();
-
-  useEffect(() => {
-    if (status === AUCTION_STATUS.INITIAL) {
-      setDisabled(false);
-    }
-
-    setLoading(false);
-  }, [status]);
 
   const openAuction = () => {
-    if (status === AUCTION_STATUS.INITIAL) {
-      setLoading(true);
-      props.onClick();
-    }
+    setLoading(true);
+    props.onClick(props.isReopen);
   }
 
-  return (
-    <Button
-      type='primary'
-      disabled={disabled}
-      loading={loading}
-      onClick={openAuction}
-    >
-      Open Auction (Random Item)
-    </Button>
-  )
+  if (props.isReopen) {
+    return (
+      <Tooltip placement='top' title='This will not start another round of bidding'>
+        <Button
+          type='primary'
+          loading={loading}
+          onClick={openAuction}
+        >
+          Reopen Auction
+        </Button>
+      </Tooltip>
+    );
+  } else {
+    return (
+      <Button
+        type='primary'
+        loading={loading}
+        onClick={openAuction}
+      >
+        Open Auction (Random Item)
+      </Button>
+    );
+  }
 }
 
 export default OpenAuctionButton;

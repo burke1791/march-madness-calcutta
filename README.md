@@ -1,7 +1,5 @@
 ![Prod](https://github.com/burke1791/march-madness-calcutta/workflows/Prod/badge.svg)
 ![Stage](https://github.com/burke1791/march-madness-calcutta/workflows/Stage/badge.svg)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=burke1791_march-madness-calcutta&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=burke1791_march-madness-calcutta)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=burke1791_march-madness-calcutta&metric=security_rating)](https://sonarcloud.io/dashboard?id=burke1791_march-madness-calcutta)
 
 ### Front End Repository for [Calcutta League](https://calcuttaleague.com)
 

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { List, Table } from 'antd';
-import 'antd/dist/antd.css';
+
 import { useLeagueState } from '../../context/leagueContext';
 import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
-import { leagueServiceHelper } from '../../services/league/helper';
 import { teamDisplayName } from '../../utilities/helper';
 import { useAuthState } from '../../context/authContext';
 import AuctionGroupDeleteButtonCell from './auctionGroupDeleteButtonCell';
 import useData from '../../hooks/useData';
+import { packageLeagueSeedGroups } from '../../parsers/league/leagueSeedGroup';
 
 const { Column } = Table;
 
@@ -22,7 +22,7 @@ function AuctionGroupTable(props) {
     baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
     endpoint: `${LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SEED_GROUPS}/${leagueId}`,
     method: 'GET',
-    processData: leagueServiceHelper.packageLeagueSeedGroups,
+    processData: packageLeagueSeedGroups,
     conditions: [authenticated, leagueId]
   });
 
@@ -69,7 +69,7 @@ function AuctionGroupTable(props) {
               renderItem={item => {
                 return (
                   <List.Item key={item.slotId} size='small'>
-                    {teamDisplayName(item.teamName, item.seed)}
+                    {item.displayName}
                   </List.Item>
                 );
               }}

@@ -58,6 +58,35 @@ export function parseAuctionTeams(teams) {
   return teamArr;
 }
 
+export function parseAuctionTeamsNew(teams) {
+  if (!teams?.length) return [];
+
+  const teamArr = teams.map(t => {
+    return {
+      itemId: +t.itemId,
+      teamLogoUrl: t.teamLogoUrl,
+      itemTypeId: +t.itemTypeId,
+      itemName: t.itemName,
+      displayName: t.displayName,
+      seed: +t.seed,
+      owner: t.userId,
+      ownerAlias: t.alias,
+      price: t.price,
+      isComplete: t.price !== null,
+      ...getDisplayType(t.price !== null, t.price, t.seed)
+    };
+  });
+
+  teamArr.sort((a, b) => {
+    return a.displayOrder - b.displayOrder ||
+      a.seed - b.seed ||
+      b.itemTypeId - a.itemTypeId ||
+      a.itemName.localeCompare(b.itemName);
+  });
+
+  return teamArr;
+}
+
 /**
  * @typedef DisplayType
  * @property {String} displayClass

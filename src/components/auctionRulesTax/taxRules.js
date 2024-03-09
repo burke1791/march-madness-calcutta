@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Table, Typography } from 'antd';
 import { useLeagueState } from '../../context/leagueContext';
-import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { API_CONFIG, DATA_SYNC_SERVICE_ENDPOINTS, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import AuctionRules from '../auctionRules/auctionRules';
 import { AuctionTaxRuleInputNumberCell } from './auctionTaxRuleInputNumberCell';
 import { AuctionTaxRuleDeleteCell } from './auctionTaxRuleDeleteCell';
@@ -127,8 +127,10 @@ function TaxRules() {
 
   return (
     <AuctionRules
+      getBaseUrl={API_CONFIG.LEAGUE_SERVICE_BASE_URL}
       getEndpoint={`${LEAGUE_SERVICE_ENDPOINTS.AUCTION_TAX_RULE}/${leagueId}`}
-      postEndpoint={`${LEAGUE_SERVICE_ENDPOINTS.AUCTION_TAX_RULE}/${leagueId}`}
+      postBaseUrl={API_CONFIG.DATA_SYNC_SERVICE_BASE_URL}
+      postEndpoint={`${DATA_SYNC_SERVICE_ENDPOINTS.AUCTION_TAX_RULE}/${leagueId}`}
       ruleKey='AuctionTaxRuleId'
       isRuleChanged={!!ruleChangedEvent}
       getNewRules={packageChangedRules}

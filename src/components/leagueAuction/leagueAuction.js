@@ -4,52 +4,37 @@ import AuctionActions from '../auctionActions/auctionActions';
 import AuctionChat from '../auctionChat/auctionChat';
 
 import { Row, Col, message } from 'antd';
-import 'antd/dist/antd.css';
+
 import MyTeams from '../myTeams/myTeams';
 import MemberList from '../memberList/memberList';
-import { AUCTION_SERVICE_ENDPOINTS, SOCKETS, API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
-import { useLeagueState } from '../../context/leagueContext';
+import { AUCTION_SERVICE_ENDPOINTS, SOCKETS, API_CONFIG, AUCTION_STATUS } from '../../utilities/constants';
+import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
 import { useAuthState } from '../../context/authContext';
 import withAuctionWebsocket from '../../HOC/withWebsocket';
 import { useAuctionDispatch, useAuctionState } from '../../context/auctionContext';
 import AuctionModal from './auctionModal';
 import AuctionLoadingModal from './auctionLoadingModal';
 import useData from '../../hooks/useData';
-import { parseAuctionSettings } from './helper';
-import { parseAuctionSummary, parseAuctionTeams } from '../../parsers/auction';
+import { parseAuctionStatus } from '../../parsers/auction';
+import { parseAuctionTeamsNew } from '../../parsers/auction/fetchAuctionTeams';
+import AuctionCloseModal from './auctionCloseModal';
 
 function LeagueAuction(props) {
 
   const [sidebarInUse, setSidebarInUse] = useState(true);
 
-  const { leagueId } = useLeagueState();
-  const { authenticated } = useAuthState();
-  const { errorMessage, connected } = useAuctionState();
+  const { leagueId, leagueStatusId } = useLeagueState();
+  const { authenticated, userId } = useAuthState();
+  const { errorMessage, connected, status } = useAuctionState();
 
   const auctionDispatch = useAuctionDispatch();
+  const leagueDispatch = useLeagueDispatch();
 
-  const [auctionSettings, auctionSettingsReturnDate, fetchAuctionSettings] = useData({
-    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
-    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.GET_LEAGUE_SETTINGS}/${leagueId}?settingClass=Auction`,
-    method: 'GET',
-    processData: parseAuctionSettings,
-    conditions: [authenticated, leagueId]
-  });
-
-  const [auctionSummary, auctionSummaryReturnDate, fetchAuctionSummary] = useData({
+  const [auctionData, auctionDataReturnDate, fetchAuctionData] = useData({
     baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
-    endpoint: `${AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_SUMMARY}/${leagueId}`,
+    endpoint: `${AUCTION_SERVICE_ENDPOINTS.FULL_PAYLOAD}/${leagueId}`,
     method: 'GET',
-    processData: parseAuctionSummary,
     conditions: [authenticated, leagueId]
-  });
-
-  const [teams, teamsReturnDate, fetchTeams] = useData({
-    baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
-    endpoint: `${AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_TEAMS}/${leagueId}`,
-    method: 'GET',
-    processData: parseAuctionTeams,
-    conditions: [authenticated, leagueId, connected]
   });
 
   useEffect(() => {
@@ -60,40 +45,100 @@ function LeagueAuction(props) {
 
   useEffect(() => {
     if (leagueId && authenticated && connected) {
-      fetchAllAuctionData();
+      // fetchAllAuctionData();
+      fetchAuctionData();
     }
   }, [leagueId, authenticated, connected]);
 
   useEffect(() => {
-    if (auctionSettingsReturnDate && auctionSettings) {
-      const keys = Object.keys(auctionSettings);
-      
-      for (let key of keys) {
-        auctionDispatch({ type: 'update', key: key, value: auctionSettings[key] });
+    if (leagueStatusId != undefined && status != undefined) {
+      console.log(leagueStatusId, status);
+      if (
+        ((status == AUCTION_STATUS.END || status == AUCTION_STATUS.INITIAL) && leagueStatusId == 2) ||
+        ((status == AUCTION_STATUS.BIDDING || status == AUCTION_STATUS.SOLD || status == AUCTION_STATUS.CONFIRMED_SOLD) && leagueStatusId != 2)
+      ) {
+        console.log('should be refreshing league metadata');
+        leagueDispatch({ type: 'update', key: 'leagueMetadataRefresh', value: new Date().valueOf() });
       }
     }
-  }, [auctionSettingsReturnDate]);
+  }, [leagueStatusId, status]);
 
   useEffect(() => {
-    if (auctionSummaryReturnDate && auctionSummary) {
-      if (auctionSummary.prizepool !== undefined) {
-        auctionDispatch({ type: 'update', key: 'prizepool', value: auctionSummary.prizepool });
-      }
+    if (auctionDataReturnDate && auctionData?.message == 'ERROR!') {
+      console.log(auctionData);
+      message.error('Unable to get auction data');
+    } else if (auctionDataReturnDate && auctionData) {
+      console.log(auctionData);
+      syncAuctionStatus(auctionData.status);
+      syncAuctionTeams(auctionData.slots);
+      syncAuctionSettings(auctionData.settings);
+      syncAuctionUsers(auctionData.users);
     }
-  }, [auctionSummaryReturnDate]);
+  }, [auctionData, auctionDataReturnDate]);
 
   useEffect(() => {
-    if (teamsReturnDate) {
-      console.log(teams);
-      auctionDispatch({ type: 'update', key: 'teams', value: teams });
-      auctionDispatch({ type: 'update', key: 'teamsDownloadedDate', value: new Date().valueOf() });
+    if (auctionDataReturnDate && !!userId && auctionData?.users) {
+      syncAuctionSummary(auctionData.users, userId);
     }
-  }, [teamsReturnDate]);
+  }, [auctionData, auctionDataReturnDate, userId]);
 
-  const fetchAllAuctionData = () => {
-    fetchAuctionSettings();
-    fetchAuctionSummary();
-    fetchTeams();
+  const syncAuctionStatus = (status) => {
+    const parsedStatus = parseAuctionStatus([status]);
+    const keys = Object.keys(parsedStatus);
+
+    for (let key of keys) {
+      auctionDispatch({ type: 'update', key: key, value: parsedStatus[key] });
+    }
+
+    auctionDispatch({ type: 'update', key: 'auctionStatusDownloadedDate', value: new Date().valueOf() });
+  }
+
+  const syncAuctionTeams = (teams) => {
+    const parsedTeams = parseAuctionTeamsNew(teams);
+
+    auctionDispatch({ type: 'update', key: 'teams', value: parsedTeams });
+    auctionDispatch({ type: 'update', key: 'teamsDownloadedDate', value: new Date().valueOf() });
+
+    let available = 0;
+
+    teams.forEach(t => {
+      if (t.price == null) available++;
+    });
+
+    auctionDispatch({ type: 'update', key: 'numLotsRemaining', value: available });
+  }
+
+  const syncAuctionSettings = (settings) => {
+    if (!Array.isArray(settings) || settings.length == 0) return;
+
+    auctionDispatch({ type: 'update', key: 'auctionSettings', value: settings });
+    auctionDispatch({ type: 'update', key: 'auctionSettingsDownloadedDate', value: new Date().valueOf() });
+  }
+
+  const syncAuctionSummary = (users, userId) => {
+    if (!Array.isArray(users) || users.length == 0) return;
+
+    const thisUser = users.find(u => u.userId == userId);
+    if (thisUser != undefined) {
+      auctionDispatch({ type: 'update', key: 'naturalBuyIn', value: thisUser.naturalBuyIn });
+      auctionDispatch({ type: 'update', key: 'taxBuyIn', value: thisUser.taxBuyIn });
+    }
+
+    let prizepool = 0;
+
+    users.forEach(u => {
+      prizepool += u.naturalBuyIn;
+      prizepool += u.taxBuyIn;
+    });
+
+    auctionDispatch({ type: 'update', key: 'prizepool', value: prizepool });
+  }
+
+  const syncAuctionUsers = (users) => {
+    if (!Array.isArray(users) || users.length == 0) return;
+
+    auctionDispatch({ type: 'update', key: 'memberBuyIns', value: users });
+    auctionDispatch({ type: 'update', key: 'auctionBuyInsDownloadedDate', value: new Date().valueOf() });
   }
 
   const handleAuctionError = (errorMessage) => {
@@ -116,6 +161,7 @@ function LeagueAuction(props) {
       </Col>
       <AuctionModal title='Connection to Auction Service Closed' />
       <AuctionLoadingModal errorTimer={15} />
+      <AuctionCloseModal sendSocketMessage={props.sendSocketMessage} />
     </Row>
   );
 }

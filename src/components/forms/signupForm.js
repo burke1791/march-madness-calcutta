@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
-import { AUTH_FORM_TYPE, ERROR_MESSAGES, NOTIF } from '../../utilities/constants';
+import { AUTH_FORM_TYPE, AUTH_STATUS, NOTIF } from '../../utilities/constants';
 
 import { Form, Input, Button, Checkbox, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import 'antd/dist/antd.css';
-import { signUp } from '../../utilities/authService';
+
 import Pubsub from '../../utilities/pubsub';
+import withAuth from '../../HOC/withAuth';
 
 const formItemStyle = {
   marginBottom: '6px'
@@ -22,6 +22,19 @@ const layout = {
   }
 };
 
+/**
+ * @typedef SignupFormProps
+ * @property {Boolean} loading
+ * @property {Function} toggleLoading
+ * @property {Function} toggleAuthForm
+ * @property {Function} signUp
+ * @property {Function} setAuthContext
+ */
+
+/**
+ * @component
+ * @param {SignupFormProps} props 
+ */
 function SignupForm(props) {
 
   const [form] = Form.useForm();
@@ -46,14 +59,25 @@ function SignupForm(props) {
     setErrorMessage(errorMsg);
   }
 
-  const handleSubmit = (values) => {
-    props.toggleLoading();
+  const handleSubmit = async (values) => {
+    props.toggleLoading(true);
     
-    let email = values.email;
-    let username = values.username;
-    let password = values.password;
+    try {
+      const email = values.email;
+      const username = values.username;
+      const password = values.password;
 
-    signUp(username, email, password);
+      const { isSignUpComplete, nextStep } = await props.signUp(username, email, password);
+
+      props.toggleLoading(false);
+
+      if (nextStep === 'CONFIRM_SIGN_UP') {
+        props.toggleAuthForm(AUTH_FORM_TYPE.CONFIRM)
+      }
+    } catch (error) {
+      console.log(error);
+      props.toggleLoading();
+    }
   }
 
   const generateErrorMessage = () => {
@@ -183,5 +207,5 @@ function SignupForm(props) {
   );
 }
 
-export default SignupForm;
+export default withAuth(SignupForm);
 

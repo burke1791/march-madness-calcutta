@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import { Layout, Typography } from 'antd';
-import 'antd/dist/antd.css';
+
 
 const { Header } = Layout;
 const { Title } = Typography;

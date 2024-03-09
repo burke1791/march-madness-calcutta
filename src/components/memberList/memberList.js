@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 import { Row, Col, Card, Table } from 'antd';
-import 'antd/dist/antd.css';
+
 import './memberList.css';
 
 import { formatMoney } from '../../utilities/helper';
 import Pubsub from '../../utilities/pubsub';
-import { API_CONFIG, AUCTION_NOTIF, AUCTION_SERVICE_ENDPOINTS } from '../../utilities/constants';
-import { useAuctionDispatch, useAuctionState } from '../../context/auctionContext';
+import { AUCTION_NOTIF } from '../../utilities/constants';
+import { useAuctionState } from '../../context/auctionContext';
 import { useLeagueState } from '../../context/leagueContext';
-import useData from '../../hooks/useData';
 import { useAuthState } from '../../context/authContext';
 import { DisconnectOutlined } from '@ant-design/icons';
 
@@ -28,36 +27,11 @@ function MemberList(props) {
   const { leagueId } = useLeagueState();
   const { authenticated, userId } = useAuthState();
 
-  const auctionDispatch = useAuctionDispatch();
-
-  const [users, usersReturnDate, getUsers] = useData({
-    baseUrl: API_CONFIG.AUCTION_SERVICE_BASE_URL,
-    endpoint: `${AUCTION_SERVICE_ENDPOINTS.FETCH_AUCTION_BUYINS}/${leagueId}`,
-    method: 'GET',
-    conditions: [authenticated, leagueId]
-  });
-
   useEffect(() => {
     if (authenticated && leagueId) {
-      downloadData();
+      setLoading(true);
     }
   }, [authenticated, leagueId]);
-
-  useEffect(() => {
-    if (confirmedSoldTimestamp && confirmedSoldTimestamp > auctionBuyInsDownloadedDate) {
-      setLoading(true);
-    } else if (auctionBuyInsDownloadedDate && auctionBuyInsDownloadedDate > confirmedSoldTimestamp) {
-      setLoading(false);
-    }
-  }, [confirmedSoldTimestamp, auctionBuyInsDownloadedDate]);
-
-  useEffect(() => {
-    if (usersReturnDate) {
-      setLoading(false);
-      auctionDispatch({ type: 'update', key: 'memberBuyIns', value: users });
-      auctionDispatch({ type: 'update', key: 'auctionBuyInsDownloadedDate', value: new Date().valueOf() });
-    }
-  }, [usersReturnDate]);
 
   useEffect(() => {
     if (connectedUsersUpdated || auctionBuyInsDownloadedDate) {
@@ -66,7 +40,9 @@ function MemberList(props) {
   }, [connectedUsersUpdated, auctionBuyInsDownloadedDate]);
 
   useEffect(() => {
-    updateMyNaturalAndTaxBuyIn();
+    if (auctionBuyInsDownloadedDate) {
+      setLoading(false);
+    }
   }, [auctionBuyInsDownloadedDate]);
 
   useEffect(() => {
@@ -85,11 +61,6 @@ function MemberList(props) {
     })
   }, []);
 
-  const downloadData = () => {
-    setLoading(true);
-    getUsers();
-  }
-
   const updateUsersList = () => {
 
     const list = [];
@@ -97,9 +68,9 @@ function MemberList(props) {
     if (memberBuyIns?.length) {
       for (let u of memberBuyIns) {
         list.push({
-          userId: +u.UserId,
-          alias: u.Alias,
-          totalBuyIn: u.NaturalBuyIn + u.TaxBuyIn,
+          userId: +u.userId,
+          alias: u.alias,
+          totalBuyIn: u.naturalBuyIn + u.taxBuyIn,
           isConnected: false
         });
       }
@@ -126,20 +97,6 @@ function MemberList(props) {
     list.sort((a, b) => b.totalBuyIn - a.totalBuyIn);
 
     setUserList(list);
-  }
-
-  const updateMyNaturalAndTaxBuyIn = () => {
-    if (memberBuyIns && memberBuyIns.length) {
-      const currentUser = memberBuyIns.find(u => u.UserId == userId);
-
-      if (currentUser) {
-        const naturalBuyIn = currentUser.NaturalBuyIn || 0;
-        const taxBuyIn = currentUser.TaxBuyIn || 0;
-
-        auctionDispatch({ type: 'update', key: 'naturalBuyIn', value: naturalBuyIn });
-        auctionDispatch({ type: 'update', key: 'taxBuyIn', value: taxBuyIn });
-      }
-    }
   }
 
   const handleConnection = (newConnectedUsers) => {

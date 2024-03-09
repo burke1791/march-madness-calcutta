@@ -1,23 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Layout, Button, message, Popconfirm } from 'antd';
-import 'antd/dist/antd.css';
+import { Menu, Layout, Button, message, Popconfirm, Tooltip } from 'antd';
+
+import './leagueNav.css';
+
 import { useLeagueState } from '../../context/leagueContext';
 import { parseLeaguePathName } from '../../utilities/helper';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthState } from '../../context/authContext';
 import useData from '../../hooks/useData';
-import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { API_CONFIG, DATA_SYNC_SERVICE_ENDPOINTS } from '../../utilities/constants';
 
-const menuItems = {
-  start: [
-    { key: '', label: 'League Home' },
-    { key: 'auction', label: 'Auction Room' },
-    { key: 'teams', label: 'Teams' }
-  ],
-  tail: [
-    { key: 'settings', label: 'Settings' }
-  ]
-};
+
 
 const { Sider } = Layout;
 
@@ -26,7 +19,7 @@ function LeagueNav() {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState([]);
 
-  const { leagueId, supplementalPages } = useLeagueState();
+  const { leagueId, supplementalPages, leagueStatusId } = useLeagueState();
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -76,15 +69,19 @@ function LeagueNav() {
 
     if (supplementalItems && supplementalItems.length > 0) {
       return [
-        ...menuItems.start,
+        { key: '', label: 'League Home' },
+        { key: 'auction', label: <AuctionRoomMenuItem isActive={leagueStatusId == 2} /> },
+        { key: 'teams', label: 'Teams' },
         ...supplementalItems,
-        ...menuItems.tail,
+        { key: 'settings', label: 'Settings' },
         { key: 'leave', label: <LeaveButton hidden={collapsed} />, style: { position: 'absolute', bottom: 8, paddingTop: 0, paddingRight: 16, paddingBottom: 0, paddingLeft: 16 } }
       ];
     } else {
       return [
-        ...menuItems.start,
-        ...menuItems.tail,
+        { key: '', label: 'League Home' },
+        { key: 'auction', label: <AuctionRoomMenuItem isActive={leagueStatusId == 2} /> },
+        { key: 'teams', label: 'Teams' },
+        { key: 'settings', label: 'Settings' },
         { key: 'leave', label: <LeaveButton hidden={collapsed} />, style: { position: 'absolute', bottom: 8, paddingTop: 0, paddingRight: 16, paddingBottom: 0, paddingLeft: 16 } }
       ];
     }
@@ -121,8 +118,8 @@ function LeaveButton (props) {
   const navigate = useNavigate();
 
   const [leaveLeagueResponse, leaveLeagueReturnDate, leaveLeague] = useData({
-    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
-    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.LEAVE_LEAGUE}/${leagueId}`,
+    baseUrl: API_CONFIG.DATA_SYNC_SERVICE_BASE_URL,
+    endpoint: `${DATA_SYNC_SERVICE_ENDPOINTS.LEAVE_LEAGUE}/${leagueId}`,
     method: 'POST',
     conditions: [authenticated, leagueId]
   });
@@ -163,6 +160,25 @@ function LeaveButton (props) {
       </Button>
     </Popconfirm>
   );
+}
+
+function AuctionRoomMenuItem(props) {
+  if (props.isActive) {
+    return (
+      <Tooltip placement='right' title='Auction results will not appear on league pages until the auction is closed'>
+        <div className='pulse-container'>
+          <span>Auction Room</span>
+          <PulseCircle />
+        </div>
+      </Tooltip>
+    );
+  }
+
+  return 'Auction Room';
+}
+
+function PulseCircle() {
+  return <div className='circle-menu pulse-menu green pulse-inline'></div>;
 }
 
 export default LeagueNav;

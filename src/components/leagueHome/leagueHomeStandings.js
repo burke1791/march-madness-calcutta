@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 
-import { message, Table, Typography } from 'antd';
-import 'antd/dist/antd.css';
+import { Table, Typography } from 'antd';
+
 import './leagueHome.css';
 
 import AlivePie from '../alivePie/alivePie';
 import { useLeagueDispatch, useLeagueState } from '../../context/leagueContext';
 import { formatMoney } from '../../utilities/helper';
 import { useAuthState } from '../../context/authContext';
-import LeagueService from '../../services/league/league.service';
-import { LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
-import { leagueServiceHelper } from '../../services/league/helper';
+import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useNavigate } from 'react-router-dom';
+import useData from '../../hooks/useData';
+import { parseLeagueUserSummaries } from '../../parsers/league';
 
 const { Text } = Typography;
 const { Column } = Table;
@@ -26,22 +26,25 @@ function LeagueHomeStandings(props) {
   const leagueDispatch = useLeagueDispatch();
   const navigate = useNavigate();
 
+  const [leagueUserSummaries, leagueUserSummariesReturnDate, fetchLeagueUserSummaries] = useData({
+    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
+    endpoint: `${LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES}/${leagueId}`,
+    method: 'GET',
+    processData: parseLeagueUserSummaries,
+    conditions: [authenticated, leagueId]
+  });
+
   useEffect(() => {
     if (authenticated && leagueId) {
       fetchLeagueUserSummaries();
     }
   }, [leagueId, authenticated]);
 
-  const fetchLeagueUserSummaries = () => {
-    LeagueService.callApiWithPromise(LEAGUE_SERVICE_ENDPOINTS.LEAGUE_USER_SUMMARIES, { leagueId }).then(response => {
-      let leagueUsers = leagueServiceHelper.packageLeagueUserInfo(response.data, true);
-      populateStandings(leagueUsers);
-    }).catch(error => {
-      message.error('Error downloading league standings, please try again later');
-      setLoading(false);
-      console.log(error);
-    });
-  }
+  useEffect(() => {
+    if (leagueUserSummaries && leagueUserSummariesReturnDate) {
+      populateStandings(leagueUserSummaries);
+    }
+  }, [leagueUserSummaries, leagueUserSummariesReturnDate]);
 
   const populateStandings = (leagueUsers) => {
     if (leagueUsers !== undefined && leagueUsers.length > 0) {
@@ -51,15 +54,14 @@ function LeagueHomeStandings(props) {
   }
 
   const getRowClassName = (record) => {
-    if (record.id == userId) return 'pointer current-user-row';
+    if (+record.userId === +userId) return 'pointer current-user-row';
     return 'pointer';
   }
 
   return (
     <Table
-      // columns={userColumns}
       dataSource={userList}
-      rowKey='id'
+      rowKey='userId'
       rowClassName={getRowClassName}
       size='small'
       pagination={false}
@@ -69,7 +71,7 @@ function LeagueHomeStandings(props) {
           return {
             onClick: (event) => {
               if (leagueId) {
-                navigate(`/leagues/${leagueId}/member/${record.id}`, { state: { userId: record.id }});
+                navigate(`/leagues/${leagueId}/member/${record.userId}`, { state: { userId: record.userId }});
               } else {
                 console.log('leagueId is falsy');
               }

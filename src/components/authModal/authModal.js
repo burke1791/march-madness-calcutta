@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Modal, Button } from 'antd';
-import 'antd/dist/antd.css';
+import { Modal } from 'antd';
 
 import { AUTH_FORM_TYPE, NOTIF } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';
@@ -39,6 +38,8 @@ function AuthModal() {
   }
 
   const handleFormToggle = (type) => {
+    console.log(type);
+    console.log(loading);
     setFormType(type);
   }
 
@@ -63,7 +64,12 @@ function AuthModal() {
   const generateForm = () => {
     if (formType === AUTH_FORM_TYPE.SIGN_IN) {
       return (
-        <WrappedSigninForm loading={loading} toggleLoading={toggleLoading} toggleAuthForm={handleFormToggle} />
+        <WrappedSigninForm
+          loading={loading}
+          toggleLoading={toggleLoading}
+          toggleAuthForm={handleFormToggle}
+          dismiss={handleCancel}
+        />
       );
     } else if (formType === AUTH_FORM_TYPE.SIGN_UP) {
       return (
@@ -71,7 +77,12 @@ function AuthModal() {
       );
     } else if (formType === AUTH_FORM_TYPE.CONFIRM) {
       return (
-        <ConfirmAccount loading={loading} toggleLoading={toggleLoading} toggleAuthForm={handleFormToggle} />
+        <ConfirmAccount
+          loading={loading}
+          toggleLoading={toggleLoading}
+          toggleAuthForm={handleFormToggle}
+          dismiss={handleCancel}
+        />
       )
     } else if (formType === AUTH_FORM_TYPE.PASSWORD_RESET) {
       return (

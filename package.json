@@ -3,18 +3,17 @@
   "version": "0.2.0",
   "private": true,
   "dependencies": {
-    "@ant-design/colors": "^6.0.0",
-    "@ant-design/icons": "^4.7.0",
-    "@aws-amplify/auth": "^4.5.4",
-    "antd": "^4.20.6",
-    "aws-amplify": "^4.3.22",
-    "axios": "^0.27.2",
-    "react": "^18.1.0",
-    "react-dom": "^18.1.0",
-    "react-router-dom": "^6.3.0",
+    "@ant-design/colors": "^7.0.0",
+    "@ant-design/icons": "^5.2.6",
+    "antd": "^5.12.5",
+    "aws-amplify": "^6.0.9",
+    "axios": "^1.6.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.21.1",
     "react-scripts": "^5.0.1",
     "use-deep-compare-effect": "^1.8.1",
-    "uuid": "^8.3.2"
+    "uuid": "^9.0.1"
   },
   "scripts": {
     "start": "react-scripts start",

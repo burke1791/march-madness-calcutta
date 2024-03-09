@@ -6,29 +6,21 @@ import money from '../images/cash_icon.png';
 import basketball from '../images/basketball_icon.jpg';
 import Pubsub from '../utilities/pubsub';
 import { NOTIF, AUTH_FORM_TYPE } from '../utilities/constants';
-import { User } from '../utilities/authService';
 import { Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { useAuthState } from '../context/authContext';
 
 function LandingPage() {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    Pubsub.subscribe(NOTIF.SIGN_IN, LandingPage, handleSignin);
+  const { authenticated } = useAuthState();
 
-    if (User.user_id) {
+  useEffect(() => {
+    if (authenticated) {
       navigate('/home');
     }
-
-    return (() => {
-      Pubsub.unsubscribe(NOTIF.SIGN_IN, LandingPage);
-    });
-  }, []);
-
-  const handleSignin = () => {
-    navigate('/home');
-  }
+  }, [authenticated]);
 
   const signup = () => {
     Pubsub.publish(NOTIF.AUTH_MODAL_SHOW, AUTH_FORM_TYPE.SIGN_UP);

@@ -4,14 +4,13 @@ import WrappedNewLeagueForm from '../newLeagueForm/newLeagueForm';
 
 import { LEAGUE_FORM_TYPE, NOTIF, LEAGUE_SERVICE_ENDPOINTS, API_CONFIG } from '../../utilities/constants';
 import Pubsub from '../../utilities/pubsub';
-import LeagueService from '../../services/league/league.service'
 
 import { Modal } from 'antd';
-import 'antd/dist/antd.css';
+
 import { useAuthState } from '../../context/authContext';
 import { useTournamentDispatch } from '../../context/tournamentContext';
-import { tournamentOptionsParser } from '../../services/league/parsers';
 import useData from '../../hooks/useData';
+import { tournamentOptionsParser } from '../../parsers/league';
 
 // @TODO combine this entire component into AuthModal and rename it to CalcuttaModal
 function LeagueModal() {

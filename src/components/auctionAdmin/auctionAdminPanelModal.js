@@ -106,7 +106,7 @@ function AuctionAdminPanel(props) {
             After a team is selected, automatically close the admin panel
       */}
       <Divider orientation='left'>Auction Lots</Divider>
-      <AuctionLotsTable sendSocketMessage={props.sendSocketMessage} />
+      <AuctionLotsTable sendSocketMessage={props.sendSocketMessage} dismissableClick={onAdminButtonClicked} />
       {/* Table of all users - AuctionPermission interface (new DB tables)
             This will also require changes to the websocket handling for all users
       */}
@@ -132,8 +132,8 @@ function AdminButtons(props) {
   const { leagueId } = useLeagueState();
   const { status } = useAuctionState();
 
-  const openAuction = () => {
-    props.sendSocketMessage('START_AUCTION', { leagueId });
+  const openAuction = (isReopen) => {
+    props.sendSocketMessage('START_AUCTION', { leagueId: leagueId, isReopen: isReopen });
     props.onClick(ADMIN_BUTTONS.OPEN);
   }
 
@@ -154,13 +154,24 @@ function AdminButtons(props) {
 
   return (
     <Row justify='space-around'>
-      { status === AUCTION_STATUS.INITIAL ?
-        <OpenAuctionButton onClick={openAuction} />
-        :
-        <CloseAuctionButton onClick={closeAuction} />
-      }
+      <AuctionOpenCloseButton status={status} onOpenClick={openAuction} onCloseClick={closeAuction} />
       <NextItemButton onClick={nextItem} />
       <ResetClockButton onClick={resetClock} />
     </Row>
   );
+}
+
+function AuctionOpenCloseButton(props) {
+  switch (props.status) {
+    case AUCTION_STATUS.INITIAL:
+      return <OpenAuctionButton onClick={props.onOpenClick} isReopen={false} />
+    case AUCTION_STATUS.END:
+      return <OpenAuctionButton onClick={props.onOpenClick} isReopen={true} />
+    case AUCTION_STATUS.BIDDING:
+    case AUCTION_STATUS.SOLD:
+    case AUCTION_STATUS.CONFIRMED_SOLD:
+      return <CloseAuctionButton onClick={props.onCloseClick} />
+    default:
+      return null;
+  }
 }
