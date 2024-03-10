@@ -138,7 +138,11 @@ function BiddingWidget(props) {
         console.log(newVal);
         if (currentRule && nextRule && currentRule.AuctionBidRuleId !== nextRule.AuctionBidRuleId) {
           // set newVal to the highest legal bid within nextRule
-          newVal = nextRule.MaxThresholdInclusive - (nextRule.MaxThresholdInclusive % nextRule.MinIncrement);
+          // newVal = nextRule.MaxThresholdInclusive - (nextRule.MaxThresholdInclusive % nextRule.MinIncrement);
+          newVal = nextRule.MaxThresholdInclusive - nextRule.MinIncrement;
+          remainder = newVal % nextRule.MinIncrement;
+          if (remainder !== ruleRemainder) newVal = newVal + nextRule.MinIncrement - ruleRemainder - remainder;
+          console.log(newVal);
         } else if (nextRule && nextRule.MinIncrement) {
           remainder = newVal % nextRule.MinIncrement;
           console.log(remainder);
