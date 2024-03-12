@@ -144,6 +144,10 @@ function withAuctionWebsocket(WrappedComponent, config) {
           // this msgType indicates a full data update was sent with the websocket payload
           auctionDataSync(msgObj);
           break;
+        case AUCTION_WEBSOCKET_MSG_TYPE.SETTINGS:
+          console.log(msgObj);
+          auctionSettingsSync(msgObj);
+          break;
         case AUCTION_WEBSOCKET_MSG_TYPE.INFO:
           // misc info that doesn't affect core auction functionality
           showNotifMessage(msgObj.notifLevel, msgObj.notifMessage);
@@ -233,6 +237,14 @@ function withAuctionWebsocket(WrappedComponent, config) {
       if (payload.message) {
         message.info(payload.message);
       }
+    }
+
+    const auctionSettingsSync = (payload) => {
+      syncAuctionTeams(payload.slots);
+      syncAuctionSettings(payload.settings);
+
+      auctionDispatch({ type: 'update', key: 'numLotsRemaining', value: countAvailableLots(payload.slots) });
+
     }
 
     const countAvailableLots = (slots) => {
