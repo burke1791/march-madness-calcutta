@@ -130,11 +130,14 @@ function withAuth(WrappedComponent) {
     }
 
     const submitForgotPassword = async (email, code, newPassword) => {
-      await confirmResetPassword({
+      const data = await confirmResetPassword({
         username: email,
         confirmationCode: code,
         newPassword: newPassword
       });
+
+      console.log(data);
+      return data;
     }
 
     const authContextSignedOut = () => {
