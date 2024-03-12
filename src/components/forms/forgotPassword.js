@@ -4,6 +4,8 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 
 import withAuth from '../../HOC/withAuth';
 import { useAuthState } from '../../context/authContext';
+import Pubsub from '../../utilities/pubsub';
+import { AUTH_FORM_TYPE, NOTIF } from '../../utilities/constants';
 
 const formItemStyle = {
   marginBottom: '6px'
@@ -23,22 +25,33 @@ function ForgotPassword(props) {
 
   const [form] = Form.useForm();
 
+  const [formType, setFormType] = useState('email');
   const [instructionText, setInstructionText] = useState('');
   const [submitText, setSubmitText] = useState('Send Password Reset Code');
 
   const { errorMessage } = useAuthState();
 
-  useEffect(() => {
-    console.log(props.formType);
+  // useEffect(() => {
+  //   console.log(props.formType);
 
-    if (props.formType === 'forgotPassword-code') {
+  //   if (props.formType === 'forgotPassword-code') {
+  //     setInstructionText('Check your email for a password reset code');
+  //     setSubmitText('Reset Password');
+  //   } else {
+  //     setInstructionText('');
+  //     setSubmitText('Send Password Reset Code');
+  //   }
+  // }, [props.formType]);
+
+  useEffect(() => {
+    if (formType === 'forgotPassword-code') {
       setInstructionText('Check your email for a password reset code');
       setSubmitText('Reset Password');
     } else {
       setInstructionText('');
       setSubmitText('Send Password Reset Code');
     }
-  }, [props.formType]);
+  }, [formType]);
 
   const generateErrorMessage = () => {
     if (errorMessage) {
@@ -51,7 +64,7 @@ function ForgotPassword(props) {
   }
 
   const generateInstructionText = () => {
-    if (props.formType === 'forgotPassword-code') {
+    if (formType === 'forgotPassword-code') {
       return (
         <div>
           <span>{instructionText}</span>
@@ -62,7 +75,7 @@ function ForgotPassword(props) {
   }
 
   const generateFormItems = () => {
-    if (props.formType === 'forgotPassword-code') {
+    if (formType === 'forgotPassword-code') {
       return ([
         <Form.Item 
           name='code'
@@ -137,14 +150,25 @@ function ForgotPassword(props) {
   const handleSubmit = async (values) => {
     console.log(values);
     props.toggleLoading();
-    const data = await props.initiateForgotPassword(values.email);
-    console.log(data);
+
+    if (formType === 'forgotPassword-code') {
+      const data = await props.submitForgotPassword(values.email, values.code, values.newPassword);
+      console.log(data);
+      Pubsub.publish(NOTIF.AUTH_MODAL_SHOW, AUTH_FORM_TYPE.SIGN_IN);
+    } else {
+      const data = await props.initiateForgotPassword(values.email);
+      console.log(data);
+      setFormType(data.newFormType);
+    }
+    
+    props.toggleLoading(false);
   }
   
   return (
     <Form
       form={form}
-      onFinish={props.initiateForgotPassword}
+      {...layout}
+      onFinish={handleSubmit}
       className='forgot-password'
       style={{ maxWidth: '300px' }}
     >
