@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState, useRef } from 'react';
 import { Card, Col, Radio, Row, Select, Button, message, Typography } from 'antd';
 import CommissionerFeeInput from './commissionerFeeInput';
 import useData from '../../hooks/useData';
-import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
+import { API_CONFIG, DATA_SYNC_SERVICE_ENDPOINTS, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import { useAuthState } from '../../context/authContext';
 import { useLeagueState } from '../../context/leagueContext';
 import { useSettingsDispatch } from '../../context/leagueSettingsContext';
@@ -34,8 +34,8 @@ function PayoutCalculation() {
   });
 
   const [setPayoutSettingsResponse, setPayoutSettingsResponseDate, setPayoutSettings] = useData({
-    baseUrl: API_CONFIG.LEAGUE_SERVICE_BASE_URL,
-    endpoint: LEAGUE_SERVICE_ENDPOINTS.UPDATE_LEAGUE_SETTINGS,
+    baseUrl: API_CONFIG.DATA_SYNC_SERVICE_BASE_URL,
+    endpoint: DATA_SYNC_SERVICE_ENDPOINTS.UPDATE_LEAGUE_SETTINGS,
     method: 'POST',
     processData: null,
     conditions: [authenticated, leagueId]
