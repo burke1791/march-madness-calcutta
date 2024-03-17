@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Layout, Table, Row, Typography, message } from 'antd';
+import { Layout, Table, Row, Typography, message, Col, Statistic, Card } from 'antd';
 
 import { API_CONFIG, LEAGUE_SERVICE_ENDPOINTS } from '../../utilities/constants';
 import LeagueService from '../../services/league/league.service';
@@ -11,6 +11,7 @@ import { useAuthState } from '../../context/authContext';
 import { useLocation } from 'react-router-dom';
 import useData from '../../hooks/useData';
 import { parseLeagueUserTeams } from '../../parsers/league';
+import { DollarTwoTone } from '@ant-design/icons';
 
 const { Header, Content } = Layout;
 const { Text, Title } = Typography;
@@ -109,7 +110,6 @@ function MemberPage(props) {
   }, [userMetadata, userMetadataReturnDate]);
 
   useEffect(() => {
-    console.log(userTeams);
     if (userTeams?.length && userTeamsReturnDate) {
       setTeams(userTeams);
       setLoading(false);
@@ -172,33 +172,69 @@ function MemberPage(props) {
         <Title level={1} style={{ margin: 0 }}>{alias}</Title>
       </Header>
       <Content>
-        <Row type='flex' justify='center'>
-          <Table
-            columns={columns}
-            dataSource={teams}
-            rowClassName='pointer'
-            size='small'
-            pagination={false}
-            loading={loading}
-            rowKey='id'
-            onRow={
-              (record, index) => {
-                if (!record.groupFlag) {
-                  return {
-                    onClick: (event) => {
-                      message.info('Team page coming soon');
-                    }
-                  };
+        <Row type='flex' justify='center' gutter={[12, 8]}>
+          <Col xs={0} md={5} xxl={4}>
+            <Card style={{ textAlign: 'center' }} bodyStyle={{ padding: '24px 12px' }}>
+              <Statistic title='Total Buy-In' value={totalBuyIn} precision={2} prefix={<DollarTwoTone />} />
+            </Card>
+          </Col>
+          <Col xs={0} md={5} xxl={4}>
+            <Card style={{ textAlign: 'center' }} bodyStyle={{ padding: '24px 12px' }}>
+              <Statistic
+                title='Tax'
+                value={taxBuyIn}
+                precision={2}
+                valueStyle={{ color: taxBuyIn > 0 ? '#cf1322': null }}
+                prefix={<DollarTwoTone />}
+              />
+            </Card>
+          </Col>
+          <Col xs={0} md={5} xxl={4}>
+            <Card style={{ textAlign: 'center' }} bodyStyle={{ padding: '24px 12px' }}>
+              <Statistic title='Payout' value={payout} precision={2} prefix={<DollarTwoTone />} />
+            </Card>
+          </Col>
+          <Col xs={0} md={5} xxl={4}>
+            <Card style={{ textAlign: 'center' }} bodyStyle={{ padding: '24px 12px' }}>
+              <Statistic
+                title='Net Return'
+                value={payout - totalBuyIn}
+                precision={2}
+                valueStyle={{ color: (payout - totalBuyIn) >= 0 ? '#3f8600' : '#cf1322' }}
+                prefix={<DollarTwoTone />}
+              />
+            </Card>
+          </Col>
+        </Row>
+        <Row type='flex' justify='center' gutter={[12, 8]} style={{ marginTop: 16}}>
+          <Col md={20} xxl={16}>
+            <Table
+              columns={columns}
+              dataSource={teams}
+              rowClassName='pointer'
+              size='small'
+              pagination={false}
+              loading={loading}
+              rowKey='id'
+              onRow={
+                (record, index) => {
+                  if (!record.groupFlag) {
+                    return {
+                      onClick: (event) => {
+                        message.info('Team page coming soon');
+                      }
+                    };
+                  }
                 }
               }
-            }
-            expandable={{ 
-              expandedRowRender: record => groupTeamsTable(record.groupTeams),
-              rowExpandable: record => record.groupFlag,
-              expandRowByClick: true,
-              defaultExpandAllRows: true
-            }}
-          />
+              expandable={{ 
+                expandedRowRender: record => groupTeamsTable(record.groupTeams),
+                rowExpandable: record => record.groupFlag,
+                expandRowByClick: true,
+                defaultExpandAllRows: true
+              }}
+            />
+          </Col>
         </Row>
       </Content>
     </Layout>
