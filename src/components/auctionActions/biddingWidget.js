@@ -26,7 +26,7 @@ const AUTOFILL_MIN_BID_LOCALSTORAGE_KEY = 'autoFillMinBidCheckbox';
 function BiddingWidget(props) {
 
   const [bidVal, setBidVal] = useState(0);
-  const [bidStep, setBidStep] = useState(1);
+  // const [bidStep, setBidStep] = useState(1);
   const [bidStatus, setBidStatus] = useState(null);
   const [autoFillMinBid, setAutoFillMinBid] = useState(false);
 
@@ -66,8 +66,20 @@ function BiddingWidget(props) {
 
   useEffect(() => {
     if (bidRules && bidRules.length > 0) {
-      const newMin = bidRules.find(br => br.MinThresholdExclusive <= bidVal && (br.MaxThresholdInclusive > bidVal || br.MaxThresholdInclusive == null))?.MinThresholdExclusive;
-      const newIncrement = bidRules.find(br => br.MinThresholdExclusive <= bidVal && (br.MaxThresholdInclusive > bidVal || br.MaxThresholdInclusive == null))?.MinIncrement || 1;
+      const rule = bidRules.find(br => {
+        return (
+          (
+            br.MinThresholdExclusive <= bidVal ||
+            (br.MinThresholdExclusive == 0 && bidVal == 0)
+          ) && 
+          (
+            br.MaxThresholdInclusive > bidVal ||
+            br.MaxThresholdInclusive == null
+          )
+        );
+      });
+      const newMin = rule?.MinThresholdExclusive;
+      const newIncrement = rule?.MinIncrement || 1;
 
       const validationRemainder = (bidVal - newMin) % newIncrement;
 
@@ -98,7 +110,7 @@ function BiddingWidget(props) {
   const bidChange = (value) => {
     const newVal = value == null ? null : Math.floor(value);
 
-    updateBidStep(newVal);
+    // updateBidStep(newVal);
     setBidVal(newVal);
   }
 
@@ -106,8 +118,6 @@ function BiddingWidget(props) {
     let prevVal;
     let newVal = value;
     let step = 1;
-
-    console.log(info);
 
     if (info.type === 'up') prevVal = value - info.offset;
     if (info.type === 'down') prevVal = value + info.offset;
@@ -117,7 +127,7 @@ function BiddingWidget(props) {
         return (
           (
             br.MinThresholdExclusive < prevVal ||
-            (br.MinThresholdExclusive == 0 && prevVal == 0)
+            (br.MinThresholdExclusive == 0 && prevVal <= 0)
           ) && 
           (
             br.MaxThresholdInclusive >= prevVal ||
@@ -127,34 +137,42 @@ function BiddingWidget(props) {
       });
       step = currentRule?.MinIncrement || step;
 
+      let nextRule;
+
       if (info.type === 'up') {
         newVal = prevVal + step;
+
+        nextRule = bidRules.find(br => {
+          return (
+            (
+              br.MinThresholdExclusive < newVal ||
+              (br.MinThresholdExclusive == 0 && newVal <= 0)
+            ) && 
+            (
+              br.MaxThresholdInclusive >= newVal ||
+              br.MaxThresholdInclusive == null
+            )
+          )
+        });
       } else {
         newVal = prevVal - step;
-      }
 
-      const nextRule = bidRules.find(br => {
-        return (
-          (
-            br.MinThresholdExclusive < newVal ||
-            (br.MinThresholdExclusive == 0 && newVal == 0)
-          ) && 
-          (
-            br.MaxThresholdInclusive >= newVal ||
-            br.MaxThresholdInclusive == null
+        nextRule = bidRules.find(br => {
+          return (
+            (
+              br.MinThresholdExclusive <= newVal ||
+              (br.MinThresholdExclusive == 0 && newVal <= 0)
+            ) && 
+            (
+              br.MaxThresholdInclusive > newVal ||
+              br.MaxThresholdInclusive == null
+            )
           )
-        )
-      });
+        });
+      }
 
       // next we need to validate that newVal is legal within nextRule and correct it if not
       let remainder;
-      let ruleRemainder = nextRule?.MinThresholdExclusive % nextRule?.MinIncrement || 0;
-
-      console.log('prev:', prevVal);
-      console.log('new:', newVal);
-      console.log('currInc:', currentRule.MinIncrement);
-      console.log('newInc:', nextRule.MinIncrement);
-      console.log('ruleRemainder:', ruleRemainder);
 
       if (info.type === 'up') {
         if (currentRule && nextRule && currentRule.AuctionBidRuleId !== nextRule.AuctionBidRuleId) {
@@ -167,28 +185,23 @@ function BiddingWidget(props) {
           }
         } else if (nextRule && nextRule.MinIncrement) {
           remainder = (newVal - nextRule.MinThresholdExclusive) % nextRule.MinIncrement;
-          // if (remainder !== ruleRemainder) newVal = newVal - remainder + ruleRemainder;
           if (remainder !== 0) newVal -= remainder;
         }
       } else {
         if (currentRule && nextRule && currentRule.AuctionBidRuleId !== nextRule.AuctionBidRuleId) {
-          // set newVal to the highest legal bid within nextRule
-          // newVal = nextRule.MaxThresholdInclusive - (nextRule.MaxThresholdInclusive % nextRule.MinIncrement);
-          newVal = nextRule.MaxThresholdInclusive;
+          if (nextRule.MaxThresholdInclusive < prevVal) {
+            newVal = nextRule.MaxThresholdInclusive;
+          }
           remainder = (newVal - nextRule.MinThresholdExclusive) % nextRule.MinIncrement;
-          // if (remainder !== ruleRemainder) newVal = newVal + nextRule.MinIncrement - ruleRemainder - remainder;
-          if (remainder !== 0) newVal += remainder;
+          if (remainder !== 0) newVal += (nextRule.MinIncrement - remainder);
         } else if (nextRule && nextRule.MinIncrement) {
           remainder = (newVal - nextRule.MinThresholdExclusive) % nextRule.MinIncrement;
-          // if (remainder !== ruleRemainder) newVal = newVal + nextRule.MinIncrement - ruleRemainder - remainder;
-          if (remainder !== 0) newVal += remainder;
+          if (remainder !== 0) newVal += (nextRule.MinIncrement - remainder);
         }
       }
 
-      console.log('remainder:', remainder);
     }
 
-    console.log('newVal:', newVal);
     setBidVal(newVal);
   }
 
@@ -253,7 +266,7 @@ function BiddingWidget(props) {
 
   const updateBidStep = (val) => {
     const step = computeBidStep(val);
-    setBidStep(step);
+    // setBidStep(step);
     return step;
   }
 
@@ -291,7 +304,7 @@ function BiddingWidget(props) {
           onStep={onStep}
           onPressEnter={placeCustomBid}
           precision={0}
-          step={bidStep}
+          // step={bidStep}
           value={bidVal}
           status={bidStatus}
           size='small'
