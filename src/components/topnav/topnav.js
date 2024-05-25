@@ -33,7 +33,10 @@ function Topnav(props) {
   });
 
   useEffect(() => {
-    autoSignin();
+    // autoSignin();
+
+    // we auto-signout now because the website is down
+    autoSignout();
   }, []);
 
   useEffect(() => {
@@ -67,6 +70,10 @@ function Topnav(props) {
         authenticated: false
       });
     }
+  }
+
+  const autoSignout = async () => {
+    await props.signOut();
   }
 
   const generateAuthenticatedDropdown = () => {
