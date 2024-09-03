@@ -33,10 +33,10 @@ function Topnav(props) {
   });
 
   useEffect(() => {
-    // autoSignin();
+    autoSignin();
 
     // we auto-signout now because the website is down
-    autoSignout();
+    // autoSignout();
   }, []);
 
   useEffect(() => {
