@@ -95,31 +95,31 @@ function AuthModal() {
     }
   }
 
-  // return (
-  //   <Modal
-  //     title={formType}
-  //     open={visible}
-  //     onCancel={handleCancel}
-  //     style={{ maxWidth: '320px', top: '50px' }}
-  //     footer={null}
-  //   >
-  //     {generateForm()}
-  //   </Modal>
-  // );
-
-  // the website is down, so we don't allow users to sign in
   return (
     <Modal
-      title='Out to Lunch'
+      title={formType}
       open={visible}
       onCancel={handleCancel}
-      style={{ maxWidth: 320, top: 50 }}
+      style={{ maxWidth: '320px', top: '50px' }}
       footer={null}
     >
-      <p>I am rewriting the website from scratch and hope to have it back up sometime this fall</p>
-      <p>If you would like auction data from any past leagues you participated in, send me an email at <a href='mailto:data@calcuttaleague.com'>data@calcuttaleague.com</a>.</p>
+      {generateForm()}
     </Modal>
   );
+
+  // the website is down, so we don't allow users to sign in
+  // return (
+  //   <Modal
+  //     title='Out to Lunch'
+  //     open={visible}
+  //     onCancel={handleCancel}
+  //     style={{ maxWidth: 320, top: 50 }}
+  //     footer={null}
+  //   >
+  //     <p>I am rewriting the website from scratch and hope to have it back up sometime this fall</p>
+  //     <p>If you would like auction data from any past leagues you participated in, send me an email at <a href='mailto:data@calcuttaleague.com'>data@calcuttaleague.com</a>.</p>
+  //   </Modal>
+  // );
 }
 
 export default AuthModal;
